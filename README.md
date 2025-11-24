@@ -1,2 +1,1 @@
-# cpt-with-ross
-CPT with Ross is an AI-assisted self-help web application tool for people who are participating in Cognitive Processing Therapy for PTSD.
+Rails app generated with [lewagon/rails-templates](https://github.com/lewagon/rails-templates), created by the [Le Wagon coding bootcamp](https://www.lewagon.com) team.
