@@ -28,16 +28,12 @@ jobs:
           # Set to 'true' if you want to force scopes like "feat(ui): new button"
           requireScope: false
           # Helpful error message shown to the user
-          error_message: |
-            Title must start with feat, fix, or chore.
-            Examples:
-              - feat: add new login page
-              - fix: resolve header alignment issue
-              - chore: update readme
           subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: |
+            Title must start with feat, fix, or chore.
             Please use a lowercase letter for the subject's first letter.
-            (Example: Use "feat: add CSS button" instead of "feat: Add CSS button")
+            Example:
+              - "feat: add CSS button" instead of "feat: Add CSS button"
 
       # ------------------------------------------------------------
       # 2. Enforce Labels (Must have at least 1)
