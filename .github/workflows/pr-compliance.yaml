@@ -1,0 +1,53 @@
+name: "PR Compliance"
+
+on:
+  pull_request:
+    # Run on open, but also when edited/updated so the check passes if the user fixes the mistake
+    types: [opened, edited, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      # ------------------------------------------------------------
+      # 1. Enforce Semantic Titles (Conventional Commits)
+      # ------------------------------------------------------------
+      - name: Validate PR Title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # List of allowed prefixes (The "Big Three")
+          types: |
+            feat
+            fix
+            chore
+          # Set to 'true' if you want to force scopes like "feat(ui): new button"
+          requireScope: false
+          # Helpful error message shown to the user
+          error_message: |
+            Title must start with feat, fix, or chore.
+            Examples:
+              - feat: add new login page
+              - fix: resolve header alignment issue
+              - chore: update readme
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            Please use a lowercase letter for the subject's first letter.
+            (Example: Use "feat: add CSS button" instead of "feat: Add CSS button")
+
+      # ------------------------------------------------------------
+      # 2. Enforce Labels (Must have at least 1)
+      # ------------------------------------------------------------
+      - name: Validate PR Labels
+        uses: mheap/github-action-required-labels@v5
+        with:
+          mode: minimum
+          count: 1
+          # The PR must have at least one of these labels
+          labels: "feature, bug, enhancement, documentation, maintenance, chore, dependencies"
+          # Fail the build if no label is found
+          exit_type: failure
