@@ -1,4 +1,4 @@
-name: Chore
+name: chore
 description: Docs, tests, formatting, version bumps, or refactoring
 title: "chore: "
 labels: ["chore"]

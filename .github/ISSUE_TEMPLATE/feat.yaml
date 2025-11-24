@@ -1,4 +1,4 @@
-name: Feature
+name: feature
 description: Changes code logic AND affects the end user
 title: "feat: "
 labels: ["feature"]
