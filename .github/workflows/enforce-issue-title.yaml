@@ -24,7 +24,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                body: "This issue has been automatically closed because the title does not follow our convention.\n\n**Required Format:** `type: description` (all lowercase)\n**Allowed Types:** `feat`, `bug`, `chore`\n\n**Examples:**\n- `feat: add login button`\n- `bug: fix header alignment`\n- `chore: update readme`\n\nPlease edit the title and reopen the issue."
+                body: "This issue has been automatically closed because the title does not follow our convention.\n\n**Required Format:** `type: description` (e.g. "feat: add CSS button" instead of "feat: Add CSS button")\n**Allowed Types:** `feat`, `bug`, `chore`\n\n**Examples:**\n- `feat: add login button`\n- `bug: fix header alignment`\n- `chore: update readme`\n\nPlease edit the title and reopen the issue."
               });
 
               // 2. Close the issue
