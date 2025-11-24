@@ -1,0 +1,37 @@
+name: Enforce Issue Title
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Title Format
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.issue.title;
+            // Regex: Starts with feat/bug/chore, followed by colon space, then a LOWERCASE letter
+            const regex = /^(feat|bug|chore): [a-z].+$/;
+
+            if (!regex.test(title)) {
+              // 1. Add a comment explaining the error
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: "This issue has been automatically closed because the title does not follow our convention.\n\n**Required Format:** `type: description` (all lowercase)\n**Allowed Types:** `feat`, `bug`, `chore`\n\n**Examples:**\n- `feat: add login button`\n- `bug: fix header alignment`\n- `chore: update readme`\n\nPlease edit the title and reopen the issue."
+              });
+
+              // 2. Close the issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                state: 'closed'
+              });
+            }
