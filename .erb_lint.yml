@@ -31,3 +31,6 @@ linters:
   # Disabled to ignore multi-line helper blocks (like content_for).
   MultilineHelper:
     enabled: false
+
+exclude:
+  - 'vendor/**/*'
