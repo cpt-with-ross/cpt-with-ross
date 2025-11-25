@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :challenges
   resources :models, only: %i[index show] do
     collection do
       post :refresh
