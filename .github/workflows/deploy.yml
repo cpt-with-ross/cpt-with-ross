@@ -1,0 +1,43 @@
+name: Deploy to Heroku
+
+# Trigger deployment only when PRs are merged into main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the code
+      # fetch-depth: 0 is CRITICAL. Heroku needs full git history to deploy.
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # 2. Authenticate with Heroku
+      # We generate a .netrc file so Git commands can access Heroku without a prompt.
+      - name: Authenticate Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login email@example.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login email@example.com
+            password $HEROKU_API_KEY
+          EOF
+
+      # 3. Add the Remote and Deploy
+      # We add the git remote manually and push.
+      # Because you have a Procfile with 'release:', migrations run automatically after this push.
+      - name: Push to Heroku
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          git remote add heroku https://git.heroku.com/$HEROKU_APP_NAME.git
+          git push heroku main

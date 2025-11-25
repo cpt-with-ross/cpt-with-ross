@@ -1,0 +1,33 @@
+allowed_extensions:
+  - erb
+
+linters:
+  # Rubocop: Disabled to prevent style rules from being enforced in ERB views,
+  # leaving style enforcement solely to the .rubocop.yml file.
+  Rubocop:
+    enabled: false
+
+  # Checks for common ERB pitfalls like using the unsafe `raw` method.
+  ErbSafety:
+    enabled: true
+
+  # Enforces valid HTML5 element syntax (e.g., `<br>` instead of `<br />`).
+  HtmlElements:
+    enabled: true
+
+  # Checks for correct ERB comment syntax (`<%# with space %>`).
+  Comment:
+    enabled: true
+
+  # Ensures a single trailing newline at the end of the file.
+  TrailingEmptyLines:
+    enabled: true
+
+
+  # Disabled to ignore limits on line length within views.
+  LineLength:
+    enabled: false
+
+  # Disabled to ignore multi-line helper blocks (like content_for).
+  MultilineHelper:
+    enabled: false

@@ -1,0 +1,65 @@
+plugins:
+  - rubocop-rails
+  - rubocop-capybara
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'bin/**/*'
+    - 'db/schema.rb'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'public/**/*'
+
+# --- CONVENTIONS ---
+# Standard Ruby: Single quotes preferred
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
+# Standard Ruby: Logic should fit on a standard screen
+Layout/LineLength:
+  Max: 120
+  AllowedPatterns: ['^\s*#']
+
+# --- PREFERENCES ---
+# Disabled to reduce noise
+Style/ConditionalAssignment:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Style/MutableConstant:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Bundler/OrderedGems:
+  Enabled: false
+Rails/I18nLocaleTexts:
+  Enabled: false
+Style/RedundantReturn:
+  Enabled: false
+Style/WordArray:
+  Enabled: false
+Style/SignalException:
+  Enabled: false
+Style/EmptyMethod:
+  Enabled: false
+Style/MissingRespondToMissing:
+  Enabled: false
+
+# --- RAILS SPECIFIC ---
+# ENABLED: Forces .find_each in Models/Controllers for performance
+Rails/FindEach:
+  Enabled: true
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'

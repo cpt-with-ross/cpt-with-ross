@@ -1,0 +1,28 @@
+{
+  "name": "cpt-with-ross",
+  "version": "1.0.0",
+  "description": "CPT with Ross is an AI-assisted self-help web application tool for people who are participating in Cognitive Processing Therapy for PTSD.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:check": "npm run lint:ruby:check && npm run lint:js:check",
+    "lint:ruby:check": "bundle exec rubocop && bundle exec erb_lint --lint-all",
+    "lint:js:check": "npx eslint .",
+    "lint:fix": "npm run lint:ruby:fix && npm run lint:js:fix",
+    "lint:ruby:fix": "bundle exec rubocop -A && bundle exec erb_lint --lint-all --autocorrect",
+    "lint:js:fix": "npx eslint . --fix"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0"
+  }
+}
