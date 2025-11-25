@@ -1,7 +1,7 @@
 {
-  "name": "cpt-with-ross",
+  "name": "wott-downgraded",
   "version": "1.0.0",
-  "description": "CPT with Ross is an AI-assisted self-help web application tool for people who are participating in Cognitive Processing Therapy for PTSD.",
+  "description": "Wott downgraded AI assistant.",
   "main": "index.js",
   "directories": {
     "lib": "lib",
