@@ -7,8 +7,11 @@ class MessagesController < ApplicationController
     ChatResponseJob.perform_later(@chat.id, content)
 
     respond_to do |format|
-      format.turbo_stream
-      format.html { redirect_to @chat }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace('new_message', partial: 'messages/form',
+                                                                 locals: { chat: @chat, message: Message.new })
+      end
+      format.html { redirect_to challenge_chat_path(@chat.challenge) }
     end
   end
 
