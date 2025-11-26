@@ -2,15 +2,19 @@
 
 <% content_for :title, "Chats" %>
 
-<h1>Chats</h1>
+<div class="container">
+  <h1 >Chats</h1>
+  <div id="chats" class="container">
+    <% @chats.each do |chat| %>
+    <div class="card mb-2 p-2">
+      <%= render chat %>
+      <p>
+        <%= link_to "Show this chat", chat %>
+      </p>
+    </div>
+    <% end %>
+  </div>
 
-<div id="chats">
-  <% @chats.each do |chat| %>
-    <%= render chat %>
-    <p>
-      <%= link_to "Show this chat", chat %>
-    </p>
-  <% end %>
+<%= link_to "Back to Challenges", challenges_path %>
+
 </div>
-
-<%= link_to "New chat", new_chat_path %>

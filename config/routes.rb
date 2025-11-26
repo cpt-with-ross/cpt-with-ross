@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   end
   resources :models, only: %i[index show] do
     collection do
-      post :refresh
+      post :refresh #to refresh partial and not the whole page
     end
   end
   resources :chats, only: [] do

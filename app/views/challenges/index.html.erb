@@ -1,14 +1,23 @@
 <p style="color: green"><%= notice %></p>
+<div class = "container">
+  <h1>Challenges</h1>
+</div>
+<div class = "container d-flex justify-content-between mb-1">
+  <%= link_to "New challenge", new_challenge_path, class: "btn btn-primary rounded-pill p-2" %>
+  <h2><%= link_to "See all Chats", chats_path %></h2>
+</div>
 
-<h1>Challenges</h1>
 
-<div id="challenges">
+<div id="challenges" class = "container">
   <% @challenges.each do |challenge| %>
+    <div class="card mb-2 p-2">
     <%= render challenge %>
     <p>
       <%= link_to "Show this challenge", challenge %>
     </p>
+    <p>
+      <%= link_to "Chat History", challenge_chat_path(challenge) %>
+    </p>
+    </div>
   <% end %>
 </div>
-
-<%= link_to "New challenge", new_challenge_path %>
