@@ -1,17 +1,14 @@
 Rails.application.routes.draw do
-  resources :challenges
-  resources :models, only: %i[index show] do
+  resources :challenges do
+    resource :chat, only: [:show]  # singular because each challenge has a single chat
+  end
+  resources :models, only: %i[index show] do   # Ai model
     collection do
-      post :refresh
+      post :refresh #to refresh partial and not the whole page
     end
   end
   resources :chats do
     resources :messages, only: [:create]
-  end
-  resources :models, only: %i[index show] do
-    collection do
-      post :refresh
-    end
   end
   devise_for :users
   root to: 'pages#home'

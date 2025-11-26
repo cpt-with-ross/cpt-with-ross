@@ -6,7 +6,15 @@ class ChatsController < ApplicationController
   end
 
   def show
-    @message = @chat.messages.build
+    if params[:challenge_id].present?
+      @challenge = Challenge.find(params[:challenge_id])
+      @chat = @challenge.chat
+      @message = @chat.messages.build
+      render :challenge_show
+    else
+      @chat = Chat.find(params[:id])
+      @message = @chat.messages.build
+    end
   end
 
   def new
@@ -26,7 +34,14 @@ class ChatsController < ApplicationController
   private
 
   def set_chat
-    @chat = Chat.find(params[:id])
+    # Check if accessed via nested challenge route
+    if params[:challenge_id].present?
+      @challenge = Challenge.find(params[:challenge_id])
+      @chat = @challenge.chat
+    else
+      # Regular chat show by ID
+      @chat = Chat.find(params[:id])
+    end
   end
 
   def model

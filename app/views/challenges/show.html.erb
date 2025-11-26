@@ -3,6 +3,7 @@
 <%= render @challenge %>
 
 <div>
+  <%= link_to "Chat History", challenge_chat_path(@challenge) %>
   <%= link_to "Edit this challenge", edit_challenge_path(@challenge) %> |
   <%= link_to "Back to challenges", challenges_path %>
 
