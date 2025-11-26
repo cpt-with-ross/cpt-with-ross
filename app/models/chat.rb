@@ -1,3 +1,8 @@
 class Chat < ApplicationRecord
   acts_as_chat messages_foreign_key: :chat_id
+  belongs_to :user
+  belongs_to :challenge
+  validates :user_id, presence: true
+  validates :challenge_id, presence: true
+  validates :challenge_id, uniqueness: { scope: :user_id }
 end

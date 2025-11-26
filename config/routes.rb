@@ -1,17 +1,15 @@
 Rails.application.routes.draw do
-  resources :challenges
+  resources :challenges do
+    resource :chat, only: %i[show create]
+    get :refresh
+  end
   resources :models, only: %i[index show] do
     collection do
       post :refresh
     end
   end
-  resources :chats do
+  resources :chats, only: [] do
     resources :messages, only: [:create]
-  end
-  resources :models, only: %i[index show] do
-    collection do
-      post :refresh
-    end
   end
   devise_for :users
   root to: 'pages#home'
