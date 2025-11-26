@@ -1,14 +1,26 @@
-<p style="color: green"><%= notice %></p>
+<div class="container pt-5">
+  <div class="row">
+    <p style="color: green"><%= notice %></p>
+  </div>
 
-<h1>Challenges</h1>
+  <div class="row">
+    <h1 class="display-2 text-center fw-bold">Challenges</h1>
+  </div>
 
-<div id="challenges">
-  <% @challenges.each do |challenge| %>
-    <%= render challenge %>
-    <p>
-      <%= link_to "Show this challenge", challenge %>
-    </p>
-  <% end %>
+  <div id="challenges" class="row row-cols-1 row-cols-md-4 g-4">
+    <% @challenges.each do |challenge| %>
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <%= render challenge %>
+          <p><%= link_to "Show this challenge", challenge, class: "card-link" %></p>
+        </div>
+      </div>
+    </div>
+    <% end %>
+  </div>
+
+  <div class="mt-4">
+    <%= link_to "New challenge", new_challenge_path %>
+  </div>
 </div>
-
-<%= link_to "New challenge", new_challenge_path %>
