@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Traumas</h1>
+
+<div id="traumas">
+  <% @traumas.each do |trauma| %>
+    <%= render trauma %>
+    <p>
+      <%= link_to "Show this trauma", trauma %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New trauma", new_trauma_path %>

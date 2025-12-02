@@ -1,0 +1,17 @@
+
+<%= simple_form_for(@stuck_point) do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+
+  <div class="form-inputs">
+    <%= f.input :title %>
+    <%= f.association :trauma %>
+    <%= f.input :belief %>
+    <%= f.input :belief_type %>
+    <%= f.input :resolved %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

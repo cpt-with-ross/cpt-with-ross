@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Stuck points</h1>
+
+<div id="stuck_points">
+  <% @stuck_points.each do |stuck_point| %>
+    <%= render stuck_point %>
+    <p>
+      <%= link_to "Show this stuck point", stuck_point %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New stuck point", new_stuck_point_path %>

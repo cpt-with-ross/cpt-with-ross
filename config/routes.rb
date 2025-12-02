@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :alternative_thoughts
+  resources :abc_worksheets
+  resources :stuck_points
+  resources :impact_statements
+  resources :traumas
   resources :models, only: %i[index show] do
     collection do
       post :refresh
