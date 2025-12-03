@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_25_011059) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_02_200509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "vector"
+
+  create_table "abc_worksheets", force: :cascade do |t|
+    t.bigint "stuck_point_id", null: false
+    t.text "activating_event"
+    t.text "consequence_feeling"
+    t.integer "feeling_intensity"
+    t.text "consequence_behaviour"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stuck_point_id"], name: "index_abc_worksheets_on_stuck_point_id"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -43,11 +53,40 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_011059) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "alternative_thoughts", force: :cascade do |t|
+    t.bigint "stuck_point_id", null: false
+    t.text "evidence_for"
+    t.text "evidence_against"
+    t.text "alternative_thought"
+    t.integer "belief_rating"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stuck_point_id"], name: "index_alternative_thoughts_on_stuck_point_id"
+  end
+
+  create_table "challenges", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "specs"
+    t.index ["user_id"], name: "index_challenges_on_user_id"
+  end
+
   create_table "chats", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "model_id"
     t.index ["model_id"], name: "index_chats_on_model_id"
+  end
+
+  create_table "impact_statements", force: :cascade do |t|
+    t.text "content"
+    t.bigint "trauma_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trauma_id"], name: "index_impact_statements_on_trauma_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -91,6 +130,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_011059) do
     t.index ["provider"], name: "index_models_on_provider"
   end
 
+  create_table "stuck_points", force: :cascade do |t|
+    t.string "title"
+    t.bigint "trauma_id", null: false
+    t.text "belief"
+    t.string "belief_type"
+    t.boolean "resolved"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trauma_id"], name: "index_stuck_points_on_trauma_id"
+  end
+
   create_table "tool_calls", force: :cascade do |t|
     t.string "tool_call_id", null: false
     t.string "name", null: false
@@ -101,6 +151,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_011059) do
     t.index ["message_id"], name: "index_tool_calls_on_message_id"
     t.index ["name"], name: "index_tool_calls_on_name"
     t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id", unique: true
+  end
+
+  create_table "traumas", force: :cascade do |t|
+    t.string "name"
+    t.date "event_date"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_traumas_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -115,11 +174,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_011059) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "abc_worksheets", "stuck_points"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "alternative_thoughts", "stuck_points"
+  add_foreign_key "challenges", "users"
   add_foreign_key "chats", "models"
+  add_foreign_key "impact_statements", "traumas"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
   add_foreign_key "messages", "tool_calls"
+  add_foreign_key "stuck_points", "traumas"
   add_foreign_key "tool_calls", "messages"
+  add_foreign_key "traumas", "users"
 end

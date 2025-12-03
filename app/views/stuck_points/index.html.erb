@@ -1,14 +1,16 @@
-<p style="color: green"><%= notice %></p>
+<div class="container mt-4 bg-white shadow p-4">
+  <p style="color: green"><%= notice %></p>
 
-<h1>Stuck points</h1>
+  <h1>Stuck points</h1>
 
-<div id="stuck_points">
-  <% @stuck_points.each do |stuck_point| %>
-    <%= render stuck_point %>
-    <p>
-      <%= link_to "Show this stuck point", stuck_point %>
-    </p>
-  <% end %>
+  <div id="stuck_points">
+    <% @stuck_points.each do |stuck_point| %>
+      <%= render stuck_point %>
+      <p>
+        <%= link_to "Show this stuck point", stuck_point %>
+      </p>
+    <% end %>
+  </div>
+
+  <%= link_to "New stuck point", new_stuck_point_path %>
 </div>
-
-<%= link_to "New stuck point", new_stuck_point_path %>

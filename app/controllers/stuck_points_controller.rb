@@ -65,6 +65,6 @@ class StuckPointsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def stuck_point_params
-      params.require(:stuck_point).permit(:title, :trauma_id, :belief, :belief_type, :resolved)
+      params.require(:stuck_point,:title, :trauma_id, :belief, :belief_type).permit(:resolved)
     end
 end

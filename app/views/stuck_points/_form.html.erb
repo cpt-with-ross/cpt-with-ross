@@ -7,7 +7,7 @@
     <%= f.input :title %>
     <%= f.association :trauma %>
     <%= f.input :belief %>
-    <%= f.input :belief_type %>
+    <%= f.input :belief_type, collection: ['Safety', 'Trust', 'Power and control', 'Esteem', 'Intimacy'], prompt: "Select an option" %>
     <%= f.input :resolved %>
   </div>
 
