@@ -1,12 +1,12 @@
 <div class="containe bg-white mt-4 p-4">
   <h1>New stuck point</h1>
 
-<%= render "form", stuck_point: @stuck_point %>
+<%= render "form" %>
 
 </div>
 
 <br>
 
 <div>
-  <%= link_to "Back to stuck points", stuck_points_path %>
+  <%= link_to "Back to stuck points", trauma_stuck_points_path(@trauma) %>
 </div>

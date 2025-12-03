@@ -8,7 +8,9 @@
     <p>
       <%= link_to "Show this trauma", trauma %>
     </p>
+    <p>
+      <%= link_to "Stuck points", trauma_stuck_points_path(trauma) %>
+    </p>
   <% end %>
 </div>
 
-<%= link_to "New trauma", new_trauma_path %>

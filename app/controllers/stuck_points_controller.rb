@@ -1,32 +1,29 @@
 class StuckPointsController < ApplicationController
-  before_action :set_stuck_point, only: %i[ show edit update destroy ]
+  before_action :set_trauma
+  before_action :set_stuck_point, only: %i[ edit update destroy ]
 
-  # GET /stuck_points or /stuck_points.json
+  # GET /traumas/:trauma_id/stuck_points
   def index
-    @stuck_points = StuckPoint.all
+    @stuck_points = @trauma.stuck_points
   end
 
-  # GET /stuck_points/1 or /stuck_points/1.json
-  def show
-  end
-
-  # GET /stuck_points/new
+  # GET /traumas/:trauma_id/stuck_points/new
   def new
-    @stuck_point = StuckPoint.new
+    @stuck_point = @trauma.stuck_points.new
   end
 
-  # GET /stuck_points/1/edit
+  # GET /traumas/:trauma_id/stuck_points/:id/edit
   def edit
   end
 
-  # POST /stuck_points or /stuck_points.json
+  # POST /traumas/:trauma_id/stuck_points
   def create
-    @stuck_point = StuckPoint.new(stuck_point_params)
+    @stuck_point = @trauma.stuck_points.new(stuck_point_params)
 
     respond_to do |format|
       if @stuck_point.save
-        format.html { redirect_to @stuck_point, notice: "Stuck point was successfully created." }
-        format.json { render :show, status: :created, location: @stuck_point }
+        format.html { redirect_to trauma_stuck_points_path(@trauma), notice: "Stuck point was successfully created." }
+        format.json { render :index, status: :created, location: trauma_stuck_points_path(@trauma) }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @stuck_point.errors, status: :unprocessable_entity }
@@ -34,12 +31,12 @@ class StuckPointsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /stuck_points/1 or /stuck_points/1.json
+  # PATCH/PUT /traumas/:trauma_id/stuck_points/:id
   def update
     respond_to do |format|
       if @stuck_point.update(stuck_point_params)
-        format.html { redirect_to @stuck_point, notice: "Stuck point was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @stuck_point }
+        format.html { redirect_to trauma_stuck_points_path(@trauma), notice: "Stuck point was successfully updated.", status: :see_other }
+        format.json { render :index, status: :ok, location: trauma_stuck_points_path(@trauma) }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @stuck_point.errors, status: :unprocessable_entity }
@@ -47,24 +44,32 @@ class StuckPointsController < ApplicationController
     end
   end
 
-  # DELETE /stuck_points/1 or /stuck_points/1.json
+  # DELETE /traumas/:trauma_id/stuck_points/:id
   def destroy
     @stuck_point.destroy!
 
     respond_to do |format|
-      format.html { redirect_to stuck_points_path, notice: "Stuck point was successfully destroyed.", status: :see_other }
+      format.html { redirect_to trauma_stuck_points_path(@trauma), notice: "Stuck point was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end
 
   private
+    def set_trauma
+      # Use find_by and render 404 for missing/invalid ids (including literal ":trauma_id")
+      @trauma = Trauma.find_by(id: params[:trauma_id])
+      unless @trauma
+        render file: Rails.root.join('public', '404.html'), status: :not_found, layout: false
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_stuck_point
-      @stuck_point = StuckPoint.find(params[:id])
+      @stuck_point = @trauma.stuck_points.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def stuck_point_params
-      params.require(:stuck_point,:title, :trauma_id, :belief, :belief_type).permit(:resolved)
+      params.require(:stuck_point).permit(:title, :belief, :belief_type, :resolved)
     end
 end

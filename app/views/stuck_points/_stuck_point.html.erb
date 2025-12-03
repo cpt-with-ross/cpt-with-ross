@@ -6,7 +6,7 @@
 
   <p>
     <strong>Trauma:</strong>
-    <%= stuck_point.trauma_id %>
+    <%= stuck_point.trauma.try(:name) || stuck_point.trauma_id %>
   </p>
 
   <p>

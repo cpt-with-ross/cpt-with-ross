@@ -10,8 +10,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root to: 'traumas#index'
   # Defines routes for traumas resource
-  resources :traumas, only: %i[create edit update destroy] do
-    resources :stuck_points, only: %i[index create edit update destroy] do
+  resources :traumas, only: %i[index create edit update destroy] do
+    resources :stuck_points, only: %i[index new create edit update destroy] do
       resources :abc_worksheets, only: %i[index create edit update destroy]
       resources :alternative_thoughts, only: %i[index create edit update destroy]
     end
