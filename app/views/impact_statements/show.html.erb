@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @impact_statement %>
+
+<div>
+  <%= link_to "Edit this impact statement", edit_impact_statement_path(@impact_statement) %> |
+  <%= link_to "Back to impact statements", impact_statements_path %>
+
+  <%= button_to "Destroy this impact statement", @impact_statement, method: :delete %>
+</div>

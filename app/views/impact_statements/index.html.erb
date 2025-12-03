@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Impact statements</h1>
+
+<div id="impact_statements">
+  <% @impact_statements.each do |impact_statement| %>
+    <%= render impact_statement %>
+    <p>
+      <%= link_to "Show this impact statement", impact_statement %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New impact statement", new_impact_statement_path %>
