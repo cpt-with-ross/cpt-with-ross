@@ -15,8 +15,8 @@ jobs:
         with:
           script: |
             const title = context.payload.issue.title;
-            // Regex: Starts with feat/bug/chore, followed by colon space, then a LOWERCASE letter
-            const regex = /^(feat|bug|chore): [a-z].+$/;
+            // Regex: Starts with epic/story/feat/bug/chore, followed by colon space, then a LOWERCASE letter
+            const regex = /^(epic|story|feat|bug|chore): [a-z].+$/;
 
             if (!regex.test(title)) {
               // 1. Add a comment explaining the error
@@ -24,7 +24,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                body: "This issue has been automatically closed because the title does not follow our convention.\n\n**Required Format:** `type: description` (Start with feat/bug/chore, followed by colon space, then a LOWERCASE letter)\n**Allowed Types:** `feat`, `bug`, `chore`\n\n**Examples:**\n- `feat: add CSS login button`\n- `bug: fix header alignment`\n- `chore: update README`\n\nPlease edit the title and reopen the issue."
+                body: "This issue has been automatically closed because the title does not follow our convention.\n\n**Required Format:** `type: description` (Start with epic/story/feat/bug/chore, followed by colon space, then a LOWERCASE letter)\n**Allowed Types:** `epic`, `story`, `feat`, `bug`, `chore`\n\n**Examples:**\n- `feat: add CSS login button`\n- `bug: fix header alignment`\n- `chore: update README`\n\nPlease edit the title and reopen the issue."
               });
 
               // 2. Close the issue
