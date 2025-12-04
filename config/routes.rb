@@ -7,15 +7,16 @@ Rails.application.routes.draw do
 
   # Defines devise routes for user authentication
   devise_for :users
-  # Defines the root path route ("/")
-  root to: 'traumas#index'
-  # Defines routes for traumas resource
-  resources :impact_statements, only: %i[edit update] # so that it has only 1 id
-  resources :traumas do
-    resources :impact_statements, only: %i[new create]
-    resources :stuck_points, only: %i[index create edit update destroy] do
-      resources :abc_worksheets, only: %i[index create edit update destroy]
-      resources :alternative_thoughts, only: %i[index create edit update destroy]
+
+  # 1. Dashboard: The persistent shell with blank center
+  root 'dashboard#index'
+
+  # 2. Main Hierarchy
+  resources :index_events, shallow: true, only: %i[index new create edit update destroy] do
+    resource :impact_statement, only: %i[show edit update]
+    resources :stuck_points, only: %i[new create edit update destroy] do
+      resources :abc_worksheets, only: %i[new create show edit update destroy]
+      resources :alternative_thoughts, only: %i[new create show edit update destroy]
     end
   end
 end
