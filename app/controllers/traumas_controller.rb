@@ -3,7 +3,7 @@ class TraumasController < ApplicationController
 
   # GET /traumas or /traumas.json
   def index
-    @traumas = Trauma.all
+    @traumas = current_user.traumas.order(created_at: :desc)
   end
 
   # GET /traumas/1 or /traumas/1.json
@@ -12,20 +12,21 @@ class TraumasController < ApplicationController
 
   # GET /traumas/new
   def new
-    @trauma = Trauma.new
+    @trauma = current_user.traumas.build
   end
 
   # GET /traumas/1/edit
   def edit
+    
   end
 
   # POST /traumas or /traumas.json
   def create
-    @trauma = Trauma.new(trauma_params)
+    @trauma = current_user.traumas.build(trauma_params)
 
     respond_to do |format|
       if @trauma.save
-        format.html { redirect_to @trauma, notice: "Trauma was successfully created." }
+        format.html { redirect_to new_trauma_impact_statement_path(@trauma), notice: "Trauma logged successfully. Please write your impact statement." }
         format.json { render :show, status: :created, location: @trauma }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -60,11 +61,12 @@ class TraumasController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_trauma
-      @trauma = Trauma.find(params[:id])
+      @trauma = current_user.traumas.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def trauma_params
-      params.require(:trauma).permit(:name, :event_date, :user_id)
+      # user_id removed to prevent injection, ruby .build takes care of the user_id
+      params.require(:trauma).permit(:name, :event_date)
     end
 end

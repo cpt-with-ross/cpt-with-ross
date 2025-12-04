@@ -1,9 +1,14 @@
-<h1>New impact statement</h1>
+<h1>Write Your Impact Statement</h1>
 
-<%= render "form", impact_statement: @impact_statement %>
+<%= simple_form_for([@trauma, @impact_statement]) do |f| %>
+  <%= f.error_notification %>
 
-<br>
+  <div class="form-inputs">
+    <%= f.input :content, as: :text, label: "Impact Statement", input_html: { rows: 10 } %>
+  </div>
 
-<div>
-  <%= link_to "Back to impact statements", impact_statements_path %>
-</div>
+  <div class="form-actions">
+    <%= f.button :submit, "Save Impact Statement" %>
+    <p>The Impact Statement can be edited later</p>
+  </div>
+<% end %>

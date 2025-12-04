@@ -4,11 +4,17 @@
 
 <div id="traumas">
   <% @traumas.each do |trauma| %>
+  <div class="card">
     <%= render trauma %>
     <p>
       <%= link_to "Show this trauma", trauma %>
     </p>
+  </div>
   <% end %>
 </div>
 
-<%= link_to "New trauma", new_trauma_path %>
+<% if @traumas.any? %>
+  <%= link_to "New trauma", new_trauma_path %>
+<% else %>
+  <h2 class="text-center" style="color: white;"><%= link_to "Create your first trauma ", new_trauma_path, class: "btn btn-primary" %></h2>
+<% end %>

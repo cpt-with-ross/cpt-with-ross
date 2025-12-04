@@ -10,7 +10,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root to: 'traumas#index'
   # Defines routes for traumas resource
-  resources :traumas, only: %i[create edit update destroy] do
+  resources :impact_statements, only: %i[edit update] # so that it has only 1 id
+  resources :traumas do
+    resources :impact_statements, only: %i[new create]
     resources :stuck_points, only: %i[index create edit update destroy] do
       resources :abc_worksheets, only: %i[index create edit update destroy]
       resources :alternative_thoughts, only: %i[index create edit update destroy]
