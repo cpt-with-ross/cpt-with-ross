@@ -7,11 +7,11 @@
     <% @stuck_points.each do |stuck_point| %>
       <%= render stuck_point %>
       <p>
-        <%= link_to "Edit", edit_trauma_stuck_point_path(@trauma, stuck_point) %> |
-        <%= button_to "Delete", trauma_stuck_point_path(@trauma, stuck_point), method: :delete, data: { confirm: "Are you sure?" } %>
+        <%= link_to "Edit", edit_index_event_stuck_point_path(@index_event, stuck_point) %> |
+        <%= button_to "Delete", index_event_stuck_point_path(@index_event, stuck_point), method: :delete, data: { confirm: "Are you sure?" } %>
       </p>
     <% end %>
   </div>
 
-  <%= link_to "New stuck point", new_trauma_stuck_point_path(@trauma) %>
+  <%= link_to "New stuck point", new_index_event_stuck_point_path(@index_event) %>
 </div>

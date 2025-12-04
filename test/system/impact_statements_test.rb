@@ -15,7 +15,7 @@ class ImpactStatementsTest < ApplicationSystemTestCase
     click_on "New impact statement"
 
     fill_in "Content", with: @impact_statement.content
-    fill_in "Trauma", with: @impact_statement.trauma_id
+    fill_in "IndexEvent", with: @impact_statement.index_event_id
     click_on "Create Impact statement"
 
     assert_text "Impact statement was successfully created"
@@ -27,7 +27,7 @@ class ImpactStatementsTest < ApplicationSystemTestCase
     click_on "Edit this impact statement", match: :first
 
     fill_in "Content", with: @impact_statement.content
-    fill_in "Trauma", with: @impact_statement.trauma_id
+    fill_in "IndexEvent", with: @impact_statement.index_event_id
     click_on "Update Impact statement"
 
     assert_text "Impact statement was successfully updated"

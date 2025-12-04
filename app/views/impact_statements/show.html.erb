@@ -3,8 +3,8 @@
 <%= render @impact_statement %>
 
 <div>
-  <%= link_to "Edit this impact statement", edit_impact_statement_path(@impact_statement) %> |
-  <%= link_to "Back to impact statements", impact_statements_path %>
+  <%= link_to "Edit this impact statement", edit_index_event_impact_statement_path(@impact_statement.index_event) %> |
+  <%= link_to "Back to impact statements", index_events_path %>
 
-  <%= button_to "Destroy this impact statement", @impact_statement, method: :delete %>
+  <%= button_to "Destroy this impact statement", index_event_path(@impact_statement.index_event), method: :delete %>
 </div>

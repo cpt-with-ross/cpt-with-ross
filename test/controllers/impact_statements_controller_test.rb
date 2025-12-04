@@ -17,7 +17,7 @@ class ImpactStatementsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create impact_statement" do
     assert_difference("ImpactStatement.count") do
-      post impact_statements_url, params: { impact_statement: { content: @impact_statement.content, trauma_id: @impact_statement.trauma_id } }
+      post impact_statements_url, params: { impact_statement: { content: @impact_statement.content, index_event_id: @impact_statement.index_event_id } }
     end
 
     assert_redirected_to impact_statement_url(ImpactStatement.last)
@@ -34,7 +34,7 @@ class ImpactStatementsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update impact_statement" do
-    patch impact_statement_url(@impact_statement), params: { impact_statement: { content: @impact_statement.content, trauma_id: @impact_statement.trauma_id } }
+    patch impact_statement_url(@impact_statement), params: { impact_statement: { content: @impact_statement.content, index_event_id: @impact_statement.index_event_id } }
     assert_redirected_to impact_statement_url(@impact_statement)
   end
 

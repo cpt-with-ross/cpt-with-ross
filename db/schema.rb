@@ -73,10 +73,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_200509) do
 
   create_table "impact_statements", force: :cascade do |t|
     t.text "content"
-    t.bigint "trauma_id", null: false
+    t.bigint "index_event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["trauma_id"], name: "index_impact_statements_on_trauma_id"
+    t.index ["index_event_id"], name: "index_impact_statements_on_index_event_id"
+  end
+
+  create_table "index_events", force: :cascade do |t|
+    t.string "name"
+    t.date "event_date"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_index_events_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -122,13 +131,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_200509) do
 
   create_table "stuck_points", force: :cascade do |t|
     t.string "title"
-    t.bigint "trauma_id", null: false
+    t.bigint "index_event_id", null: false
     t.text "belief"
     t.string "belief_type"
     t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["trauma_id"], name: "index_stuck_points_on_trauma_id"
+    t.index ["index_event_id"], name: "index_stuck_points_on_index_event_id"
   end
 
   create_table "tool_calls", force: :cascade do |t|
@@ -141,15 +150,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_200509) do
     t.index ["message_id"], name: "index_tool_calls_on_message_id"
     t.index ["name"], name: "index_tool_calls_on_name"
     t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id", unique: true
-  end
-
-  create_table "traumas", force: :cascade do |t|
-    t.string "name"
-    t.date "event_date"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_traumas_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -169,11 +169,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_200509) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "alternative_thoughts", "stuck_points"
   add_foreign_key "chats", "models"
-  add_foreign_key "impact_statements", "traumas"
+  add_foreign_key "impact_statements", "index_events"
+  add_foreign_key "index_events", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
   add_foreign_key "messages", "tool_calls"
-  add_foreign_key "stuck_points", "traumas"
+  add_foreign_key "stuck_points", "index_events"
   add_foreign_key "tool_calls", "messages"
-  add_foreign_key "traumas", "users"
 end

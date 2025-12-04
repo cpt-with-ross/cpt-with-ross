@@ -18,7 +18,7 @@ class StuckPointsTest < ApplicationSystemTestCase
     fill_in "Belief type", with: @stuck_point.belief_type
     check "Resolved" if @stuck_point.resolved
     fill_in "Title", with: @stuck_point.title
-    fill_in "Trauma", with: @stuck_point.trauma_id
+    fill_in "IndexEvent", with: @stuck_point.index_event_id
     click_on "Create Stuck point"
 
     assert_text "Stuck point was successfully created"
@@ -33,7 +33,7 @@ class StuckPointsTest < ApplicationSystemTestCase
     fill_in "Belief type", with: @stuck_point.belief_type
     check "Resolved" if @stuck_point.resolved
     fill_in "Title", with: @stuck_point.title
-    fill_in "Trauma", with: @stuck_point.trauma_id
+    fill_in "IndexEvent", with: @stuck_point.index_event_id
     click_on "Update Stuck point"
 
     assert_text "Stuck point was successfully updated"

@@ -1,0 +1,10 @@
+<h1>Editing index_event</h1>
+
+<%= render "form", index_event: @index_event %>
+
+<br>
+
+<div>
+  <%= link_to "Edit Impact Satement", edit_impact_statement_path(@index_event.impact_statement) %>
+  <%= link_to "Back to index_events", index_events_path %>
+</div>

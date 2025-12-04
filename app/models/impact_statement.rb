@@ -1,3 +1,3 @@
 class ImpactStatement < ApplicationRecord
-  belongs_to :trauma
+  belongs_to :index_event
 end
