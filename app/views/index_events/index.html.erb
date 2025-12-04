@@ -1,0 +1,21 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>IndexEvents</h1>
+
+<div id="index_events">
+  <% @index_events.each do |index_event| %>
+  <div class="card">
+    <%= render index_event %>
+    <p>
+      <%= link_to "Show this index_event", index_event_impact_statement_path(index_event) %>
+    </p>
+  </div>
+  <% end %>
+</div>
+
+<% if @index_events.any? %>
+  <%= link_to "New index_event", new_index_event_path %>
+<% else %>
+  <h2 class="text-center" style="color: white;"><%= link_to "Create your first index_event ", new_index_event_path, class: "btn btn-primary" %></h2>
+<% end %>
+

@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @index_event %>
+
+<div>
+  <%= link_to "Edit this index_event", edit_index_event_path(@index_event) %> |
+  <%= link_to "Back to index_events", index_events_path %>
+
+  <%= button_to "Destroy this index_event", @index_event, method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+</div>
