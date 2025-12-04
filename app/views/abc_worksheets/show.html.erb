@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @abc_worksheet %>
+
+<div>
+  <%= link_to "Edit this abc worksheet", edit_abc_worksheet_path(@abc_worksheet) %> |
+  <%= link_to "Back to abc worksheets", abc_worksheets_path %>
+
+  <%= button_to "Destroy this abc worksheet", @abc_worksheet, method: :delete %>
+</div>
