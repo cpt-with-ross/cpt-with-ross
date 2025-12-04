@@ -18,3 +18,7 @@
 <% else %>
   <h2 class="text-center" style="color: white;"><%= link_to "Create your first trauma ", new_trauma_path, class: "btn btn-primary" %></h2>
 <% end %>
+    <p>
+      <%= link_to "Stuck points", trauma_stuck_points_path(trauma) %>
+    </p>
+</div>

@@ -17,7 +17,6 @@ class TraumasController < ApplicationController
 
   # GET /traumas/1/edit
   def edit
-    
   end
 
   # POST /traumas or /traumas.json

@@ -18,7 +18,7 @@ class ImpactStatementsController < ApplicationController
 
   # GET /impact_statements/1/edit
   def edit
-    @impact_statement = ImpactStatement.find(params[:id])
+    # @impact_statement = ImpactStatement.find(params[:id])
   end
 
   # POST /impact_statements or /impact_statements.json
@@ -42,7 +42,7 @@ class ImpactStatementsController < ApplicationController
   def update
     respond_to do |format|
       if @impact_statement.update(impact_statement_params)
-        format.html { redirect_to @impact_statement.trauma, notice: "Impact statement was successfully updated.", status: :see_other }
+        format.html { redirect_to @impact_statement, notice: "Impact statement was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @impact_statement }
       else
         format.html { render :edit, status: :unprocessable_entity }
