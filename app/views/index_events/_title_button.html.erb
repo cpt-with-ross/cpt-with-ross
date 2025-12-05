@@ -1,0 +1,9 @@
+<% is_active ||= false %>
+<button class="btn btn-link text-decoration-none shadow-none p-2 ps-0 fw-normal w-100 text-start d-flex align-items-center collapsed
+        <%= is_active ? 'sidebar-active text-dark fw-bold' : 'text-dark' %>"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapse_<%= index_event.id %>">
+  <i class="fa-solid fa-chevron-down me-2 text-muted chevron-icon" style="font-size: 0.7rem;"></i>
+  <span class="<%= is_active ? 'fw-bold' : 'fw-normal' %>"><%= index_event.title %></span>
+</button>

@@ -1,0 +1,22 @@
+<%= turbo_frame_tag "new_index_event_form_frame" do %>
+
+  <div class="p-2 mb-2 bg-light rounded border">
+    <%= simple_form_for @index_event, url: index_events_path do |f| %>
+
+      <div class="mb-2">
+        <%= f.input :title,
+            as: :string,
+            label: false,
+            input_html: { class: "form-control form-control-sm", placeholder: "Event Name...", autofocus: true } %>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <%= link_to "Cancel", index_events_path, class: "btn btn-sm btn-link text-muted text-decoration-none p-0", data: { turbo_frame: "new_index_event_form_frame" } %>
+
+        <%= f.button :submit, "Save", class: "btn btn-sm btn-dark" %>
+      </div>
+
+    <% end %>
+  </div>
+
+<% end %>
