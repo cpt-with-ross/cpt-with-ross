@@ -8,29 +8,13 @@ class ImpactStatementsController < ApplicationController
   end
 
   def edit
-    render_inline_form @impact_statement,
-                       url: index_event_impact_statement_path(@index_event),
-                       placeholder: 'Write your impact statement...',
-                       frame_id: dom_id(@impact_statement, :edit_frame),
-                       attribute_name: :statement
   end
 
   def update
     if @impact_statement.update(impact_statement_params)
-      respond_with_turbo_or_redirect do
-        render turbo_stream: turbo_stream.replace(
-          dom_id(@impact_statement),
-          partial: 'impact_statements/impact_statement',
-          locals: { impact_statement: @impact_statement }
-        )
-      end
+      redirect_to index_event_impact_statement_path(@index_event)
     else
-      render_inline_form @impact_statement,
-                         url: index_event_impact_statement_path(@index_event),
-                         placeholder: 'Write your impact statement...',
-                         frame_id: dom_id(@impact_statement, :edit_frame),
-                         attribute_name: :statement,
-                         status: :unprocessable_content
+      render :edit, status: :unprocessable_content
     end
   end
 
