@@ -1,6 +1,6 @@
 RubyLLM.configure do |config|
   # Google Vertex AI configuration with Application Default Credentials (ADC)
-  # ADC is automatically discovered by googleauth gem - no API key needed
+  # ADC is automatically discovered by googleauth gem from GOOGLE_APPLICATION_CREDENTIALS
   config.vertexai_project_id = ENV['GOOGLE_CLOUD_PROJECT'] || Rails.application.credentials.dig(:google, :project_id)
   config.vertexai_location = ENV['GOOGLE_CLOUD_LOCATION'] || 'us-central1'
 
