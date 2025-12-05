@@ -1,12 +1,32 @@
+# frozen_string_literal: true
+
+# =============================================================================
+# AlternativeThoughtsController - Managing Balanced Thought Challenges
+# =============================================================================
+#
+# Alternative Thoughts are a CPT tool for cognitive restructuring. Once a stuck
+# point is identified and analyzed via ABC worksheets, users create alternative
+# thoughts that challenge and balance the original belief.
+#
+# Structure:
+# - Unbalanced Thought: The original stuck point / automatic thought
+# - Balanced Thought: A more realistic, helpful perspective
+#
+# This helps users move from all-or-nothing thinking (e.g., "I can never trust
+# anyone") to balanced perspectives (e.g., "While some people have hurt me,
+# I can learn to evaluate trustworthiness over time").
+#
 class AlternativeThoughtsController < ApplicationController
   include InlineFormRenderable
   include StuckPointChildResource
 
   before_action :set_alternative_thought, only: %i[show edit update destroy]
 
+  # Renders the show view within the main_content Turbo Frame
   def show
   end
 
+  # Renders inline form for creating a new alternative thought
   def new
     @alternative_thought = @stuck_point.alternative_thoughts.build
     render_inline_form @alternative_thought,
@@ -16,6 +36,9 @@ class AlternativeThoughtsController < ApplicationController
                        attribute_name: :title
   end
 
+  # Dual behavior based on requesting Turbo Frame:
+  # - main_content: Full edit form in center panel
+  # - title_frame: Inline title edit in sidebar
   def edit
     if turbo_frame_request_id == 'main_content'
       render :edit
@@ -28,6 +51,10 @@ class AlternativeThoughtsController < ApplicationController
     end
   end
 
+  # Creates a new alternative thought. On success:
+  # 1. Appends to sidebar list
+  # 2. Clears the inline form
+  # 3. Shows the new thought in main content
   def create
     @alternative_thought = @stuck_point.alternative_thoughts.build(alternative_thought_params)
 
@@ -54,6 +81,7 @@ class AlternativeThoughtsController < ApplicationController
     end
   end
 
+  # Updates the alternative thought and refreshes both sidebar and main content
   def update
     if @alternative_thought.update(alternative_thought_params)
       respond_with_turbo_or_redirect do
@@ -80,12 +108,14 @@ class AlternativeThoughtsController < ApplicationController
     end
   end
 
+  # Deletes thought with fallback handling from StuckPointChildResource
   def destroy
     destroy_with_fallback(@alternative_thought, alternative_thought_path(@alternative_thought))
   end
 
   private
 
+  # Finds alternative thought with authorization via join to current user
   def set_alternative_thought
     @alternative_thought = AlternativeThought.joins(stuck_point: { index_event: :user })
                                              .where(users: { id: current_user.id })

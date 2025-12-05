@@ -1,3 +1,24 @@
+# frozen_string_literal: true
+
+# =============================================================================
+# StuckPointsController - Managing Cognitive Stuck Points
+# =============================================================================
+#
+# A "Stuck Point" in CPT is a negative or unhelpful thought/belief that keeps
+# someone "stuck" in unhelpful patterns after trauma. Examples:
+# - "I should have prevented what happened"
+# - "The world is completely dangerous"
+# - "I can't trust anyone"
+#
+# Stuck Points are the focus of CPT therapy work. Users create them, then work
+# through them via ABC Worksheets (identifying patterns) and Alternative
+# Thoughts (developing balanced perspectives).
+#
+# This controller follows the same inline-editing and Turbo Stream patterns
+# as IndexEventsController. Key addition: When a stuck point's statement is
+# updated, we trigger an async job to sync the statement to all related ABC
+# worksheets (which display the stuck point as their "B - Belief" field).
+#
 # rubocop:disable Metrics/ClassLength
 class StuckPointsController < ApplicationController
   include InlineFormRenderable
@@ -5,12 +26,14 @@ class StuckPointsController < ApplicationController
   before_action :set_index_event, only: %i[new create]
   before_action :set_stuck_point, only: %i[show edit update destroy]
 
+  # Returns title button partial for Turbo Frame refresh
   def show
     render partial: 'stuck_points/title_button',
            locals: { stuck_point: @stuck_point },
            layout: false
   end
 
+  # Renders inline form for new stuck point within an IndexEvent's accordion
   def new
     @stuck_point = @index_event.stuck_points.build
     render_inline_form @stuck_point,
@@ -20,6 +43,7 @@ class StuckPointsController < ApplicationController
                        attribute_name: :statement
   end
 
+  # Renders inline form for editing existing stuck point statement
   def edit
     render_inline_form @stuck_point,
                        url: stuck_point_path(@stuck_point),
@@ -29,6 +53,8 @@ class StuckPointsController < ApplicationController
                        cancel_url: stuck_point_path(@stuck_point)
   end
 
+  # Creates new stuck point nested under an IndexEvent.
+  # Adds to the sidebar list within the parent event's accordion section.
   def create
     @stuck_point = @index_event.stuck_points.build(stuck_point_params)
 
@@ -51,9 +77,12 @@ class StuckPointsController < ApplicationController
     end
   end
 
+  # Updates stuck point. When the statement changes, queues a background job
+  # to sync the new statement to all ABC worksheets (their "beliefs" field
+  # should match the stuck point statement).
   def update
     if @stuck_point.update(stuck_point_params)
-      # Update beliefs on all ABC worksheets when statement changes (async)
+      # Async sync: Update all ABC worksheet beliefs to match new statement
       UpdateAbcBeliefsJob.perform_later(@stuck_point.id, @stuck_point.statement)
 
       respond_with_turbo_or_redirect do
@@ -65,7 +94,7 @@ class StuckPointsController < ApplicationController
           )
         ]
 
-        # Refresh center column if viewing a child to update the header and content
+        # Refresh main content if viewing a child resource (worksheet/thought)
         child_content = find_viewed_child_content
         streams << turbo_stream.update('main_content', child_content) if child_content
 
@@ -82,6 +111,8 @@ class StuckPointsController < ApplicationController
     end
   end
 
+  # Deletes stuck point and all children (cascade via dependent: :destroy).
+  # If user was viewing a child, shows impact statement as fallback.
   def destroy
     index_event = @stuck_point.index_event
     child_paths = build_child_paths(@stuck_point)
@@ -91,6 +122,7 @@ class StuckPointsController < ApplicationController
       format.turbo_stream do
         streams = [turbo_stream.remove(dom_id(@stuck_point))]
 
+        # If viewing deleted child content, show impact statement instead
         if viewing_child?(child_paths)
           streams << turbo_stream.update('main_content',
                                          partial: 'impact_statements/impact_statement',
@@ -105,10 +137,12 @@ class StuckPointsController < ApplicationController
 
   private
 
+  # Finds parent IndexEvent scoped to current user
   def set_index_event
     @index_event = current_user.index_events.find(params[:index_event_id])
   end
 
+  # Finds stuck point by ID (shallow route)
   def set_stuck_point
     @stuck_point = StuckPoint.find(params[:id])
   end
@@ -117,11 +151,13 @@ class StuckPointsController < ApplicationController
     params.require(:stuck_point).permit(:statement, :belief, :belief_type, :resolved)
   end
 
+  # Builds list of URL paths to child resources for deletion fallback logic
   def build_child_paths(stuck_point)
     stuck_point.abc_worksheets.map { |ws| abc_worksheet_path(ws) } +
       stuck_point.alternative_thoughts.map { |at| alternative_thought_path(at) }
   end
 
+  # Checks if user is currently viewing one of this stuck point's children
   def viewing_child?(child_paths)
     current_path = params[:current_path]
     return false if current_path.blank?
@@ -129,11 +165,13 @@ class StuckPointsController < ApplicationController
     child_paths.include?(current_path)
   end
 
+  # Finds and renders the content for whatever child the user is viewing.
+  # Reloads associations to get fresh data after any updates.
   def find_viewed_child_content
     current_path = params[:current_path]
     return nil if current_path.blank?
 
-    # Reload associations to get fresh data after updates
+    # Check if viewing an ABC worksheet
     @stuck_point.abc_worksheets.reload.each do |ws|
       if current_path == abc_worksheet_path(ws)
         return render_to_string(partial: 'abc_worksheets/show_content',
@@ -141,6 +179,7 @@ class StuckPointsController < ApplicationController
       end
     end
 
+    # Check if viewing an alternative thought
     @stuck_point.alternative_thoughts.reload.each do |at|
       if current_path == alternative_thought_path(at)
         return render_to_string(partial: 'alternative_thoughts/show_content',
