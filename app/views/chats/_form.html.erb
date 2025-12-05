@@ -1,29 +1,16 @@
-<%= form_with(model: chat, url: chats_path) do |form| %>
-  <% if chat.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(chat.errors.count, "error") %> prohibited this chat from being saved:</h2>
+<%= simple_form_for chat, url: chats_path do |f| %>
+  <%= f.input :model,
+      as: :select,
+      label: "Select AI model:",
+      collection: Model.pluck(:name, :model_id).unshift(["Default (#{RubyLLM.config.default_model})", nil]),
+      selected: @selected_model,
+      input_html: { style: "width: 100%; max-width: 600px; padding: 5px;" } %>
 
-      <ul>
-        <% chat.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= f.input :prompt,
+      as: :string,
+      label: false,
+      wrapper_html: { style: "margin-top: 15px;" },
+      input_html: { style: "width: 100%; max-width: 600px;", placeholder: "What would you like to discuss?", autofocus: true } %>
 
-  <div>
-    <%= form.label :model, "Select AI model:", style: "display: block" %>
-    <%= form.select :model,
-        options_for_select(Model.pluck(:name, :model_id).unshift(["Default (#{RubyLLM.config.default_model})", nil]), @selected_model),
-        {},
-        style: "width: 100%; max-width: 600px; padding: 5px;" %>
-  </div>
-
-  <div style="margin-top: 15px;">
-    <%= form.text_field :prompt, style: "width: 100%; max-width: 600px;", placeholder: "What would you like to discuss?", autofocus: true %>
-  </div>
-
-  <div>
-    <%= form.submit "Start new chat" %>
-  </div>
+  <%= f.button :submit, "Start new chat" %>
 <% end %>
