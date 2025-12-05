@@ -1,7 +1,7 @@
 class IndexEvent < ApplicationRecord
-  belongs_to :user
-  has_one :impact_statement, dependent: :destroy
-  has_many :stuck_points, dependent: :destroy
+  belongs_to :user, inverse_of: :index_events
+  has_one :impact_statement, dependent: :destroy, inverse_of: :index_event
+  has_many :stuck_points, dependent: :destroy, inverse_of: :index_event
 
   validates :title, presence: true
 
