@@ -20,7 +20,7 @@
         <% if model.new_record? %>
           <button type="button"
                   class="btn btn-sm btn-link text-muted text-decoration-none p-0"
-                  onclick="document.getElementById('<%= frame_id %>').innerHTML=''">
+                  onclick="document.getElementById(<%= frame_id.to_json %>).innerHTML=''">
             Cancel
           </button>
         <% end %>

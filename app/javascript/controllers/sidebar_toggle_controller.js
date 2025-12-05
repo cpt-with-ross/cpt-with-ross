@@ -1,5 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
+/* global bootstrap */
+
 // Handles Index Event sidebar toggle behavior:
 // - Click when collapsed: expand and navigate to Impact Statement
 // - Click when expanded but not on Impact Statement: navigate to Impact Statement
