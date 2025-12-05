@@ -70,7 +70,7 @@ class StuckPointsController < ApplicationController
   private
 
   def set_index_event
-    @index_event = IndexEvent.find(params[:index_event_id])
+    @index_event = current_user.index_events.find(params[:index_event_id])
   end
 
   def set_stuck_point
@@ -78,6 +78,6 @@ class StuckPointsController < ApplicationController
   end
 
   def stuck_point_params
-    params.require(:stuck_point).permit(:statement)
+    params.require(:stuck_point).permit(:statement, :belief, :belief_type, :resolved)
   end
 end

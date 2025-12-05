@@ -1,10 +1,13 @@
 class IndexEventsController < ApplicationController
   include InlineFormRenderable
 
-  before_action :set_index_event, only: %i[edit update destroy]
+  before_action :set_index_event, only: %i[show edit update destroy]
+
+  def show
+  end
 
   def new
-    @index_event = IndexEvent.new
+    @index_event = current_user.index_events.build
     render_inline_form @index_event,
                        url: index_events_path,
                        placeholder: 'New Index Event Name...',
@@ -21,7 +24,7 @@ class IndexEventsController < ApplicationController
   end
 
   def create
-    @index_event = IndexEvent.new(index_event_params)
+    @index_event = current_user.index_events.build(index_event_params)
 
     if @index_event.save
       respond_with_turbo_or_redirect do
@@ -69,7 +72,7 @@ class IndexEventsController < ApplicationController
   private
 
   def set_index_event
-    @index_event = IndexEvent.find(params[:id])
+    @index_event = current_user.index_events.find(params[:id])
   end
 
   def index_event_params
