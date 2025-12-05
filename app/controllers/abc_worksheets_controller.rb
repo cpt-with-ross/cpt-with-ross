@@ -22,6 +22,7 @@ class AbcWorksheetsController < ApplicationController
   include StuckPointChildResource
 
   before_action :set_abc_worksheet, only: %i[show edit update destroy]
+  before_action :set_worksheet_focus, only: %i[show edit]
 
   # Renders the show view within the main_content Turbo Frame
   def show
@@ -143,5 +144,10 @@ class AbcWorksheetsController < ApplicationController
 
   def abc_worksheet_params
     params.require(:abc_worksheet).permit(:title, :activating_event, :beliefs, :consequences)
+  end
+
+  # Sets focus context for AI chat when viewing this worksheet
+  def set_worksheet_focus
+    set_focus_context(:abc_worksheet, @abc_worksheet.id)
   end
 end

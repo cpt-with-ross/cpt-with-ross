@@ -21,6 +21,7 @@ class AlternativeThoughtsController < ApplicationController
   include StuckPointChildResource
 
   before_action :set_alternative_thought, only: %i[show edit update destroy]
+  before_action :set_thought_focus, only: %i[show edit]
 
   # Renders the show view within the main_content Turbo Frame
   def show
@@ -125,5 +126,10 @@ class AlternativeThoughtsController < ApplicationController
 
   def alternative_thought_params
     params.require(:alternative_thought).permit(:title, :unbalanced_thought, :balanced_thought)
+  end
+
+  # Sets focus context for AI chat when viewing this alternative thought
+  def set_thought_focus
+    set_focus_context(:alternative_thought, @alternative_thought.id)
   end
 end

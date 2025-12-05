@@ -23,6 +23,7 @@ class ImpactStatementsController < ApplicationController
 
   before_action :set_index_event
   before_action :set_impact_statement
+  before_action :set_statement_focus, only: %i[show edit]
 
   # Renders the impact statement view in main_content
   def show
@@ -55,5 +56,10 @@ class ImpactStatementsController < ApplicationController
 
   def impact_statement_params
     params.require(:impact_statement).permit(:statement)
+  end
+
+  # Sets focus context for AI chat when viewing this impact statement
+  def set_statement_focus
+    set_focus_context(:impact_statement, @impact_statement.id)
   end
 end

@@ -3,6 +3,12 @@
               id: "chat-form",
               html: { autocomplete: "off" },
               data: { controller: "chat-form", action: "turbo:submit-start->chat-form#disable turbo:submit-end->chat-form#reset" } do |f| %>
+  <%# Pass focus context to the AI so it knows what the user is currently viewing %>
+  <% if focus_context.present? %>
+    <%= hidden_field_tag 'focus_context[type]', focus_context[:type] %>
+    <%= hidden_field_tag 'focus_context[id]', focus_context[:id] %>
+  <% end %>
+
   <div class="position-relative border rounded-3 p-2 shadow-sm" style="min-height: 120px;">
     <%= f.text_area :content,
         class: "form-control border-0 shadow-none w-100 h-100 bg-transparent",

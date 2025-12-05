@@ -9,10 +9,15 @@
 #
 # Flow:
 # 1. User sends message -> MessagesController creates placeholder assistant message
-# 2. This job is enqueued with the chat, user content, and placeholder message ID
+# 2. This job is enqueued with the chat, user content, placeholder message ID, and optional focus
 # 3. CptChatService performs RAG retrieval and starts LLM streaming
 # 4. Each chunk is broadcast to the user via ActionCable in real-time
 # 5. Final content is persisted to the placeholder message
+#
+# Focus Context:
+# The optional focus_context hash allows prioritizing specific therapy items in the
+# AI's response. Pass { type: 'stuck_point', id: 123 } to focus on that item.
+# Supported types: index_event, stuck_point, abc_worksheet, alternative_thought, impact_statement
 #
 # Error Handling:
 # All RubyLLM errors are caught and converted to user-friendly messages.
@@ -21,14 +26,17 @@
 class ChatResponseJob < ApplicationJob
   queue_as :critical
 
-  def perform(chat_id, content, assistant_message_id)
+  def perform(chat_id, content, assistant_message_id, focus_context = {})
     chat = Chat.find(chat_id)
     message = Message.find(assistant_message_id)
     user = chat.user
     accumulated_content = +'' # Mutable string for efficient concatenation
 
+    # Build focus hash from serialized context (background jobs can't receive AR objects)
+    focus = build_focus(focus_context)
+
     # CptChatService handles RAG retrieval, system prompt construction, and LLM interaction
-    service = CptChatService.new(chat, user)
+    service = CptChatService.new(chat, user, focus: focus)
     service.ask(content) do |chunk|
       next if chunk.content.blank?
 
@@ -60,6 +68,40 @@ class ChatResponseJob < ApplicationJob
   end
 
   private
+
+  # Converts serialized focus context to ActiveRecord objects.
+  # Background jobs receive primitive types, so we reconstruct the focus hash here.
+  #
+  # @param focus_context [Hash] Serialized context with :type and :id keys
+  # @return [Hash] Focus hash with symbolized type key and AR object value
+  def build_focus(focus_context)
+    return {} if focus_context.blank?
+
+    # Handle both string and symbol keys (job serialization may vary)
+    type = focus_context[:type] || focus_context['type']
+    id = focus_context[:id] || focus_context['id']
+
+    return {} if type.blank? || id.blank?
+
+    model_class = focus_type_to_class(type)
+    return {} unless model_class
+
+    record = model_class.find_by(id: id)
+    return {} unless record
+
+    { type.to_sym => record }
+  end
+
+  # Maps focus type strings to their corresponding model classes
+  def focus_type_to_class(type)
+    {
+      'index_event' => IndexEvent,
+      'stuck_point' => StuckPoint,
+      'abc_worksheet' => AbcWorksheet,
+      'alternative_thought' => AlternativeThought,
+      'impact_statement' => ImpactStatement
+    }[type.to_s]
+  end
 
   # Broadcasts error to UI and persists fallback content to the message
   def handle_error(message, broadcast_text, persist_text)
