@@ -83,23 +83,12 @@ class IndexEventsController < ApplicationController
 
   def destroy
     related_paths = build_related_paths(@index_event)
-    current_path = params[:current_path]
-    Rails.logger.info "DELETE INDEX EVENT - current_path: '#{current_path}'"
-    Rails.logger.info "DELETE INDEX EVENT - related_paths: #{related_paths}"
-    Rails.logger.info "DELETE INDEX EVENT - match?: #{related_paths.include?(current_path)}"
     @index_event.destroy
 
     respond_to do |format|
       format.turbo_stream do
         streams = [turbo_stream.remove(dom_id(@index_event))]
-
-        if viewing_related_content?(related_paths)
-          Rails.logger.info 'DELETE INDEX EVENT - Updating main_content to welcome'
-          streams << turbo_stream.update('main_content', partial: 'dashboard/welcome')
-        else
-          Rails.logger.info 'DELETE INDEX EVENT - NOT updating main_content'
-        end
-
+        streams << turbo_stream.update('main_content', partial: 'dashboard/welcome') if viewing_related_content?(related_paths)
         render turbo_stream: streams
       end
       format.html { redirect_to root_path }
