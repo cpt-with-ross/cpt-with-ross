@@ -1,7 +1,7 @@
 class AlternativeThoughtsController < ApplicationController
   include InlineFormRenderable
+  include StuckPointChildResource
 
-  before_action :set_stuck_point, only: %i[new create]
   before_action :set_alternative_thought, only: %i[show edit update destroy]
 
   def show
@@ -81,33 +81,10 @@ class AlternativeThoughtsController < ApplicationController
   end
 
   def destroy
-    index_event = @stuck_point.index_event
-    viewing_self = params[:current_path] == alternative_thought_path(@alternative_thought)
-    @alternative_thought.destroy
-
-    respond_to do |format|
-      format.turbo_stream do
-        streams = [turbo_stream.remove(dom_id(@alternative_thought))]
-
-        if viewing_self
-          streams << turbo_stream.update('main_content',
-                                         partial: 'impact_statements/impact_statement',
-                                         locals: { impact_statement: index_event.impact_statement })
-        end
-
-        render turbo_stream: streams
-      end
-      format.html { redirect_to root_path }
-    end
+    destroy_with_fallback(@alternative_thought, alternative_thought_path(@alternative_thought))
   end
 
   private
-
-  def set_stuck_point
-    @stuck_point = StuckPoint.joins(index_event: :user)
-                             .where(users: { id: current_user.id })
-                             .find(params[:stuck_point_id])
-  end
 
   def set_alternative_thought
     @alternative_thought = AlternativeThought.joins(stuck_point: { index_event: :user })

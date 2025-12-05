@@ -1,5 +1,6 @@
 class IndexEventsController < ApplicationController
   include InlineFormRenderable
+  include IndexEventContentHelper
 
   before_action :set_index_event, only: %i[show edit update destroy]
 
@@ -103,54 +104,5 @@ class IndexEventsController < ApplicationController
 
   def index_event_params
     params.require(:index_event).permit(:title)
-  end
-
-  def build_related_paths(index_event)
-    paths = [index_event_impact_statement_path(index_event)]
-
-    index_event.stuck_points.each do |sp|
-      sp.abc_worksheets.each { |ws| paths << abc_worksheet_path(ws) }
-      sp.alternative_thoughts.each { |at| paths << alternative_thought_path(at) }
-    end
-
-    paths
-  end
-
-  def viewing_related_content?(related_paths)
-    current_path = params[:current_path]
-    return false if current_path.blank?
-
-    related_paths.include?(current_path)
-  end
-
-  def find_viewed_child_content
-    current_path = params[:current_path]
-    return nil if current_path.blank?
-
-    # Check if viewing impact statement
-    if current_path == index_event_impact_statement_path(@index_event)
-      return render_to_string(partial: 'impact_statements/show_content',
-                              locals: { impact_statement: @index_event.impact_statement,
-                                        index_event: @index_event })
-    end
-
-    # Check ABC worksheets
-    @index_event.stuck_points.each do |sp|
-      sp.abc_worksheets.each do |ws|
-        if current_path == abc_worksheet_path(ws)
-          return render_to_string(partial: 'abc_worksheets/show_content',
-                                  locals: { abc_worksheet: ws, stuck_point: sp })
-        end
-      end
-
-      sp.alternative_thoughts.each do |at|
-        if current_path == alternative_thought_path(at)
-          return render_to_string(partial: 'alternative_thoughts/show_content',
-                                  locals: { alternative_thought: at, stuck_point: sp })
-        end
-      end
-    end
-
-    nil
   end
 end
