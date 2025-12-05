@@ -1,0 +1,77 @@
+<div class="d-flex flex-column h-100 border-start bg-white">
+
+  <div class="px-3 border-bottom bg-light d-flex align-items-center justify-content-end" style="height: 65px;">
+    <div class="dropdown">
+      <a href="#" class="text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+
+        <div class="bg-white border rounded-5 px-3 py-1 d-flex align-items-center gap-2 shadow-sm hover-shadow-md transition-all">
+
+          <span class="small fw-bold text-dark" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <% if defined?(current_user) && current_user.present? %>
+              <%= current_user.email %>
+            <% else %>
+              Guest
+            <% end %>
+          </span>
+
+          <i class="fa-solid fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
+
+        </div>
+
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+        <li><h6 class="dropdown-header text-muted text-uppercase small">My Account</h6></li>
+        <li><%= link_to "Profile", "#", class: "dropdown-item small" %></li>
+        <li><%= link_to "Settings", "#", class: "dropdown-item small" %></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item small text-danger" do %>
+            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Sign Out
+          <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="flex-grow-1 overflow-y-auto p-4 bg-white" id="chat-messages">
+
+    <div class="d-flex justify-content-end mb-4">
+      <div class="bg-light text-dark px-3 py-2 rounded-4" style="max-width: 80%; font-size: 0.95rem;">
+        Hey Ross! Explain trauma to me.
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-start mb-4">
+      <div class="text-dark" style="max-width: 90%; font-size: 0.95rem; line-height: 1.6;">
+        A trauma is a very stressful event that involves actual or threatened death, serious injury, or sexual violence.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="p-4 bg-white">
+    <%= simple_form_for :chat, url: "#", html: { class: "w-100", autocomplete: "off" } do |f| %>
+
+      <div class="position-relative border rounded-3 p-2 shadow-sm" style="min-height: 120px;">
+
+        <%= f.input_field :content,
+            as: :text,
+            class: "form-control border-0 shadow-none w-100 h-100 bg-transparent",
+            style: "resize: none;",
+            placeholder: "Chat with Ross, Ask Questions, Get Help...",
+            rows: 3,
+            label: false %>
+
+        <div class="d-flex justify-content-end align-items-end mt-2 px-1">
+          <button class="btn btn-dark rounded-circle d-flex align-items-center justify-content-center p-0"
+                  type="submit"
+                  style="width: 32px; height: 32px;">
+            <i class="fa-solid fa-paper-plane small"></i>
+          </button>
+        </div>
+
+      </div>
+    <% end %>
+  </div>
+
+</div>

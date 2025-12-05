@@ -1,0 +1,32 @@
+<%# Reusable inline form for Turbo Frame editing. frame_id must match the parent frame. %>
+<%= turbo_frame_tag frame_id do %>
+  <div class="p-2 mb-2 bg-light rounded border">
+    <%= simple_form_for(model, url: url) do |f| %>
+
+      <div class="mb-2">
+        <%= f.input attribute_name,
+            label: false,
+            placeholder: local_assigns[:placeholder] || "Enter name...",
+            autofocus: true,
+            input_html: { class: "form-control form-control-sm" } %>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 align-items-center">
+        <%# Persisted records: Cancel links back to show action, which re-renders the frame.
+            New records: No show URL exists, so we clear the frame via JS instead. %>
+        <% if model.persisted? %>
+          <%= link_to "Cancel", url, class: "btn btn-sm btn-link text-muted text-decoration-none p-0" %>
+        <% else %>
+          <button type="button"
+                  class="btn btn-sm btn-link text-muted text-decoration-none p-0"
+                  onclick="document.getElementById('<%= frame_id %>').innerHTML=''">
+            Cancel
+          </button>
+        <% end %>
+
+        <%= f.button :submit, "Save", class: "btn btn-sm btn-dark" %>
+      </div>
+
+    <% end %>
+  </div>
+<% end %>
