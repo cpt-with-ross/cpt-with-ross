@@ -1,0 +1,30 @@
+<%= tag.div id: dom_id(alternative_thought) do %>
+  <div class="card p-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <h5 class="card-title mb-0">Alternative Thought</h5>
+      <%= link_to edit_alternative_thought_path(alternative_thought),
+          class: "btn btn-sm btn-outline-secondary",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+
+    <div class="mb-4">
+      <h6 class="text-muted mb-2">Unbalanced Thought</h6>
+      <% if alternative_thought.unbalanced_thought.present? %>
+        <p class="card-text"><%= simple_format(alternative_thought.unbalanced_thought) %></p>
+      <% else %>
+        <p class="text-muted fst-italic">Not yet written.</p>
+      <% end %>
+    </div>
+
+    <div>
+      <h6 class="text-muted mb-2">Balanced Thought</h6>
+      <% if alternative_thought.balanced_thought.present? %>
+        <p class="card-text"><%= simple_format(alternative_thought.balanced_thought) %></p>
+      <% else %>
+        <p class="text-muted fst-italic">Not yet written.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

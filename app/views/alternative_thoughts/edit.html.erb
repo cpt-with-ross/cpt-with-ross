@@ -1,0 +1,30 @@
+<%= turbo_frame_tag "main_content", data: { controller: "frame-tracker", frame_tracker_initial_path_value: edit_alternative_thought_path(@alternative_thought) } do %>
+  <%= render "shared/page_header",
+      parents: [@stuck_point.index_event.title, @stuck_point.statement.truncate(30), "Alternative Thoughts"],
+      title: "Edit #{@alternative_thought.title}" %>
+
+  <div class="card p-4 shadow-sm">
+    <%= simple_form_for @alternative_thought, data: { turbo_frame: "main_content" } do |f| %>
+      <div class="mb-4">
+        <%= f.input :unbalanced_thought,
+            as: :text,
+            label: "Unbalanced Thought",
+            input_html: { rows: 4, class: "form-control" },
+            hint: "Write the negative or distorted thought you want to challenge." %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :balanced_thought,
+            as: :text,
+            label: "Balanced Thought",
+            input_html: { rows: 4, class: "form-control" },
+            hint: "Write a more balanced, realistic alternative to the unbalanced thought." %>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.button :submit, "Save", class: "btn btn-primary" %>
+        <%= link_to "Cancel", @alternative_thought, class: "btn btn-outline-secondary", data: { turbo_frame: "main_content" } %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

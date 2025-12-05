@@ -1,19 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CptWithRoss</title>
+    <title>CPT with Ross</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag 'application', 'data-turbo-track': 'reload' %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= render 'shared/navbar' %>
-    <%= render 'shared/flashes' %>
+  <body class="vh-100 overflow-hidden bg-white">
 
-    <%= yield %>
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+
+        <div class="col-2 h-100 p-0">
+          <%= render 'shared/sidebar' %>
+        </div>
+
+        <div class="col-6 h-100 p-0 d-flex flex-column bg-light overflow-y-auto">
+          <%= render 'shared/flashes' %>
+          <%= yield %>
+        </div>
+
+        <div class="col-4 h-100 p-0">
+          <%= render 'shared/chat', chat: @chat if @chat %>
+        </div>
+
+      </div>
+    </div>
+
   </body>
 </html>

@@ -1,0 +1,18 @@
+<%= tag.div id: dom_id(impact_statement) do %>
+  <div class="card p-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <h5 class="card-title mb-0">Impact Statement</h5>
+      <%= link_to edit_index_event_impact_statement_path(impact_statement.index_event),
+          class: "btn btn-sm btn-outline-secondary",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+
+    <% if impact_statement.statement.present? %>
+      <p class="card-text"><%= simple_format(impact_statement.statement) %></p>
+    <% else %>
+      <p class="text-muted fst-italic">No impact statement written yet. Click Edit to begin.</p>
+    <% end %>
+  </div>
+<% end %>

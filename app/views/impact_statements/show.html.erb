@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "main_content", data: { controller: "frame-tracker", frame_tracker_initial_path_value: index_event_impact_statement_path(@index_event) } do %>
+  <%= render "impact_statements/show_content",
+      impact_statement: @impact_statement,
+      index_event: @index_event %>
+<% end %>

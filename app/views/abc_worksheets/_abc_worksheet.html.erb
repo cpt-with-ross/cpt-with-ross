@@ -1,0 +1,39 @@
+<%= tag.div id: dom_id(abc_worksheet) do %>
+  <div class="card p-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <h5 class="card-title mb-0">ABC Worksheet</h5>
+      <%= link_to edit_abc_worksheet_path(abc_worksheet),
+          class: "btn btn-sm btn-outline-secondary",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+
+    <div class="mb-4">
+      <h6 class="text-muted mb-2">A - Activating Event</h6>
+      <% if abc_worksheet.activating_event.present? %>
+        <p class="card-text"><%= simple_format(abc_worksheet.activating_event) %></p>
+      <% else %>
+        <p class="text-muted fst-italic">Not yet written.</p>
+      <% end %>
+    </div>
+
+    <div class="mb-4">
+      <h6 class="text-muted mb-2">B - Beliefs</h6>
+      <% if abc_worksheet.beliefs.present? %>
+        <p class="card-text"><%= simple_format(abc_worksheet.beliefs) %></p>
+      <% else %>
+        <p class="text-muted fst-italic">Not yet written.</p>
+      <% end %>
+    </div>
+
+    <div>
+      <h6 class="text-muted mb-2">C - Consequences</h6>
+      <% if abc_worksheet.consequences.present? %>
+        <p class="card-text"><%= simple_format(abc_worksheet.consequences) %></p>
+      <% else %>
+        <p class="text-muted fst-italic">Not yet written.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -23,11 +23,11 @@ gem 'turbo-rails'
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem 'stimulus-rails'
 
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem 'jbuilder'
+# Database-backed ActionCable adapter (no Redis required)
+gem 'solid_cable'
 
-# Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
+# Database-backed job queue (no Redis required)
+gem 'solid_queue'
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -79,5 +79,7 @@ group :test do
 end
 
 gem 'ruby_llm', '~> 1.9'
+gem 'googleauth' # Required for Vertex AI authentication with ADC
 
 gem 'pgvector', '~> 0.3.2'
+gem 'neighbor'

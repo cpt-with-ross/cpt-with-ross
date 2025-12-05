@@ -1,0 +1,7 @@
+<div data-controller="current-path" data-current-path-path-value="<%= abc_worksheet_path(abc_worksheet) %>"></div>
+
+<%= render "shared/page_header",
+    parents: [stuck_point.index_event.title, stuck_point.statement.truncate(30), "ABC Worksheets"],
+    title: abc_worksheet.title %>
+
+<%= render "abc_worksheets/abc_worksheet", abc_worksheet: abc_worksheet %>

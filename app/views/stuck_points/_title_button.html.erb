@@ -1,0 +1,10 @@
+<%= turbo_frame_tag dom_id(stuck_point, :title_frame) do %>
+  <button class="btn btn-link text-muted text-decoration-none shadow-none p-1 ps-0 fw-normal small w-100 text-start d-flex align-items-center collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse_stuck_<%= stuck_point.id %>">
+    <i class="fa-solid fa-chevron-down me-2 text-muted chevron-icon" style="font-size: 0.6rem;"></i>
+    <i class="fa-solid fa-thumbtack me-2" style="font-size: 0.7rem;"></i>
+    <%= stuck_point.statement %>
+  </button>
+<% end %>

@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "main_content", data: { controller: "frame-tracker", frame_tracker_initial_path_value: abc_worksheet_path(@abc_worksheet) } do %>
+  <%= render "abc_worksheets/show_content",
+      abc_worksheet: @abc_worksheet,
+      stuck_point: @stuck_point %>
+<% end %>

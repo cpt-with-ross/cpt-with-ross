@@ -1,0 +1,33 @@
+<div class="d-flex flex-column h-100 bg-white border-end">
+
+  <div class="px-3 border-bottom bg-light d-flex align-items-center gap-2" style="min-height: 65px;">
+    <%= image_tag "logo.png", class: "rounded", style: "width: 32px; height: 32px;", alt: "Logo" %>
+    <span class="fw-bold text-dark">CPT with Ross</span>
+  </div>
+
+  <div class="p-3 flex-grow-1 overflow-y-auto">
+
+    <div class="d-flex align-items-center justify-content-between mb-2 px-1">
+      <span class="text-uppercase text-secondary fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">
+        Index Events
+      </span>
+
+      <%= link_to new_index_event_path,
+          class: "btn btn-sm btn-link text-secondary p-0 text-decoration-none opacity-75 hover-opacity-100",
+          title: "Add New Index Event",
+          data: { turbo_frame: "new_index_event_form_frame" } do %>
+        <i class="fa-solid fa-plus"></i>
+      <% end %>
+    </div>
+
+    <%= turbo_frame_tag "new_index_event_form_frame" %>
+
+    <div class="accordion accordion-flush" id="indexEventsAccordion">
+      <% @index_events&.each do |index_event| %>
+         <% is_active = current_page?(index_event_impact_statement_path(index_event)) %>
+         <%= render "index_events/sidebar_item", index_event: index_event, is_active: is_active %>
+      <% end %>
+    </div>
+
+  </div>
+</div>
