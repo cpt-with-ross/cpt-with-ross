@@ -94,10 +94,10 @@ class IndexEventsController < ApplicationController
         streams = [turbo_stream.remove(dom_id(@index_event))]
 
         if viewing_related_content?(related_paths)
-          Rails.logger.info "DELETE INDEX EVENT - Updating main_content to welcome"
+          Rails.logger.info 'DELETE INDEX EVENT - Updating main_content to welcome'
           streams << turbo_stream.update('main_content', partial: 'dashboard/welcome')
         else
-          Rails.logger.info "DELETE INDEX EVENT - NOT updating main_content"
+          Rails.logger.info 'DELETE INDEX EVENT - NOT updating main_content'
         end
 
         render turbo_stream: streams

@@ -58,9 +58,7 @@ class AbcWorksheetsController < ApplicationController
   def update
     if @abc_worksheet.update(abc_worksheet_params)
       # Sync stuck point statement when beliefs changes
-      if abc_worksheet_params[:beliefs].present?
-        @stuck_point.update(statement: @abc_worksheet.beliefs)
-      end
+      @stuck_point.update(statement: @abc_worksheet.beliefs) if abc_worksheet_params[:beliefs].present?
 
       respond_with_turbo_or_redirect do
         streams = [
