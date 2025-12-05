@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -63,9 +63,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
   end
 
   create_table "chats", force: :cascade do |t|
+    t.bigint "model_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "model_id"
     t.index ["model_id"], name: "index_chats_on_model_id"
   end
 
@@ -80,9 +80,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
   create_table "index_events", force: :cascade do |t|
     t.string "title"
     t.date "date"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
     t.index ["user_id"], name: "index_index_events_on_user_id"
   end
 
@@ -94,10 +94,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
     t.integer "output_tokens"
     t.integer "cached_tokens"
     t.integer "cache_creation_tokens"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.bigint "chat_id", null: false
     t.bigint "model_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.bigint "tool_call_id"
     t.index ["chat_id"], name: "index_messages_on_chat_id"
     t.index ["model_id"], name: "index_messages_on_model_id"
@@ -194,8 +194,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
     t.integer "pid", null: false
     t.string "hostname"
     t.text "metadata"
-    t.datetime "created_at", null: false
     t.string "name", null: false
+    t.datetime "created_at", null: false
     t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
     t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
     t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
@@ -259,12 +259,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
 
   create_table "stuck_points", force: :cascade do |t|
     t.text "statement"
-    t.bigint "index_event_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.text "belief"
     t.string "belief_type"
     t.boolean "resolved"
+    t.bigint "index_event_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["index_event_id"], name: "index_stuck_points_on_index_event_id"
   end
 
@@ -272,9 +272,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
     t.string "tool_call_id", null: false
     t.string "name", null: false
     t.jsonb "arguments", default: {}
+    t.bigint "message_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "message_id", null: false
     t.index ["message_id"], name: "index_tool_calls_on_message_id"
     t.index ["name"], name: "index_tool_calls_on_name"
     t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id", unique: true
