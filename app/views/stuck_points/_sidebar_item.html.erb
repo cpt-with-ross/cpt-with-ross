@@ -1,9 +1,9 @@
 <div class="accordion-item bg-transparent border-0" id="<%= dom_id(stuck_point) %>">
 
   <div class="accordion-header d-flex align-items-center justify-content-between pe-2 sidebar-item-group">
-    <%= turbo_frame_tag dom_id(stuck_point, :title_frame), class: "flex-grow-1" do %>
+    <div class="flex-grow-1">
       <%= render 'stuck_points/title_button', stuck_point: stuck_point %>
-    <% end %>
+    </div>
 
     <%= render 'shared/action_dropdown',
         item: stuck_point,
