@@ -1,0 +1,35 @@
+.sidebar-item-group {
+  .action-btn {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .action-btn {
+    opacity: 0.4;
+    visibility: visible;
+  }
+
+  .action-btn:hover,
+  .action-btn.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .chevron-icon {
+    transition: transform 0.2s ease;
+    transform: rotate(0deg);
+  }
+
+  button.collapsed .chevron-icon {
+    transform: rotate(-90deg);
+  }
+}
+
+.sidebar-item-group .sidebar-active {
+  background-color: var(--bs-light);
+  font-weight: bold;
+  color: var(--bs-dark);
+  border-left: 4px solid var(--bs-dark);
+  padding-left: calc(0.5rem - 4px);
+}
