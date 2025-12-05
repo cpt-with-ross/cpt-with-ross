@@ -1,8 +1,0 @@
-<%= simple_form_for message, url: [@chat, message], html: { id: "new_message" } do |f| %>
-  <%= f.input :content,
-      as: :string,
-      label: false,
-      input_html: { style: "width: 100%; max-width: 600px;", placeholder: "Message...", autofocus: true } %>
-
-  <%= f.button :submit, "Send message" %>
-<% end %>
