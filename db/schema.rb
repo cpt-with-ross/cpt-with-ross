@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -68,7 +68,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
     t.bigint "model_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["model_id"], name: "index_chats_on_model_id"
+    t.index ["user_id"], name: "index_chats_on_user_id"
   end
 
   create_table "impact_statements", force: :cascade do |t|
@@ -86,6 +88,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_index_events_on_user_id"
+  end
+
+  create_table "knowledge_chunks", force: :cascade do |t|
+    t.text "content", null: false
+    t.integer "page_number"
+    t.string "source_doc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.vector "embedding", limit: 768
+    t.index ["embedding"], name: "index_knowledge_chunks_on_embedding", opclass: :vector_cosine_ops, using: :hnsw
   end
 
   create_table "messages", force: :cascade do |t|
@@ -299,6 +311,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "alternative_thoughts", "stuck_points"
   add_foreign_key "chats", "models"
+  add_foreign_key "chats", "users"
   add_foreign_key "impact_statements", "index_events"
   add_foreign_key "index_events", "users"
   add_foreign_key "messages", "chats"
