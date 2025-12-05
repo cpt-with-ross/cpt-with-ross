@@ -1,0 +1,11 @@
+<%= render "shared/page_header",
+    parent: @index_event.title,
+    title: "Impact Statement" %>
+
+<div class="card p-4 shadow-sm">
+  <h5>Impact Statement</h5>
+
+  <%= simple_form_for [@index_event, @impact_statement] do |f| %>
+     <%= f.submit "Save", class: "btn btn-black" %>
+  <% end %>
+</div>
