@@ -8,9 +8,23 @@
   <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 z-3">
     <% extra_items.each do |menu_item| %>
       <li>
+        <%
+          data_attrs = {}
+          data_attrs[:turbo_frame] = menu_item[:turbo_frame] if menu_item[:turbo_frame]
+
+          onclick_parts = []
+          if menu_item[:collapse_id]
+            onclick_parts << "bootstrap.Collapse.getOrCreateInstance(document.getElementById('#{menu_item[:collapse_id]}')).show()"
+          end
+          if menu_item[:navigate_url]
+            onclick_parts << "document.getElementById('main_content').src = '#{menu_item[:navigate_url]}'"
+          end
+          onclick_handler = onclick_parts.any? ? onclick_parts.join('; ') : nil
+        %>
         <%= link_to menu_item[:path],
             class: "dropdown-item small",
-            data: menu_item[:turbo_frame] ? { turbo_frame: menu_item[:turbo_frame] } : {} do %>
+            data: data_attrs,
+            onclick: onclick_handler do %>
           <% if menu_item[:icon] %><i class="<%= menu_item[:icon] %> me-2"></i><% end %><%= menu_item[:label] %>
         <% end %>
       </li>
@@ -22,7 +36,11 @@
     </li>
     <% if show_divider %><li><hr class="dropdown-divider"></li><% end %>
     <li>
-      <%= button_to "Delete", delete_path, method: :delete, class: "dropdown-item small text-danger" %>
+      <div data-controller="delete-with-context">
+        <%= button_to "Delete", delete_path,
+            method: :delete,
+            class: "dropdown-item small text-danger" %>
+      </div>
     </li>
   </ul>
 </div>

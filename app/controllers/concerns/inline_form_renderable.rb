@@ -12,10 +12,13 @@ module InlineFormRenderable
   # Renders the shared inline form partial within a Turbo Frame.
   # The frame_id must match the turbo_frame_tag wrapping the editable element.
   # rubocop:disable Metrics/ParameterLists
-  def render_inline_form(model, url:, placeholder:, frame_id:, attribute_name:, status: :ok)
-    render partial: 'shared/inline_form',
+  def render_inline_form(model, url:, placeholder:, frame_id:, attribute_name:,
+                         cancel_url: nil, hidden_fields: {}, status: :ok)
+    render 'shared/inline_form',
            locals: { model: model, url: url, placeholder: placeholder,
-                     frame_id: frame_id, attribute_name: attribute_name },
+                     frame_id: frame_id, attribute_name: attribute_name,
+                     cancel_url: cancel_url, hidden_fields: hidden_fields },
+           layout: false,
            status: status
   end
   # rubocop:enable Metrics/ParameterLists

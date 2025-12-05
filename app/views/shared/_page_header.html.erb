@@ -1,8 +1,8 @@
-<div class="border-bottom pb-3 mb-4 bg-white sticky-top pt-2">
+<div class="border-bottom bg-white sticky-top px-3 d-flex align-items-center" style="min-height: 65px;">
   <h5 class="fw-bold m-0">
-    <% if local_assigns[:parent] %>
-       <span class="text-muted"><%= parent %></span>
-       <span class="text-muted mx-2">&gt;</span>
+    <% Array(local_assigns[:parents]).each do |p| %>
+      <span class="text-muted"><%= p %></span>
+      <span class="text-muted mx-2">&gt;</span>
     <% end %>
 
     <span class="text-dark"><%= title %></span>

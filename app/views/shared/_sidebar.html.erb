@@ -23,8 +23,8 @@
     <%= turbo_frame_tag "new_index_event_form_frame" %>
 
     <div class="accordion accordion-flush" id="indexEventsAccordion">
-      <% @index_events.each do |index_event| %>
-         <% is_active = current_page?(index_event_path(index_event)) %>
+      <% @index_events&.each do |index_event| %>
+         <% is_active = current_page?(index_event_impact_statement_path(index_event)) %>
          <%= render "index_events/sidebar_item", index_event: index_event, is_active: is_active %>
       <% end %>
     </div>

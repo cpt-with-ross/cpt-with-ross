@@ -1,11 +1,5 @@
-<% is_active = current_page?(polymorphic_path(item)) %>
-
 <div class="d-flex align-items-center justify-content-between mb-1 sidebar-item-group" id="<%= dom_id(item) %>">
-  <%= turbo_frame_tag dom_id(item, :title_frame), class: "flex-grow-1" do %>
-    <%= link_to item.title, polymorphic_path(item),
-        class: "text-decoration-none small d-block py-1 border-start border-2 w-100
-               #{is_active ? 'sidebar-active text-dark' : 'text-secondary border-transparent hover-border-primary' }" %>
-  <% end %>
+  <%= render 'shared/file_sidebar_title', item: item %>
 
   <div class="dropdown">
     <button class="btn btn-sm btn-link text-muted p-0 action-btn" type="button" data-bs-toggle="dropdown" style="font-size: 0.75rem;">
@@ -21,9 +15,12 @@
       </li>
       <li><hr class="dropdown-divider"></li>
       <li>
-        <%= button_to item, method: :delete, class: "dropdown-item small text-danger" do %>
-          <i class="fa-regular fa-trash-can me-2"></i> Delete
-        <% end %>
+        <div data-controller="delete-with-context">
+          <%= button_to item, method: :delete,
+              class: "dropdown-item small text-danger" do %>
+            <i class="fa-regular fa-trash-can me-2"></i> Delete
+          <% end %>
+        </div>
       </li>
     </ul>
   </div>

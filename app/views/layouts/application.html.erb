@@ -18,17 +18,9 @@
           <%= render 'shared/sidebar' %>
         </div>
 
-        <div class="col-6 h-100 p-0 d-flex flex-column bg-light">
-
-          <div class="px-3 border-bottom bg-light d-flex align-items-center" style="height: 65px;">
-            <%= yield :header %>
-          </div>
-
-          <div class="flex-grow-1 overflow-y-auto">
-            <%= render 'shared/flashes' %>
-            <%= yield %>
-          </div>
-
+        <div class="col-6 h-100 p-0 d-flex flex-column bg-light overflow-y-auto">
+          <%= render 'shared/flashes' %>
+          <%= yield %>
         </div>
 
         <div class="col-4 h-100 p-0">
