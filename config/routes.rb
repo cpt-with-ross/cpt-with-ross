@@ -7,6 +7,13 @@ Rails.application.routes.draw do
 
   root 'dashboard#index'
 
+  resources :chats, only: [:create] do
+    member do
+      delete :clear
+    end
+    resources :messages, only: [:create]
+  end
+
   resources :index_events, shallow: true, only: %i[new create show edit update destroy] do
     resource :impact_statement, only: %i[show edit update]
     resources :stuck_points, only: %i[new create show edit update destroy] do
