@@ -53,8 +53,8 @@ class StuckPointsController < ApplicationController
 
   def update
     if @stuck_point.update(stuck_point_params)
-      # Update beliefs on all ABC worksheets when statement changes
-      @stuck_point.abc_worksheets.find_each { |ws| ws.update(beliefs: @stuck_point.statement) }
+      # Update beliefs on all ABC worksheets when statement changes (async)
+      UpdateAbcBeliefsJob.perform_later(@stuck_point.id, @stuck_point.statement)
 
       respond_with_turbo_or_redirect do
         streams = [
