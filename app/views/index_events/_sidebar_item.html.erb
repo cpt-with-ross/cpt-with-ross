@@ -2,9 +2,7 @@
 
   <div class="accordion-header d-flex align-items-center justify-content-between pe-2 sidebar-item-group" id="heading_<%= index_event.id %>">
 
-    <%= turbo_frame_tag dom_id(index_event, :title_frame), class: "flex-grow-1" do %>
-      <%= render 'index_events/title_button', index_event: index_event, is_active: is_active %>
-    <% end %>
+    <%= render 'index_events/title_button', index_event: index_event, is_active: is_active %>
 
     <%= render 'shared/action_dropdown',
         item: index_event,
@@ -14,7 +12,9 @@
           path: new_index_event_stuck_point_path(index_event),
           label: 'Add Stuck Point',
           icon: 'fa-solid fa-thumbtack',
-          turbo_frame: "new_stuck_point_frame_#{index_event.id}"
+          turbo_frame: "new_stuck_point_frame_#{index_event.id}",
+          collapse_id: "collapse_#{index_event.id}",
+          navigate_url: index_event_impact_statement_path(index_event)
         }] %>
   </div>
 
