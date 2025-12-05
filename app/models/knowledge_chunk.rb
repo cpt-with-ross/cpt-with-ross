@@ -1,18 +1,36 @@
-# Stores CPT knowledge base content with vector embeddings for semantic search.
-# Used by the RAG system to provide Ross with accurate CPT information.
+# frozen_string_literal: true
+
+# =============================================================================
+# KnowledgeChunk - CPT Knowledge Base with Vector Search
+# =============================================================================
+#
+# Stores chunks of CPT clinical knowledge with vector embeddings for semantic
+# search. This powers the RAG (Retrieval-Augmented Generation) system that
+# gives Ross accurate CPT information when responding to users.
+#
+# Each chunk contains:
+# - content: The actual text (typically a few paragraphs)
+# - embedding: A 1536-dimension vector (OpenAI text-embedding-3-small)
+# - page_number: Source page reference
+# - source_doc: Original document name
+#
+# Vector Search (via pgvector):
+# - has_neighbors provides nearest_neighbors() for semantic similarity search
+# - Uses cosine distance (lower = more similar)
+# - CptChatService queries this for each user message
+#
 class KnowledgeChunk < ApplicationRecord
   has_neighbors :embedding
 
   validates :content, presence: true
 
-  # Finds the most semantically similar chunks to the query embedding.
-  # Returns up to `limit` chunks ordered by cosine similarity.
+  # Scope for finding similar chunks given a pre-computed embedding vector
   scope :search_by_embedding, lambda { |embedding, limit: 5|
     nearest_neighbors(:embedding, embedding, distance: 'cosine').limit(limit)
   }
 
-  # Searches for relevant knowledge chunks using a text query.
-  # Generates an embedding for the query and finds similar chunks.
+  # High-level search API: converts text query to embedding, then searches.
+  # Returns an empty relation if embedding generation fails.
   def self.search(query, limit: 5)
     embedding = generate_embedding(query)
     return none if embedding.nil?
@@ -20,7 +38,8 @@ class KnowledgeChunk < ApplicationRecord
     search_by_embedding(embedding, limit: limit)
   end
 
-  # Generates an embedding vector for the given text using RubyLLM.
+  # Generates a vector embedding for text using the configured embedding model.
+  # Returns nil on failure for graceful degradation.
   def self.generate_embedding(text)
     config = Rails.application.config.cpt_chat
     response = RubyLLM.embed(
