@@ -9,7 +9,20 @@
 #   end
 
 # --- User ---
-user = User.new({ 'email' => 'example@email.com', 'reset_password_token' => nil, 'reset_password_sent_at' => nil,
-                  'remember_created_at' => nil })
+user = User.find_or_initialize_by(email: 'example@email.com')
 user.password = 'password'
-user.save
+user.save!
+
+# --- Index Events (CPT Therapy Data) ---
+index_event = user.index_events.find_or_create_by!(title: 'Sample Traumatic Event') do |ie|
+  ie.date = 1.year.ago
+end
+
+# The impact_statement is auto-created via after_create callback on IndexEvent
+
+# --- Stuck Points ---
+index_event.stuck_points.find_or_create_by!(statement: 'I should have been able to prevent it') do |sp|
+  sp.belief = 'I am responsible for what happened'
+  sp.belief_type = 'self-blame'
+  sp.resolved = false
+end

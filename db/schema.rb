@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_05_024212) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_05_051537) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -82,6 +82,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_024212) do
     t.date "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_index_events_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -260,6 +262,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_024212) do
     t.bigint "index_event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "belief"
+    t.string "belief_type"
+    t.boolean "resolved"
     t.index ["index_event_id"], name: "index_stuck_points_on_index_event_id"
   end
 
@@ -293,6 +298,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_024212) do
   add_foreign_key "alternative_thoughts", "stuck_points"
   add_foreign_key "chats", "models"
   add_foreign_key "impact_statements", "index_events"
+  add_foreign_key "index_events", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
   add_foreign_key "messages", "tool_calls"
