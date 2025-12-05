@@ -6,7 +6,7 @@ class CreateCptDomainTables < ActiveRecord::Migration[7.1]
     create_table :index_events do |t|
       t.string :title
       t.date :date
-      t.references :user, foreign_key: true
+      t.references :user, null: false, foreign_key: true
 
       t.timestamps
     end
@@ -32,6 +32,7 @@ class CreateCptDomainTables < ActiveRecord::Migration[7.1]
 
     # ABC Worksheets - A-B-C cognitive worksheets
     create_table :abc_worksheets do |t|
+      t.string :title
       t.text :activating_event
       t.text :beliefs
       t.text :consequences
@@ -42,6 +43,7 @@ class CreateCptDomainTables < ActiveRecord::Migration[7.1]
 
     # Alternative Thoughts - balanced thought challenges
     create_table :alternative_thoughts do |t|
+      t.string :title
       t.text :unbalanced_thought
       t.text :balanced_thought
       t.references :stuck_point, null: false, foreign_key: true
