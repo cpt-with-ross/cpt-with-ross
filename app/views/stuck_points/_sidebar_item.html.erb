@@ -1,0 +1,33 @@
+<div class="accordion-item bg-transparent border-0" id="<%= dom_id(stuck_point) %>">
+
+  <div class="accordion-header d-flex align-items-center justify-content-between pe-2 sidebar-item-group">
+    <%= turbo_frame_tag dom_id(stuck_point, :title_frame), class: "flex-grow-1" do %>
+      <%= render 'stuck_points/title_button', stuck_point: stuck_point %>
+    <% end %>
+
+    <%= render 'shared/action_dropdown',
+        item: stuck_point,
+        edit_path: edit_stuck_point_path(stuck_point),
+        delete_path: stuck_point_path(stuck_point) %>
+  </div>
+
+  <div id="collapse_stuck_<%= stuck_point.id %>" class="accordion-collapse collapse" data-bs-parent="#stuck_points_list_<%= stuck_point.index_event.id %>">
+    <div class="accordion-body p-0 ms-3 border-start ps-3 py-2">
+
+      <%= render "stuck_points/directory_header",
+          title: "ABC Worksheets",
+          collection: stuck_point.abc_worksheets,
+          new_path: new_stuck_point_abc_worksheet_path(stuck_point),
+          list_id: "abc_list_#{stuck_point.id}",
+          frame_id: "new_abc_frame_#{stuck_point.id}" %>
+
+      <%= render "stuck_points/directory_header",
+          title: "Alternative Thoughts",
+          collection: stuck_point.alternative_thoughts,
+          new_path: new_stuck_point_alternative_thought_path(stuck_point),
+          list_id: "at_list_#{stuck_point.id}",
+          frame_id: "new_at_frame_#{stuck_point.id}" %>
+
+    </div>
+  </div>
+</div>
