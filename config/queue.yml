@@ -3,10 +3,16 @@ default: &default
     - polling_interval: 1
       batch_size: 500
   workers:
-    - queues: "*"
+    # Critical queue: Chat responses need fast processing
+    - queues: [critical, default]
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
       polling_interval: 0.1
+    # Background queue: Imports, deletions, bulk updates
+    - queues: [background]
+      threads: 2
+      processes: 1
+      polling_interval: 1
 
 development:
   <<: *default
@@ -16,3 +22,12 @@ test:
 
 production:
   <<: *default
+  workers:
+    - queues: [critical, default]
+      threads: 5
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 2) %>
+      polling_interval: 0.1
+    - queues: [background]
+      threads: 3
+      processes: 1
+      polling_interval: 0.5
