@@ -79,5 +79,7 @@ group :test do
 end
 
 gem 'ruby_llm', '~> 1.9'
+gem 'googleauth' # Required for Vertex AI authentication with ADC
 
 gem 'pgvector', '~> 0.3.2'
+gem 'neighbor'
