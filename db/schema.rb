@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_05_065051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
     t.bigint "stuck_point_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title"
     t.index ["stuck_point_id"], name: "index_abc_worksheets_on_stuck_point_id"
   end
 
@@ -59,6 +60,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_000007) do
     t.bigint "stuck_point_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title"
     t.index ["stuck_point_id"], name: "index_alternative_thoughts_on_stuck_point_id"
   end
 
