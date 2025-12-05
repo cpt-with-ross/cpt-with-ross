@@ -1,4 +1,8 @@
-<div class="d-flex flex-column h-100 border-start bg-white">
+<%= turbo_stream_from "chat_#{chat.id}" %>
+
+<div class="d-flex flex-column h-100 border-start bg-white"
+     data-controller="chat"
+     data-chat-chat-id-value="<%= chat.id %>">
 
   <div class="px-3 border-bottom bg-light d-flex align-items-center justify-content-end" style="height: 65px;">
     <div class="dropdown">
@@ -33,45 +37,14 @@
     </div>
   </div>
 
-  <div class="flex-grow-1 overflow-y-auto p-4 bg-white" id="chat-messages">
-
-    <div class="d-flex justify-content-end mb-4">
-      <div class="bg-light text-dark px-3 py-2 rounded-4" style="max-width: 80%; font-size: 0.95rem;">
-        Hey Ross! Explain trauma to me.
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-start mb-4">
-      <div class="text-dark" style="max-width: 90%; font-size: 0.95rem; line-height: 1.6;">
-        A trauma is a very stressful event that involves actual or threatened death, serious injury, or sexual violence.
-      </div>
-    </div>
-
+  <div class="flex-grow-1 overflow-y-auto p-4 bg-white"
+       id="chat-messages"
+       data-chat-target="messages">
+    <%= render partial: "messages/message", collection: chat.messages.where.not(role: 'system'), as: :message %>
   </div>
 
   <div class="p-4 bg-white">
-    <%= simple_form_for :chat, url: "#", html: { class: "w-100", autocomplete: "off" } do |f| %>
-
-      <div class="position-relative border rounded-3 p-2 shadow-sm" style="min-height: 120px;">
-
-        <%= f.input_field :content,
-            as: :text,
-            class: "form-control border-0 shadow-none w-100 h-100 bg-transparent",
-            style: "resize: none;",
-            placeholder: "Chat with Ross, Ask Questions, Get Help...",
-            rows: 3,
-            label: false %>
-
-        <div class="d-flex justify-content-end align-items-end mt-2 px-1">
-          <button class="btn btn-dark rounded-circle d-flex align-items-center justify-content-center p-0"
-                  type="submit"
-                  style="width: 32px; height: 32px;">
-            <i class="fa-solid fa-paper-plane small"></i>
-          </button>
-        </div>
-
-      </div>
-    <% end %>
+    <%= render partial: "shared/chat_form", locals: { chat: chat } %>
   </div>
 
 </div>

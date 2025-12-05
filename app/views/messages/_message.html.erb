@@ -1,0 +1,13 @@
+<% if message.role == 'user' %>
+  <div class="d-flex justify-content-end mb-4" id="<%= dom_id(message) %>">
+    <div class="bg-light text-dark px-3 py-2 rounded-4" style="max-width: 80%; font-size: 0.95rem;">
+      <%= message.content %>
+    </div>
+  </div>
+<% elsif message.role == 'assistant' %>
+  <div class="d-flex justify-content-start mb-4" id="<%= dom_id(message) %>">
+    <div class="text-dark" style="max-width: 90%; font-size: 0.95rem; line-height: 1.6;">
+      <span id="message_<%= message.id %>_content"><%= message.content %></span>
+    </div>
+  </div>
+<% end %>

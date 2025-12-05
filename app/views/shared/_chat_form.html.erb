@@ -1,0 +1,31 @@
+<%= form_with model: Message.new,
+              url: chat_messages_path(chat),
+              id: "chat-form",
+              html: { autocomplete: "off" },
+              data: { controller: "chat-form", action: "turbo:submit-start->chat-form#disable turbo:submit-end->chat-form#reset" } do |f| %>
+  <div class="position-relative border rounded-3 p-2 shadow-sm" style="min-height: 120px;">
+    <%= f.text_area :content,
+        class: "form-control border-0 shadow-none w-100 h-100 bg-transparent",
+        style: "resize: none;",
+        placeholder: "Chat with Ross, Ask Questions, Get Help...",
+        rows: 3,
+        data: { chat_form_target: "input", action: "keydown->chat-form#submitOnEnter" } %>
+
+    <div class="d-flex justify-content-end align-items-end mt-2 px-1 gap-2">
+      <%= link_to clear_chat_path(chat),
+                  data: { turbo_method: :delete, turbo_confirm: "Clear all messages?" },
+                  class: "btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0",
+                  style: "width: 32px; height: 32px;",
+                  title: "Clear chat" do %>
+        <i class="fa-solid fa-broom small"></i>
+      <% end %>
+      <button class="btn btn-dark rounded-circle d-flex align-items-center justify-content-center p-0"
+              type="submit"
+              style="width: 32px; height: 32px;"
+              data-chat-form-target="submit"
+              title="Send message">
+        <i class="fa-solid fa-paper-plane small"></i>
+      </button>
+    </div>
+  </div>
+<% end %>

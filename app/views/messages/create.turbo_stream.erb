@@ -1,0 +1,14 @@
+<%# Append user message to chat %>
+<%= turbo_stream.append "chat-messages" do %>
+  <%= render partial: "messages/message", locals: { message: @user_message } %>
+<% end %>
+
+<%# Append empty assistant message placeholder for streaming %>
+<%= turbo_stream.append "chat-messages" do %>
+  <%= render partial: "messages/message", locals: { message: @assistant_message } %>
+<% end %>
+
+<%# Clear the input field %>
+<%= turbo_stream.replace "chat-form" do %>
+  <%= render partial: "shared/chat_form", locals: { chat: @chat } %>
+<% end %>
