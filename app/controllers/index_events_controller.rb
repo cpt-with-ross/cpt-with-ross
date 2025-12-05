@@ -89,7 +89,9 @@ class IndexEventsController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         streams = [turbo_stream.remove(dom_id(@index_event))]
-        streams << turbo_stream.update('main_content', partial: 'dashboard/welcome') if viewing_related_content?(related_paths)
+        if viewing_related_content?(related_paths)
+          streams << turbo_stream.update('main_content', partial: 'dashboard/welcome')
+        end
         render turbo_stream: streams
       end
       format.html { redirect_to root_path }

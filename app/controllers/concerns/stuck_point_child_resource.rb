@@ -5,7 +5,10 @@ module StuckPointChildResource
 
   included do
     include ActionView::RecordIdentifier
+
+    # rubocop:disable Rails/LexicallyScopedActionFilter
     before_action :set_stuck_point, only: %i[new create]
+    # rubocop:enable Rails/LexicallyScopedActionFilter
   end
 
   private
