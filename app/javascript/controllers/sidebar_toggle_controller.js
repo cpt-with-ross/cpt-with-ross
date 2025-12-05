@@ -1,11 +1,29 @@
+/**
+ * =============================================================================
+ * SidebarToggleController - Index Event Accordion with Smart Navigation
+ * =============================================================================
+ *
+ * Manages the Index Event accordion toggle behavior in the sidebar. The toggle
+ * has three-state behavior depending on context:
+ *
+ * 1. When collapsed -> Expand and navigate to Impact Statement
+ * 2. When expanded but NOT viewing Impact Statement -> Navigate to Impact Statement
+ * 3. When expanded AND viewing Impact Statement -> Collapse and show welcome
+ *
+ * This creates an intuitive UX where clicking an Index Event title focuses on
+ * that event's content, and clicking again "closes" it.
+ *
+ * Usage: data-controller="sidebar-toggle"
+ *
+ * Values:
+ * - expandUrl: URL to load when expanding (typically Impact Statement)
+ * - collapseUrl: URL to load when collapsing (typically dashboard/welcome)
+ * - collapseId: DOM ID of the Bootstrap collapse element
+ */
 import { Controller } from '@hotwired/stimulus';
 
 /* global bootstrap */
 
-// Handles Index Event sidebar toggle behavior:
-// - Click when collapsed: expand and navigate to Impact Statement
-// - Click when expanded but not on Impact Statement: navigate to Impact Statement
-// - Click when expanded and on Impact Statement: collapse and navigate to dashboard
 export default class extends Controller {
   static values = {
     expandUrl: String,
@@ -20,7 +38,7 @@ export default class extends Controller {
   connect() {
     this.collapseElement = document.getElementById(this.collapseIdValue);
     if (this.collapseElement) {
-      // Bind handlers to check event target matches our specific collapse element
+      // Create bound handlers that check if event is for our specific collapse
       this.handleShown = (event) => {
         if (event.target === this.collapseElement) {
           this.updateButtonState(true);
@@ -32,16 +50,16 @@ export default class extends Controller {
         }
       };
 
-      // Listen for Bootstrap collapse events to sync button state
+      // Sync button state with Bootstrap collapse events
       this.collapseElement.addEventListener('shown.bs.collapse', this.handleShown);
       this.collapseElement.addEventListener('hidden.bs.collapse', this.handleHidden);
 
-      // Set initial state
+      // Set initial state from DOM
       const isExpanded = this.collapseElement.classList.contains('show');
       this.updateButtonState(isExpanded);
     }
 
-    // Listen for turbo frame loads to track current URL
+    // Track main_content frame URL for determining current view
     document.addEventListener('turbo:frame-load', this.handleFrameLoad);
   }
 
@@ -53,9 +71,9 @@ export default class extends Controller {
     }
   }
 
+  // Track the current URL in main_content for conditional navigation logic
   handleFrameLoad(event) {
     if (event.target.id === 'main_content') {
-      // Store the current URL on the frame element and in sessionStorage
       const frame = event.target;
       const path = frame.src ? new URL(frame.src, window.location.origin).pathname : '';
       frame.dataset.currentPath = path;
@@ -65,6 +83,7 @@ export default class extends Controller {
     }
   }
 
+  // Sync button visual state with collapse state
   updateButtonState(expanded) {
     const button = this.element.querySelector('button');
     if (button) {
@@ -78,6 +97,7 @@ export default class extends Controller {
     }
   }
 
+  // Main toggle handler - implements three-state behavior
   toggle(event) {
     event.preventDefault();
 
@@ -85,21 +105,22 @@ export default class extends Controller {
     const isExpanded = collapseElement?.classList.contains('show');
 
     if (isExpanded && this.isViewingImpactStatement()) {
-      // Collapse and navigate to dashboard
+      // State 3: Expanded + viewing Impact Statement -> collapse
       this.updateButtonState(false);
       this.collapseDrawer(collapseElement);
       this.navigateFrame(this.collapseUrlValue);
     } else if (isExpanded) {
-      // Already expanded but not on Impact Statement - just navigate
+      // State 2: Expanded but viewing something else -> navigate to Impact Statement
       this.navigateFrame(this.expandUrlValue);
     } else {
-      // Expand and navigate to impact statement
+      // State 1: Collapsed -> expand and show Impact Statement
       this.updateButtonState(true);
       this.expandDrawer(collapseElement);
       this.navigateFrame(this.expandUrlValue);
     }
   }
 
+  // Check if currently viewing this Index Event's Impact Statement
   isViewingImpactStatement() {
     const frame = document.getElementById('main_content');
     const currentPath = frame?.dataset.currentPath || '';
@@ -118,6 +139,7 @@ export default class extends Controller {
     }
   }
 
+  // Navigate the main_content Turbo Frame to a new URL
   navigateFrame(url) {
     const frame = document.getElementById('main_content');
     if (frame) {
