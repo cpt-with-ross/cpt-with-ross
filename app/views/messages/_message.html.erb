@@ -1,6 +1,9 @@
 <% if message.role == 'user' %>
-  <div class="d-flex justify-content-end mb-4" id="<%= dom_id(message) %>">
-    <div class="bg-light text-dark px-3 py-2 rounded-4" style="max-width: 80%; font-size: 0.95rem;">
+  <div data-controller="text-to-speech" class="d-flex justify-content-end mb-4" id="<%= dom_id(message) %>">
+    <button data-action="click->text-to-speech#speak" class="btn btn-sm btn-link">
+      🔊
+    </button>
+    <div data-text-to-speech-target="text" class="bg-light text-dark px-3 py-2 rounded-4" style="max-width: 80%; font-size: 0.95rem;">
       <%= message.content %>
     </div>
   </div>

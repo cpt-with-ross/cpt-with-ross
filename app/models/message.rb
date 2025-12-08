@@ -20,6 +20,8 @@
 class Message < ApplicationRecord
   acts_as_message tool_calls_foreign_key: :message_id
   has_many_attached :attachments
+  has_one_attached :audio
+  after_create_commit :generate_tts_audio
 
   # Streams a chunk of LLM response to the UI in real-time.
   # Called repeatedly by ChatResponseJob as each token is generated.
@@ -39,4 +41,10 @@ class Message < ApplicationRecord
                          partial: 'messages/error',
                          locals: { error_message: error_message }
   end
+
+  def generate_tts_audio
+
+    GenerateTtsAudioJob.perform_later(id)
+  end
+
 end

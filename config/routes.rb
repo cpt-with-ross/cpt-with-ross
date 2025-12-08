@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     resources :messages, only: [:create]
   end
 
+  post 'messages/text_to_speech', to: 'messages#text_to_speech'
+
   resources :index_events, shallow: true, only: %i[new create show edit update destroy] do
     resource :impact_statement, only: %i[show edit update]
     resources :stuck_points, only: %i[new create show edit update destroy] do

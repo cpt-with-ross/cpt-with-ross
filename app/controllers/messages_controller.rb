@@ -23,7 +23,7 @@
 #
 class MessagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_chat
+  before_action :set_chat, except: [:text_to_speech]
 
   # Creates a user message and triggers AI response generation.
   # Both user and (placeholder) assistant messages are created synchronously,
@@ -46,6 +46,31 @@ class MessagesController < ApplicationController
       format.turbo_stream # Renders create.turbo_stream.erb
       format.html { redirect_to root_path }
     end
+  end
+
+
+  def text_to_speech
+    text = params[:text]
+
+    if text.blank?
+      render json: { error: 'Text parameter is required' }, status: :bad_request
+      return
+    end
+
+    begin
+    tts_service = TextToSpeechService.new
+    audio_content = tts_service.synthesize(text: text)
+
+    send_data audio_content,
+              type: 'audio/mpeg',
+              disposition: 'inline',
+              filename: "speech_#{Time.current.to_i}.mp3"
+    rescue StandardError => e
+      Rails.logger.error "TTS Error: #{e.message}"
+      render json: { error: 'Failed to generate speech' }, status: :internal_server_error
+    end
+
+    # TextToSpeechService.new.synthesize(text: text)
   end
 
   private
