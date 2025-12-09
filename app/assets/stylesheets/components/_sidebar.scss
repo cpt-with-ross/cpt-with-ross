@@ -3,6 +3,12 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease;
+
+    // Always show on mobile (no hover available)
+    @media (max-width: 1199.98px) {
+      opacity: 0.4;
+      visibility: visible;
+    }
   }
 
   &:hover .action-btn {
@@ -21,15 +27,41 @@
     transform: rotate(0deg);
   }
 
-  button.collapsed .chevron-icon {
+  .collapsed .chevron-icon {
     transform: rotate(-90deg);
+  }
+}
+
+// Text-only clickable areas in sidebar
+.sidebar-nav-text {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline !important;
   }
 }
 
 .sidebar-item-group .sidebar-active {
   background-color: var(--bs-light);
-  font-weight: bold;
-  color: var(--bs-dark);
   border-left: 4px solid var(--bs-dark);
   padding-left: calc(0.5rem - 4px);
+}
+
+// Always-visible action button with hover darkening
+.action-btn-visible {
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Sidebar user footer hover state
+.sidebar-user-footer {
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--bs-light);
+  }
 }

@@ -1,0 +1,198 @@
+// Column Navigation Layout
+//
+// Terminology (Bootstrap 5 breakpoints):
+// - Desktop: xl and above (≥1200px) - 3-column resizable layout
+// - Mobile: lg and below (<1200px) - single-column swipe navigation
+//
+// Mobile modes:
+// - sm to lg (576-1199px): Transform-based swipe navigation
+// - xs (<576px): Native scroll with scroll-snap (576px min column width)
+
+// =============================================================================
+// Mobile styles (lg and below, <1200px)
+// =============================================================================
+
+@media (max-width: 1199.98px) {
+  // Hide desktop-only resize controls
+  .chat-resize-handle,
+  .sidebar-resize-handle,
+  .chat-expand-btn,
+  .column-chat [data-action="column-resize#toggle"] {
+    display: none !important;
+  }
+
+  // Remove inter-column borders (only one column visible at a time)
+  .column-chat .border-start,
+  .column-sidebar .border-end {
+    border: none !important;
+  }
+
+  // Dot navigation indicators (hidden by default, shown on hover or during navigation)
+  .column-dots {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    display: flex;
+    gap: 10px;
+    z-index: 1050;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &:hover,
+    &.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    button {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      &.active {
+        background: var(--bs-primary);
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  // Floating navigation arrows
+  .column-nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1040;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.15);
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    &:active {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    &.d-none {
+      display: none !important;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .column-nav-prev {
+    left: 8px;
+  }
+
+  .column-nav-next {
+    right: 8px;
+  }
+}
+
+// Mobile: sm to lg (576-1199px) - Transform-based swipe navigation
+@media (min-width: 576px) and (max-width: 1199.98px) {
+  .columns-container {
+    overflow: hidden;
+    flex-wrap: nowrap !important;
+  }
+
+  .column {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100%;
+    overflow-y: auto;
+    transition: transform 0.3s ease-out;
+  }
+}
+
+// Mobile: xs (<576px) - Scroll-snap navigation
+@media (max-width: 575.98px) {
+  .columns-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .column {
+    flex: 0 0 576px !important;
+    width: 576px !important;
+    min-width: 576px !important;
+    max-width: 576px !important;
+    height: 100%;
+    overflow-y: auto;
+    scroll-snap-align: start;
+  }
+}
+
+// =============================================================================
+// Desktop styles (xl and above, ≥1200px)
+// =============================================================================
+
+@media (min-width: 1200px) {
+  // Hide mobile navigation UI
+  .column-dots,
+  .column-nav-arrow {
+    display: none !important;
+  }
+
+  .column-sidebar {
+    width: 16.666%;
+    min-width: 400px; // xl breakpoint / 3
+    max-width: 33.333%;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sidebar-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+  }
+
+  .column-main {
+    flex-grow: 1;
+    min-width: 400px; // xl breakpoint / 3
+  }
+
+  .column-chat {
+    width: 33.333%;
+    min-width: 400px; // xl breakpoint / 3
+    max-width: 41.666%;
+    flex-shrink: 0;
+  }
+}

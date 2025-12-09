@@ -15,11 +15,10 @@
 # Thoughts (developing balanced perspectives).
 #
 # This controller follows the same inline-editing and Turbo Stream patterns
-# as IndexEventsController. Key addition: When a stuck point's statement is
-# updated, we trigger an async job to sync the statement to all related ABC
-# worksheets (which display the stuck point as their "B - Belief" field).
+# as IndexEventsController. Bidirectional sync: When a stuck point's statement
+# is updated, we sync it to all ABC worksheets (column B). Vice versa, editing
+# beliefs in an ABC worksheet updates the stuck point statement.
 #
-# rubocop:disable Metrics/ClassLength
 class StuckPointsController < ApplicationController
   include InlineFormRenderable
 
@@ -38,7 +37,7 @@ class StuckPointsController < ApplicationController
     @stuck_point = @index_event.stuck_points.build
     render_inline_form @stuck_point,
                        url: index_event_stuck_points_path(@index_event),
-                       placeholder: 'New Stuck Point...',
+                       placeholder: 'Write a Stuck Point...',
                        frame_id: "new_stuck_point_frame_#{@index_event.id}",
                        attribute_name: :statement
   end
@@ -47,7 +46,7 @@ class StuckPointsController < ApplicationController
   def edit
     render_inline_form @stuck_point,
                        url: stuck_point_path(@stuck_point),
-                       placeholder: 'Stuck Point Name...',
+                       placeholder: 'Write a Stuck Point...',
                        frame_id: dom_id(@stuck_point, :title_frame),
                        attribute_name: :statement,
                        cancel_url: stuck_point_path(@stuck_point)
@@ -70,20 +69,19 @@ class StuckPointsController < ApplicationController
     else
       render_inline_form @stuck_point,
                          url: index_event_stuck_points_path(@index_event),
-                         placeholder: 'New Stuck Point...',
+                         placeholder: 'Write a Stuck Point...',
                          frame_id: "new_stuck_point_frame_#{@index_event.id}",
                          attribute_name: :statement,
                          status: :unprocessable_content
     end
   end
 
-  # Updates stuck point. When the statement changes, queues a background job
-  # to sync the new statement to all ABC worksheets (their "beliefs" field
-  # should match the stuck point statement).
+  # Updates stuck point. When the statement changes, syncs to all ABC worksheets
+  # (their "beliefs" field matches the stuck point statement). Bidirectional
+  # sync also occurs in AbcWorksheetsController when beliefs are edited there.
   def update
     if @stuck_point.update(stuck_point_params)
-      # Async sync: Update all ABC worksheet beliefs to match new statement
-      UpdateAbcBeliefsJob.perform_later(@stuck_point.id, @stuck_point.statement)
+      @stuck_point.sync_beliefs_to_worksheets
 
       respond_with_turbo_or_redirect do
         streams = [
@@ -103,7 +101,7 @@ class StuckPointsController < ApplicationController
     else
       render_inline_form @stuck_point,
                          url: stuck_point_path(@stuck_point),
-                         placeholder: 'Stuck Point Name...',
+                         placeholder: 'Write a Stuck Point...',
                          frame_id: dom_id(@stuck_point, :title_frame),
                          attribute_name: :statement,
                          cancel_url: stuck_point_path(@stuck_point),
@@ -112,7 +110,7 @@ class StuckPointsController < ApplicationController
   end
 
   # Deletes stuck point and all children (cascade via dependent: :destroy).
-  # If user was viewing a child, shows impact statement as fallback.
+  # If user was viewing a child, shows baseline as fallback.
   def destroy
     index_event = @stuck_point.index_event
     child_paths = build_child_paths(@stuck_point)
@@ -122,11 +120,11 @@ class StuckPointsController < ApplicationController
       format.turbo_stream do
         streams = [turbo_stream.remove(dom_id(@stuck_point))]
 
-        # If viewing deleted child content, show impact statement instead
+        # If viewing deleted child content, show baseline instead
         if viewing_child?(child_paths)
           streams << turbo_stream.update('main_content',
-                                         partial: 'impact_statements/impact_statement',
-                                         locals: { impact_statement: index_event.impact_statement })
+                                         partial: 'baselines/baseline',
+                                         locals: { baseline: index_event.baseline })
         end
 
         render turbo_stream: streams
@@ -142,9 +140,11 @@ class StuckPointsController < ApplicationController
     @index_event = current_user.index_events.find(params[:index_event_id])
   end
 
-  # Finds stuck point by ID (shallow route)
+  # Finds stuck point by ID (shallow route), scoped to current user
   def set_stuck_point
-    @stuck_point = StuckPoint.find(params[:id])
+    @stuck_point = StuckPoint.joins(index_event: :user)
+                             .where(users: { id: current_user.id })
+                             .find(params[:id])
   end
 
   def stuck_point_params
@@ -190,4 +190,3 @@ class StuckPointsController < ApplicationController
     nil
   end
 end
-# rubocop:enable Metrics/ClassLength

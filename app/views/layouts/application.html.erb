@@ -12,20 +12,87 @@
   <body class="vh-100 overflow-hidden bg-white">
 
     <div class="container-fluid h-100">
-      <div class="row h-100">
+      <div data-controller="mobile-columns" class="columns-container d-flex h-100">
 
-        <div class="col-2 h-100 p-0">
+        <div class="column column-sidebar h-100 p-0"
+             data-controller="column-resize"
+             data-column-resize-edge-value="right"
+             data-column-resize-min-width-value="16.666"
+             data-column-resize-max-width-value="33.333"
+             data-column-resize-min-width-px-value="400"
+             data-column-resize-storage-key-value="sidebar"
+             data-column-resize-target="panel"
+             data-mobile-columns-target="sidebar">
           <%= render 'shared/sidebar' %>
+          <div class="sidebar-resize-handle"
+               data-column-resize-target="resizeHandle"
+               data-action="mousedown->column-resize#startResize"></div>
         </div>
 
-        <div class="col-6 h-100 p-0 d-flex flex-column bg-light overflow-y-auto">
+        <div class="column column-main h-100 p-0 d-flex flex-column bg-white overflow-y-auto"
+             data-mobile-columns-target="main">
           <%= render 'shared/flashes' %>
-          <%= yield %>
+          <div class="flex-grow-1">
+            <%= yield %>
+          </div>
         </div>
 
-        <div class="col-4 h-100 p-0">
-          <%= render 'shared/chat', chat: @chat if @chat %>
+        <% if @chat %>
+          <div class="d-contents"
+               data-controller="column-resize"
+               data-column-resize-edge-value="left"
+               data-column-resize-min-width-value="25"
+               data-column-resize-max-width-value="41.666"
+               data-column-resize-min-width-px-value="400"
+               data-column-resize-collapsible-value="true"
+               data-column-resize-storage-key-value="chatPanel">
+            <div class="column column-chat chat-panel h-100 p-0"
+                 data-column-resize-target="panel"
+                 data-mobile-columns-target="chat">
+              <%= render 'shared/chat', chat: @chat %>
+            </div>
+            <button type="button"
+                    class="chat-expand-btn btn btn-primary d-none"
+                    data-action="column-resize#toggle"
+                    data-column-resize-target="expandBtn"
+                    title="Show chat">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+          </div>
+        <% end %>
+
+        <%# Mobile navigation %>
+        <div class="column-dots" data-mobile-columns-target="dots">
+          <button type="button"
+                  data-action="mobile-columns#goToSidebar"
+                  data-mobile-columns-target="dotSidebar"
+                  aria-label="Go to sidebar"></button>
+          <button type="button"
+                  data-action="mobile-columns#goToMain"
+                  data-mobile-columns-target="dotMain"
+                  aria-label="Go to main content"></button>
+          <% if @chat %>
+            <button type="button"
+                    data-action="mobile-columns#goToChat"
+                    data-mobile-columns-target="dotChat"
+                    aria-label="Go to chat"></button>
+          <% end %>
         </div>
+
+        <button type="button"
+                class="column-nav-arrow column-nav-prev d-none"
+                data-action="mobile-columns#goToPrev"
+                data-mobile-columns-target="navPrev"
+                aria-label="Previous column">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button type="button"
+                class="column-nav-arrow column-nav-next"
+                data-action="mobile-columns#goToNext"
+                data-mobile-columns-target="navNext"
+                aria-label="Next column">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
 
       </div>
     </div>

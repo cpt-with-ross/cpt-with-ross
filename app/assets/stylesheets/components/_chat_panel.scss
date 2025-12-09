@@ -1,0 +1,53 @@
+// Chat Panel - Collapsible and Resizable
+// Desktop-only features (resize, collapse)
+// Mobile layout is handled by _mobile_columns.scss
+
+// Utility to make wrapper element invisible to flexbox
+.d-contents {
+  display: contents;
+}
+
+// Desktop-only styles (>= 992px)
+@media (min-width: 992px) {
+  .chat-panel {
+    position: relative;
+
+    // Collapsed state (desktop only)
+    &.collapsed {
+      width: 0 !important;
+      min-width: 0 !important;
+      opacity: 0;
+      pointer-events: none;
+      transition: width 0.2s ease, min-width 0.2s ease, opacity 0.2s ease;
+    }
+  }
+
+  // Resize handle - full height on left edge
+  .chat-resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 10;
+  }
+
+  // Prevent text selection while resizing
+  .resizing-active {
+    user-select: none;
+    cursor: col-resize !important;
+  }
+
+  // Expand button - shown when chat is collapsed
+  .chat-expand-btn {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    border-radius: 4px 0 0 4px;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+}

@@ -1,18 +1,19 @@
 <% is_active ||= false %>
+<% expanded = local_assigns.fetch(:expanded, false) %>
 <%= turbo_frame_tag dom_id(index_event, :title_frame), class: "flex-grow-1" do %>
-  <div class="d-flex align-items-center w-100"
+  <div class="d-flex align-items-center w-100 p-2 ps-2 gap-2 <%= 'collapsed' unless expanded %> <%= 'sidebar-active' if is_active %>"
        data-controller="sidebar-toggle"
-       data-sidebar-toggle-expand-url-value="<%= index_event_impact_statement_path(index_event) %>"
+       data-sidebar-toggle-expand-url-value="<%= index_event_baseline_path(index_event) %>"
        data-sidebar-toggle-collapse-url-value="<%= root_path %>"
-       data-sidebar-toggle-collapse-id-value="collapse_<%= index_event.id %>">
-    <button class="btn btn-link text-decoration-none shadow-none p-2 ps-2 fw-normal flex-grow-1 text-start d-flex align-items-center gap-2 collapsed
-                   <%= is_active ? 'sidebar-active text-dark fw-bold' : 'text-dark' %>"
-            type="button"
-            data-action="sidebar-toggle#toggle"
-            aria-expanded="false"
-            aria-controls="collapse_<%= index_event.id %>">
-      <i class="fa-solid fa-chevron-down chevron-icon flex-shrink-0" style="font-size: 0.7rem;"></i>
-      <span class="<%= is_active ? 'fw-bold' : 'fw-normal' %>"><%= index_event.title %></span>
-    </button>
+       data-sidebar-toggle-collapse-id-value="collapse_<%= index_event.id %>"
+       data-sidebar-item-path="<%= index_event_baseline_path(index_event) %>"
+       aria-expanded="<%= expanded %>"
+       aria-controls="collapse_<%= index_event.id %>">
+    <i class="fa-solid fa-chevron-down chevron-icon flex-shrink-0 text-dark"
+       style="font-size: 0.7rem; cursor: pointer;"
+       role="button"
+       data-action="click->sidebar-toggle#toggleDrawer"></i>
+    <span class="sidebar-nav-text text-primary flex-grow-1 <%= is_active ? 'fw-bold' : '' %>"
+          role="button"><%= index_event.title %></span>
   </div>
 <% end %>

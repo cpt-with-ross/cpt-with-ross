@@ -17,7 +17,7 @@
 # Focus Context:
 # The optional focus_context hash allows prioritizing specific therapy items in the
 # AI's response. Pass { type: 'stuck_point', id: 123 } to focus on that item.
-# Supported types: index_event, stuck_point, abc_worksheet, alternative_thought, impact_statement
+# Supported types: index_event, stuck_point, abc_worksheet, alternative_thought, baseline
 #
 # Error Handling:
 # All RubyLLM errors are caught and converted to user-friendly messages.
@@ -99,7 +99,7 @@ class ChatResponseJob < ApplicationJob
       'stuck_point' => StuckPoint,
       'abc_worksheet' => AbcWorksheet,
       'alternative_thought' => AlternativeThought,
-      'impact_statement' => ImpactStatement
+      'baseline' => Baseline
     }[type.to_s]
   end
 

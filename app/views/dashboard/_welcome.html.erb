@@ -1,6 +1,8 @@
 <div data-controller="current-path" data-current-path-path-value="/"></div>
 
-<div class="d-flex flex-column align-items-center pt-5 mt-5 text-muted">
+<%= render "shared/page_header", parents: "Home", title: "Welcome", show_close: false %>
+
+<div class="main-content p-4 d-flex flex-column align-items-center pt-5 mt-5 text-muted">
 
   <div class="mb-4">
     <i class="fa-solid fa-book-open" style="font-size: 4rem;"></i>
@@ -13,10 +15,33 @@
     or create a new index event or worksheet to get started.
   </p>
 
-  <div class="mt-5 small opacity-75">
-    <div class="d-flex align-items-center gap-2">
-      <i class="fa-solid fa-arrow-left"></i>
-      <span>Navigation and Controls are on the left</span>
+  <!-- Desktop: Navigation hints -->
+  <div class="mt-5 small opacity-75 d-none d-xl-block">
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Navigation and Controls are on the left</span>
+      </div>
+      <span class="text-muted fst-italic" style="font-size: 0.75rem;">or</span>
+      <div class="d-flex align-items-center gap-2">
+        <span>Chat with Ross is on the right</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile: Swipe gesture hints -->
+  <div class="mt-5 small opacity-75 d-xl-none">
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Swipe Left for Navigation</span>
+      </div>
+      <span class="text-muted fst-italic" style="font-size: 0.75rem;">or</span>
+      <div class="d-flex align-items-center gap-2">
+        <span>Swipe Right to Chat</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
     </div>
   </div>
 

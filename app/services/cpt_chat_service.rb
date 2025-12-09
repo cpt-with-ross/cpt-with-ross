@@ -23,9 +23,8 @@
 # - { stuck_point: StuckPoint }
 # - { abc_worksheet: AbcWorksheet }
 # - { alternative_thought: AlternativeThought }
-# - { impact_statement: ImpactStatement }
+# - { baseline: Baseline }
 #
-# rubocop:disable Metrics/ClassLength
 class CptChatService
   # Cosine distance thresholds for knowledge retrieval (lower = more similar)
   RELEVANCE_THRESHOLD = 0.35  # Primary threshold for including chunks
@@ -198,8 +197,8 @@ class CptChatService
       format_abc_worksheet_detailed(@focus[:abc_worksheet])
     elsif @focus[:alternative_thought]
       format_alternative_thought_detailed(@focus[:alternative_thought])
-    elsif @focus[:impact_statement]
-      format_impact_statement_detailed(@focus[:impact_statement])
+    elsif @focus[:baseline]
+      format_baseline_detailed(@focus[:baseline])
     end
   end
 
@@ -209,7 +208,7 @@ class CptChatService
     sections = []
 
     @user.index_events
-         .includes(:impact_statement, stuck_points: %i[abc_worksheets alternative_thoughts])
+         .includes(:baseline, stuck_points: %i[abc_worksheets alternative_thoughts])
          .find_each do |event|
       # Skip detailed formatting if this event is already the focus
       next if @focus[:index_event]&.id == event.id
@@ -225,9 +224,9 @@ class CptChatService
     lines = ["### Index Event: #{event.title}"]
     lines << "Date: #{event.date}" if event.date.present?
 
-    if event.impact_statement&.statement.present?
+    if event.baseline&.statement.present?
       lines << "\n**Impact Statement:**"
-      lines << truncate_content(event.impact_statement.statement, 600)
+      lines << truncate_content(event.baseline.statement, 600)
     end
 
     event.stuck_points.each do |sp|
@@ -351,16 +350,16 @@ class CptChatService
     ALT
   end
 
-  # Detailed format for a focused impact statement
-  def format_impact_statement_detailed(impact)
-    event = impact.index_event
+  # Detailed format for a focused baseline
+  def format_baseline_detailed(baseline)
+    event = baseline.index_event
 
-    <<~IMPACT
+    <<~BASELINE
       **From Index Event:** #{event.title}
 
       **Impact Statement:**
-      #{impact.statement}
-    IMPACT
+      #{baseline.statement}
+    BASELINE
   end
 
   # Truncates long content to avoid excessive token usage while preserving meaning

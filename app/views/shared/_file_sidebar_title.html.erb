@@ -1,8 +1,7 @@
-<% is_active = current_page?(polymorphic_path(item)) %>
+<% is_active = local_assigns.key?(:is_active) ? local_assigns[:is_active] : current_page?(polymorphic_path(item)) %>
 
 <%= turbo_frame_tag dom_id(item, :title_frame), class: "flex-grow-1" do %>
   <%= link_to item.title, polymorphic_path(item),
-      class: "text-decoration-none small d-block py-1 border-start border-2 w-100
-             #{is_active ? 'sidebar-active text-dark' : 'text-secondary border-transparent hover-border-primary' }",
-      data: { turbo_frame: "main_content" } %>
+      class: "sidebar-nav-text text-primary text-decoration-none small d-block py-1 #{is_active ? 'sidebar-active fw-bold' : ''}",
+      data: { turbo_frame: "main_content", sidebar_item_path: polymorphic_path(item) } %>
 <% end %>

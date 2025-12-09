@@ -8,7 +8,9 @@
     <span class="text-dark"><%= title %></span>
   </h5>
 
-  <%= link_to root_path, class: "btn btn-sm btn-link text-muted", data: { turbo_frame: "main_content" }, title: "Close" do %>
-    <i class="fa-solid fa-xmark fa-lg"></i>
+  <% if local_assigns[:show_close] != false %>
+    <%= link_to root_path, class: "btn btn-sm btn-link text-muted", data: { turbo_frame: "main_content" }, title: "Close Worksheet" do %>
+      <i class="fa-solid fa-xmark fa-lg"></i>
+    <% end %>
   <% end %>
 </div>

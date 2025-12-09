@@ -1,19 +1,19 @@
-<div class="d-flex flex-column h-100 bg-white border-end">
+<div class="d-flex flex-column h-100 bg-white border-end" data-controller="sidebar-highlight">
 
   <div class="px-3 border-bottom bg-light d-flex align-items-center gap-2" style="min-height: 65px;">
     <%= image_tag "logo.png", class: "rounded", style: "width: 32px; height: 32px;", alt: "Logo" %>
-    <span class="fw-bold text-dark">CPT with Ross</span>
+    <h5 class="fw-bold text-dark m-0">CPT with Ross</h5>
   </div>
 
   <div class="p-3 flex-grow-1 overflow-y-auto">
 
-    <div class="d-flex align-items-center justify-content-between mb-2 px-1">
-      <span class="text-uppercase text-secondary fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">
+    <div class="d-flex align-items-center justify-content-between mb-2 pe-2 sidebar-item-group">
+      <span class="text-uppercase text-dark fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">
         Index Events
       </span>
 
       <%= link_to new_index_event_path,
-          class: "btn btn-sm btn-link text-secondary p-0 text-decoration-none opacity-75 hover-opacity-100",
+          class: "btn btn-sm btn-link text-secondary p-0 action-btn-visible",
           title: "Add New Index Event",
           data: { turbo_frame: "new_index_event_form_frame" } do %>
         <i class="fa-solid fa-plus"></i>
@@ -24,10 +24,35 @@
 
     <div class="accordion accordion-flush" id="indexEventsAccordion">
       <% @index_events&.each do |index_event| %>
-         <% is_active = current_page?(index_event_impact_statement_path(index_event)) %>
+         <% is_active = current_page?(index_event_baseline_path(index_event)) %>
          <%= render "index_events/sidebar_item", index_event: index_event, is_active: is_active %>
       <% end %>
     </div>
 
+  </div>
+
+  <div class="dropdown dropup w-100">
+    <a href="#" class="sidebar-user-footer d-flex align-items-center gap-2 px-3 py-3 text-decoration-none border-top" data-bs-toggle="dropdown" aria-expanded="false">
+      <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px;">
+        <i class="fa-solid fa-user small"></i>
+      </div>
+      <div class="flex-grow-1 min-width-0">
+        <div class="small fw-medium text-dark text-truncate">
+          <%= current_user&.email || "Guest" %>
+        </div>
+      </div>
+      <i class="fa-solid fa-ellipsis-vertical text-muted small"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm w-100 mb-1">
+      <li><h6 class="dropdown-header text-muted text-uppercase small">My Account</h6></li>
+      <li><%= link_to "Profile", "#", class: "dropdown-item py-2" %></li>
+      <li><%= link_to "Settings", "#", class: "dropdown-item py-2" %></li>
+      <li><hr class="dropdown-divider my-1"></li>
+      <li>
+        <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item py-2 text-danger" do %>
+          <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out
+        <% end %>
+      </li>
+    </ul>
   </div>
 </div>

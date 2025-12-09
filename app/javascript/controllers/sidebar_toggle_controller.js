@@ -1,24 +1,17 @@
 /**
- * =============================================================================
- * SidebarToggleController - Index Event Accordion with Smart Navigation
- * =============================================================================
+ * SidebarToggleController - Accordion Toggle with Smart Navigation
  *
- * Manages the Index Event accordion toggle behavior in the sidebar. The toggle
- * has three-state behavior depending on context:
+ * Manages accordion toggle behavior in the sidebar for Index Events and Stuck Points.
  *
- * 1. When collapsed -> Expand and navigate to Impact Statement
- * 2. When expanded but NOT viewing Impact Statement -> Navigate to Impact Statement
- * 3. When expanded AND viewing Impact Statement -> Collapse and show welcome
+ * Chevron click: Toggle drawer open/close only
+ * Title click (Index Events): 3-state behavior:
+ *   1. Collapsed -> Expand and navigate to Baseline
+ *   2. Expanded but NOT viewing Baseline -> Navigate to Baseline
+ *   3. Expanded AND viewing Baseline -> Collapse and show welcome
+ * Title click (Stuck Points): Toggle drawer only (no navigation)
  *
- * This creates an intuitive UX where clicking an Index Event title focuses on
- * that event's content, and clicking again "closes" it.
- *
- * Usage: data-controller="sidebar-toggle"
- *
- * Values:
- * - expandUrl: URL to load when expanding (typically Impact Statement)
- * - collapseUrl: URL to load when collapsing (typically dashboard/welcome)
- * - collapseId: DOM ID of the Bootstrap collapse element
+ * Uses manual click binding since Stimulus data-action doesn't work reliably
+ * on Turbo Stream content. Highlight state is managed by sidebar_highlight_controller.
  */
 import { Controller } from '@hotwired/stimulus';
 
@@ -31,119 +24,188 @@ export default class extends Controller {
     collapseId: String
   };
 
-  initialize() {
-    this.handleFrameLoad = this.handleFrameLoad.bind(this);
-  }
-
   connect() {
     this.collapseElement = document.getElementById(this.collapseIdValue);
+
+    // Manual click binding for Turbo Stream compatibility
+    this.chevron = this.element.querySelector('.chevron-icon');
+    if (this.chevron) {
+      this.boundToggleDrawer = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggleDrawer();
+      };
+      this.chevron.addEventListener('click', this.boundToggleDrawer);
+    }
+
+    this.titleText = this.element.querySelector('.sidebar-nav-text') ||
+                     this.element.querySelector('span[role="button"]');
+    if (this.titleText) {
+      this.boundToggle = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggle(e);
+      };
+      this.titleText.addEventListener('click', this.boundToggle);
+    }
+
     if (this.collapseElement) {
-      // Create bound handlers that check if event is for our specific collapse
+      // Sync chevron state when Bootstrap changes drawer externally
       this.handleShown = (event) => {
         if (event.target === this.collapseElement) {
-          this.updateButtonState(true);
+          this.updateChevronState(true);
         }
       };
       this.handleHidden = (event) => {
         if (event.target === this.collapseElement) {
-          this.updateButtonState(false);
+          this.updateChevronState(false);
         }
       };
-
-      // Sync button state with Bootstrap collapse events
       this.collapseElement.addEventListener('shown.bs.collapse', this.handleShown);
       this.collapseElement.addEventListener('hidden.bs.collapse', this.handleHidden);
 
-      // Set initial state from DOM
       const isExpanded = this.collapseElement.classList.contains('show');
-      this.updateButtonState(isExpanded);
-    }
+      this.updateChevronState(isExpanded);
 
-    // Track main_content frame URL for determining current view
-    document.addEventListener('turbo:frame-load', this.handleFrameLoad);
+      // Close other drawers when this one opens (e.g., new Index Event)
+      if (isExpanded) {
+        setTimeout(() => this.collapseOtherDrawers(), 50);
+      }
+    }
   }
 
   disconnect() {
-    document.removeEventListener('turbo:frame-load', this.handleFrameLoad);
+    if (this.chevron && this.boundToggleDrawer) {
+      this.chevron.removeEventListener('click', this.boundToggleDrawer);
+    }
+    if (this.titleText && this.boundToggle) {
+      this.titleText.removeEventListener('click', this.boundToggle);
+    }
     if (this.collapseElement) {
       this.collapseElement.removeEventListener('shown.bs.collapse', this.handleShown);
       this.collapseElement.removeEventListener('hidden.bs.collapse', this.handleHidden);
     }
   }
 
-  // Track the current URL in main_content for conditional navigation logic
-  handleFrameLoad(event) {
-    if (event.target.id === 'main_content') {
-      const frame = event.target;
-      const path = frame.src ? new URL(frame.src, window.location.origin).pathname : '';
-      frame.dataset.currentPath = path;
-      if (path) {
-        sessionStorage.setItem('mainContentCurrentPath', path);
-      }
-    }
+  updateChevronState(expanded) {
+    this.element.classList.toggle('collapsed', !expanded);
+    this.element.setAttribute('aria-expanded', String(expanded));
   }
 
-  // Sync button visual state with collapse state
-  updateButtonState(expanded) {
-    const button = this.element.querySelector('button');
-    if (button) {
-      if (expanded) {
-        button.classList.remove('collapsed');
-        button.setAttribute('aria-expanded', 'true');
-      } else {
-        button.classList.add('collapsed');
-        button.setAttribute('aria-expanded', 'false');
-      }
-    }
-  }
-
-  // Main toggle handler - implements three-state behavior
   toggle(event) {
     event.preventDefault();
+
+    // Debounce duplicate calls from manual binding + data-action
+    const now = Date.now();
+    if (this._lastToggle && now - this._lastToggle < 100) return;
 
     const collapseElement = document.getElementById(this.collapseIdValue);
     const isExpanded = collapseElement?.classList.contains('show');
 
-    if (isExpanded && this.isViewingImpactStatement()) {
-      // State 3: Expanded + viewing Impact Statement -> collapse
-      this.updateButtonState(false);
+    // Stuck Points: just toggle drawer (no navigation)
+    if (!this.hasExpandUrlValue) {
+      this._lastToggle = now;
+      this.toggleDrawer();
+      return;
+    }
+
+    // Check for unsaved changes before any state modifications
+    if (!this.confirmUnsavedChanges()) return;
+
+    // Update debounce AFTER confirm dialog (dialog blocks, so timer expires)
+    this._lastToggle = Date.now();
+
+    // Index Events: 3-state behavior
+    if (isExpanded && this.isViewingExpandUrl()) {
+      this.updateChevronState(false);
       this.collapseDrawer(collapseElement);
       this.navigateFrame(this.collapseUrlValue);
     } else if (isExpanded) {
-      // State 2: Expanded but viewing something else -> navigate to Impact Statement
       this.navigateFrame(this.expandUrlValue);
     } else {
-      // State 1: Collapsed -> expand and show Impact Statement
-      this.updateButtonState(true);
+      this.updateChevronState(true);
       this.expandDrawer(collapseElement);
       this.navigateFrame(this.expandUrlValue);
     }
   }
 
-  // Check if currently viewing this Index Event's Impact Statement
-  isViewingImpactStatement() {
+  toggleDrawer() {
+    // Debounce duplicate calls from manual binding + data-action
+    const now = Date.now();
+    if (this._lastToggleDrawer && now - this._lastToggleDrawer < 100) return;
+    this._lastToggleDrawer = now;
+
+    const collapseElement = document.getElementById(this.collapseIdValue);
+    if (!collapseElement) return;
+
+    const isExpanded = collapseElement.classList.contains('show');
+    if (isExpanded) {
+      this.updateChevronState(false);
+      this.collapseDrawer(collapseElement);
+    } else {
+      this.updateChevronState(true);
+      this.expandDrawer(collapseElement);
+    }
+  }
+
+  isViewingExpandUrl() {
     const frame = document.getElementById('main_content');
-    const currentPath = frame?.dataset.currentPath || '';
+    if (!frame) return false;
+
+    // Check content's path attribute (works with turbo_stream.update)
+    const pathElement = frame.querySelector('[data-current-path-path-value]');
+    if (pathElement) {
+      return pathElement.dataset.currentPathPathValue === this.expandUrlValue;
+    }
+
+    // Fallback: check frame's dataset or src
+    const currentPath = frame.dataset.currentPath ||
+      (frame.src && new URL(frame.src, window.location.origin).pathname);
     return currentPath === this.expandUrlValue;
   }
 
   expandDrawer(collapseElement) {
-    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElement);
-    bsCollapse.show();
+    bootstrap.Collapse.getOrCreateInstance(collapseElement).show();
   }
 
   collapseDrawer(collapseElement) {
-    const bsCollapse = bootstrap.Collapse.getInstance(collapseElement);
-    if (bsCollapse) {
-      bsCollapse.hide();
+    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElement);
+    // Force shown state for newly created elements (added with .show class via HTML)
+    if (!bsCollapse._isShown && collapseElement.classList.contains('show')) {
+      bsCollapse._isShown = true;
     }
+    bsCollapse.hide();
   }
 
-  // Navigate the main_content Turbo Frame to a new URL
   navigateFrame(url) {
     const frame = document.getElementById('main_content');
-    if (frame) {
-      frame.src = url;
-    }
+    if (frame) frame.src = url;
+  }
+
+  confirmUnsavedChanges() {
+    const container = document.querySelector('[data-controller~="unsaved-changes"]');
+    if (!container) return true;
+
+    const controller = this.application.getControllerForElementAndIdentifier(
+      container,
+      'unsaved-changes'
+    );
+    if (!controller?.isDirty?.()) return true;
+
+    return confirm('You have unsaved changes. Are you sure you want to leave? Your changes will be lost.');
+  }
+
+  collapseOtherDrawers() {
+    const parent = this.collapseElement?.dataset.bsParent;
+    if (!parent) return;
+
+    const accordion = document.querySelector(parent);
+    if (!accordion) return;
+
+    accordion.querySelectorAll('.accordion-collapse.show').forEach(collapse => {
+      if (collapse !== this.collapseElement) {
+        bootstrap.Collapse.getInstance(collapse)?.hide();
+      }
+    });
   }
 }

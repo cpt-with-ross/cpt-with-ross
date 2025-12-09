@@ -34,7 +34,7 @@ class IndexEventsController < ApplicationController
     @index_event = current_user.index_events.build
     render_inline_form @index_event,
                        url: index_events_path,
-                       placeholder: 'New Index Event Name...',
+                       placeholder: 'Name your new Index Event (Optional)...',
                        frame_id: 'new_index_event_form_frame',
                        attribute_name: :title
   end
@@ -43,53 +43,55 @@ class IndexEventsController < ApplicationController
   def edit
     render_inline_form @index_event,
                        url: index_event_path(@index_event),
-                       placeholder: 'Index Event Name...',
+                       placeholder: 'Name your new Index Event (Optional)...',
                        frame_id: dom_id(@index_event, :title_frame),
                        attribute_name: :title,
                        cancel_url: index_event_path(@index_event)
   end
 
-  # Creates a new IndexEvent and its associated ImpactStatement (auto-created via callback).
-  # On success: adds to sidebar, clears form, shows impact statement in main content.
+  # Creates a new IndexEvent and its associated Baseline (auto-created via callback).
+  # On success: adds to sidebar, clears form, shows baseline in main content.
   def create
     @index_event = current_user.index_events.build(index_event_params)
 
     if @index_event.save
       respond_with_turbo_or_redirect do
         render turbo_stream: [
-          # Add new item to sidebar accordion
+          # Add new item to sidebar accordion (expanded so drawer is open)
           turbo_stream.append('indexEventsAccordion',
                               partial: 'index_events/sidebar_item',
-                              locals: { index_event: @index_event, is_active: false }),
+                              locals: { index_event: @index_event, is_active: true, expanded: true }),
           # Clear the inline form
           turbo_stream.update('new_index_event_form_frame', ''),
-          # Show the new event's impact statement in main content
+          # Show the new event's baseline in main content
           turbo_stream.update('main_content',
-                              partial: 'impact_statements/show_content',
-                              locals: { impact_statement: @index_event.impact_statement,
+                              partial: 'baselines/show_content',
+                              locals: { baseline: @index_event.baseline,
                                         index_event: @index_event })
         ]
       end
     else
       render_inline_form @index_event,
                          url: index_events_path,
-                         placeholder: 'New Index Event Name...',
+                         placeholder: 'Name your new Index Event (Optional)...',
                          frame_id: 'new_index_event_form_frame',
                          attribute_name: :title,
                          status: :unprocessable_content
     end
   end
 
-  # Updates the IndexEvent title. If user is viewing related content (impact
-  # statement, worksheets, etc.), refresh that content to reflect the new title.
+  # Updates the IndexEvent title. If user is viewing related content (baseline,
+  # worksheets, etc.), refresh that content to reflect the new title.
   def update
     if @index_event.update(index_event_params)
       respond_with_turbo_or_redirect do
+        viewing_baseline = params[:current_path] == index_event_baseline_path(@index_event)
+
         streams = [
           turbo_stream.replace(
             dom_id(@index_event, :title_frame),
             partial: 'index_events/title_button',
-            locals: { index_event: @index_event, is_active: false }
+            locals: { index_event: @index_event, is_active: viewing_baseline }
           )
         ]
 
@@ -102,7 +104,7 @@ class IndexEventsController < ApplicationController
     else
       render_inline_form @index_event,
                          url: index_event_path(@index_event),
-                         placeholder: 'Index Event Name...',
+                         placeholder: 'Name your new Index Event (Optional)...',
                          frame_id: dom_id(@index_event, :title_frame),
                          attribute_name: :title,
                          cancel_url: index_event_path(@index_event),

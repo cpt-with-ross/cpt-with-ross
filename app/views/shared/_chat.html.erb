@@ -4,37 +4,18 @@
      data-controller="chat"
      data-chat-chat-id-value="<%= chat.id %>">
 
-  <div class="px-3 border-bottom bg-light d-flex align-items-center justify-content-end" style="height: 65px;">
-    <div class="dropdown">
-      <a href="#" class="text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+  <div class="chat-resize-handle"
+       data-column-resize-target="resizeHandle"
+       data-action="mousedown->column-resize#startResize"></div>
 
-        <div class="bg-white border rounded-5 px-3 py-1 d-flex align-items-center gap-2 shadow-sm hover-shadow-md transition-all">
-
-          <span class="small fw-bold text-dark" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <% if defined?(current_user) && current_user.present? %>
-              <%= current_user.email %>
-            <% else %>
-              Guest
-            <% end %>
-          </span>
-
-          <i class="fa-solid fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
-
-        </div>
-
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-        <li><h6 class="dropdown-header text-muted text-uppercase small">My Account</h6></li>
-        <li><%= link_to "Profile", "#", class: "dropdown-item small" %></li>
-        <li><%= link_to "Settings", "#", class: "dropdown-item small" %></li>
-        <li><hr class="dropdown-divider"></li>
-        <li>
-          <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item small text-danger" do %>
-            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Sign Out
-          <% end %>
-        </li>
-      </ul>
-    </div>
+  <div class="px-3 border-bottom bg-light d-flex align-items-center justify-content-between" style="height: 65px;">
+    <h5 class="fw-bold text-dark m-0">Chat with Ross</h5>
+    <button type="button"
+            class="btn btn-sm btn-light border"
+            data-action="column-resize#toggle"
+            title="Hide chat">
+      <i class="fa-solid fa-angles-right"></i>
+    </button>
   </div>
 
   <div class="flex-grow-1 overflow-y-auto p-4 bg-white"

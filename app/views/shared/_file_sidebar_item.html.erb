@@ -1,5 +1,7 @@
-<div class="d-flex align-items-center justify-content-between mb-1 sidebar-item-group" id="<%= dom_id(item) %>">
-  <%= render 'shared/file_sidebar_title', item: item %>
+<% title_locals = { item: item } %>
+<% title_locals[:is_active] = is_active if local_assigns.key?(:is_active) %>
+<div class="d-flex align-items-center justify-content-between mb-1 pe-2 sidebar-item-group" id="<%= dom_id(item) %>">
+  <%= render 'shared/file_sidebar_title', **title_locals %>
 
   <div class="dropdown">
     <button class="btn btn-sm btn-link text-muted p-0 action-btn" type="button" data-bs-toggle="dropdown" style="font-size: 0.75rem;">
