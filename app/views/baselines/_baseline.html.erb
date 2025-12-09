@@ -1,4 +1,15 @@
 <%= tag.div id: dom_id(baseline) do %>
+  <%# Download Summary button at top %>
+  <div class="mb-3">
+    <%= link_to summary_index_event_baseline_path(baseline.index_event),
+        class: "btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2",
+        title: "Download Summary PDF",
+        data: { turbo: false } do %>
+      <i class="fas fa-download"></i>
+      <span>Download Summary</span>
+    <% end %>
+  </div>
+
   <%# ================================================================== %>
   <%# Section 1: Baseline PTSD Checklist - Event Identification %>
   <%# ================================================================== %>

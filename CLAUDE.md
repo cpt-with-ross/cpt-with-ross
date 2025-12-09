@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CPT with Ross is an AI-assisted self-help web application for Cognitive Processing Therapy (CPT) for PTSD. Built with Rails 7.1, PostgreSQL (with pgvector), and Hotwire (Turbo/Stimulus).
 
+The user has suffered a trauma, which is called an 'index event' here. This index event caused one or more stuck points. These struck points can be analyzed when he fills an abc worksheet or challenger when he fills an alternative toughts.The user has suffered a trauma, which is called an 'index event' here. This index event caused one or more stuck points. These struck points can be analyzed when he fills an abc worksheet or challenger when he fills an alternative toughts.
+
 ## Common Commands
 
 ```bash
@@ -75,3 +77,11 @@ Uses `ruby_llm` gem with a chat/message/tool_call pattern:
 
 - Ruby: Single quotes, 120 char line limit (see `.rubocop.yml`)
 - Use `find_each` for iterating ActiveRecord collections in models/controllers
+
+
+{
+  "permissions": {
+    "allow": ["mcp__playwright"],
+    "deny": []
+  }
+}

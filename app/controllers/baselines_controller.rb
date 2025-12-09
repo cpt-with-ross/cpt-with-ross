@@ -46,6 +46,17 @@ class BaselinesController < ApplicationController
     end
   end
 
+  # Generates and downloads a summary PDF for the index event
+  def summary
+    pdf_content = SummaryPdfGenerator.new(@index_event).generate
+    filename = "#{@index_event.title.parameterize}-summary-#{Date.current}.pdf"
+
+    send_data pdf_content,
+              filename: filename,
+              type: 'application/pdf',
+              disposition: 'attachment'
+  end
+
   private
 
   # Finds parent IndexEvent scoped to current user

@@ -1,6 +1,10 @@
 # Idempotent seed data for development/test environments.
 # Run with: bin/rails db:seed
 
+user = User.find_or_initialize_by(email: 'mike.landreville@gmail.com')
+user.password = 'password'
+user.save!
+
 user = User.find_or_initialize_by(email: 'example@email.com')
 user.password = 'password'
 user.save!

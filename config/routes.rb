@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   get 'up' => 'rails/health#show', as: :rails_health_check
 
+  # Letter opener web interface for viewing emails in development
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
+
   devise_for :users, skip: %i[registrations passwords], controllers: {
     sessions: 'users/sessions'
   }
@@ -15,7 +18,9 @@ Rails.application.routes.draw do
   end
 
   resources :index_events, shallow: true, only: %i[new create show edit update destroy] do
-    resource :baseline, only: %i[show edit update]
+    resource :baseline, only: %i[show edit update] do
+      get :summary, on: :member
+    end
     resources :stuck_points, only: %i[new create show edit update destroy] do
       resources :abc_worksheets, only: %i[new create show edit update destroy] do
         member do
