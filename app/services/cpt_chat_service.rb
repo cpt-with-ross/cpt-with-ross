@@ -126,10 +126,10 @@ class CptChatService
     nil
   end
 
-  # Retrieves the user's unresolved stuck points for context injection.
+  # Retrieves the user's stuck points for context injection.
   # Stuck points are core negative beliefs identified during CPT therapy.
   def retrieve_stuck_points
-    @user.stuck_points.where(resolved: [false, nil]).pluck(:statement).join('; ')
+    @user.stuck_points.pluck(:statement).join('; ')
   end
 
   # Constructs the system prompt that defines Ross's persona and injects
@@ -145,7 +145,7 @@ class CptChatService
       PATIENT'S THERAPY PROGRESS:
       #{patient_context.presence || 'No therapy work recorded yet.'}
 
-      ACTIVE STUCK POINTS (Unresolved):
+      STUCK POINTS:
       #{stuck_points.presence || 'None identified yet'}
 
       CLINICAL GUIDELINES (Use only if relevant to the conversation):
@@ -220,9 +220,16 @@ class CptChatService
   end
 
   # Formats an index event with its nested resources
+  # rubocop:disable Metrics/PerceivedComplexity
   def format_index_event(event, include_nested: false)
     lines = ["### Index Event: #{event.title}"]
     lines << "Date: #{event.date}" if event.date.present?
+
+    # Add PCL-5 severity indicator if baseline is complete
+    if event.baseline&.pcl_complete?
+      score = event.baseline.pcl_total_score
+      lines << "PTSD Severity: #{score}/80 (#{pcl_severity_label(score)})"
+    end
 
     if event.baseline&.statement.present?
       lines << "\n**Impact Statement:**"
@@ -238,14 +245,12 @@ class CptChatService
 
     lines.join("\n")
   end
+  # rubocop:enable Metrics/PerceivedComplexity
 
   # Formats a stuck point with optional worksheet details
   # rubocop:disable Metrics/PerceivedComplexity
   def format_stuck_point(stuck_point, include_worksheets: false)
-    status = stuck_point.resolved? ? 'Resolved' : 'Working on it'
     lines = ["\n**Stuck Point:** #{stuck_point.statement}"]
-    lines << "Status: #{status}"
-    lines << "Belief Type: #{stuck_point.belief_type}" if stuck_point.belief_type.present?
 
     if include_worksheets
       stuck_point.abc_worksheets.each do |abc|
@@ -275,9 +280,6 @@ class CptChatService
     event = stuck_point.index_event
     lines = ["**From Index Event:** #{event.title}"]
     lines << "**Stuck Point:** #{stuck_point.statement}"
-    lines << "**Status:** #{stuck_point.resolved? ? 'Resolved' : 'Working on it'}"
-    lines << "**Belief:** #{stuck_point.belief}" if stuck_point.belief.present?
-    lines << "**Belief Type:** #{stuck_point.belief_type}" if stuck_point.belief_type.present?
 
     if stuck_point.abc_worksheets.any?
       lines << "\n**ABC Worksheets:**"
@@ -294,11 +296,18 @@ class CptChatService
 
   # Compact format for ABC worksheet in listings
   def format_abc_worksheet(abc)
+    emotions_summary = if abc.emotions.present? && abc.emotions.any?
+                         top = abc.emotions.max_by { |e| e['intensity'].to_i }
+                         " (Primary emotion: #{top['emotion']} #{top['intensity']}/10)"
+                       else
+                         ''
+                       end
+
     <<~ABC.strip
-      - ABC Worksheet: #{abc.title}
-        A (Activating Event): #{truncate_content(abc.activating_event, 200)}
-        B (Beliefs): #{truncate_content(abc.beliefs, 200)}
-        C (Consequences): #{truncate_content(abc.consequences, 200)}
+      - ABC Worksheet: #{abc.title}#{emotions_summary}
+        A: #{truncate_content(abc.activating_event, 150)}
+        B: #{truncate_content(abc.beliefs, 150)}
+        C: #{truncate_content(abc.consequences, 150)}
     ABC
   end
 
@@ -307,59 +316,177 @@ class CptChatService
     stuck_point = abc.stuck_point
     event = stuck_point.index_event
 
-    <<~ABC
-      **From Index Event:** #{event.title}
-      **Related Stuck Point:** #{stuck_point.statement}
+    lines = [
+      "**From Index Event:** #{event.title}",
+      "**Related Stuck Point:** #{stuck_point.statement}",
+      '',
+      "**ABC Worksheet: #{abc.title}**",
+      '**A (Activating Event):**',
+      abc.activating_event.to_s,
+      '',
+      '**B (Beliefs):**',
+      abc.beliefs.to_s,
+      '',
+      '**C (Consequences):**',
+      abc.consequences.to_s
+    ]
 
-      **ABC Worksheet: #{abc.title}**
-      **A (Activating Event):**
-      #{abc.activating_event}
+    # Add emotions if present
+    if abc.emotions.present? && abc.emotions.any?
+      lines << ''
+      lines << '**Emotions Experienced:**'
+      lines << format_emotions(abc.emotions)
+    end
 
-      **B (Beliefs):**
-      #{abc.beliefs}
-
-      **C (Consequences):**
-      #{abc.consequences}
-    ABC
+    lines.join("\n")
   end
 
   # Compact format for alternative thought in listings
   def format_alternative_thought(alt)
+    belief_change = if alt.stuck_point_belief_before.present? && alt.stuck_point_belief_after.present?
+                      " (Belief: #{alt.stuck_point_belief_before}% → #{alt.stuck_point_belief_after}%)"
+                    else
+                      ''
+                    end
+
     <<~ALT.strip
-      - Alternative Thought: #{alt.title}
-        Unbalanced: #{truncate_content(alt.unbalanced_thought, 200)}
-        Balanced: #{truncate_content(alt.balanced_thought, 200)}
+      - Alternative Thought: #{alt.title}#{belief_change}
+        Original: #{truncate_content(alt.stuck_point&.statement, 150)}
+        Alternative: #{truncate_content(alt.alternative_thought, 150)}
     ALT
   end
 
   # Detailed format for a focused alternative thought
+  # rubocop:disable Metrics/PerceivedComplexity
   def format_alternative_thought_detailed(alt)
     stuck_point = alt.stuck_point
     event = stuck_point.index_event
 
-    <<~ALT
-      **From Index Event:** #{event.title}
-      **Related Stuck Point:** #{stuck_point.statement}
+    lines = [
+      "**From Index Event:** #{event.title}",
+      "**Related Stuck Point:** #{stuck_point.statement}",
+      '',
+      "**Alternative Thought Worksheet: #{alt.title}**"
+    ]
 
-      **Alternative Thought: #{alt.title}**
-      **Unbalanced Thought:**
-      #{alt.unbalanced_thought}
+    # Section B: Initial belief rating
+    if alt.stuck_point_belief_before.present?
+      lines << "**Initial Belief in Stuck Point:** #{alt.stuck_point_belief_before}%"
+    end
 
-      **Balanced Thought:**
-      #{alt.balanced_thought}
-    ALT
+    # Section C: Emotions before
+    if alt.emotions_before.present? && alt.emotions_before.any?
+      lines << '**Emotions Before:**'
+      lines << format_emotions(alt.emotions_before)
+    end
+
+    # Section D: Exploring questions (only answered ones)
+    exploring = format_exploring_questions(alt)
+    if exploring.present?
+      lines << ''
+      lines << '**Exploring the Stuck Point:**'
+      lines << exploring
+    end
+
+    # Section E: Thinking patterns (only identified ones)
+    patterns = format_thinking_patterns(alt)
+    if patterns.present?
+      lines << ''
+      lines << '**Thinking Patterns Identified:**'
+      lines << patterns
+    end
+
+    # Section F: Alternative thought
+    if alt.alternative_thought.present?
+      lines << ''
+      lines << '**Alternative Thought:**'
+      lines << alt.alternative_thought
+      if alt.alternative_thought_belief.present?
+        lines << "**Belief in Alternative:** #{alt.alternative_thought_belief}%"
+      end
+    end
+
+    # Section G: Re-rated stuck point
+    if alt.stuck_point_belief_after.present?
+      lines << "**Updated Belief in Stuck Point:** #{alt.stuck_point_belief_after}%"
+    end
+
+    # Section H: Emotions after
+    if alt.emotions_after.present? && alt.emotions_after.any?
+      lines << '**Emotions After:**'
+      lines << format_emotions(alt.emotions_after)
+    end
+
+    lines.join("\n")
   end
+  # rubocop:enable Metrics/PerceivedComplexity
 
   # Detailed format for a focused baseline
   def format_baseline_detailed(baseline)
     event = baseline.index_event
+    lines = ["**From Index Event:** #{event.title}"]
 
-    <<~BASELINE
-      **From Index Event:** #{event.title}
+    # PCL-5 severity (0-80 scale)
+    if baseline.pcl_complete?
+      score = baseline.pcl_total_score
+      severity = pcl_severity_label(score)
+      lines << "**PTSD Severity (PCL-5):** #{score}/80 (#{severity})"
+    end
 
-      **Impact Statement:**
-      #{baseline.statement}
-    BASELINE
+    # Event context
+    lines << "**Time Since Event:** #{baseline.time_since_event}" if baseline.time_since_event.present?
+    if baseline.experience_type.present?
+      lines << "**Experience Type:** #{Baseline::EXPERIENCE_TYPES[baseline.experience_type]}"
+    end
+
+    # Impact statement
+    if baseline.statement.present?
+      lines << "\n**Impact Statement:**"
+      lines << baseline.statement
+    end
+
+    lines.join("\n")
+  end
+
+  # Format emotions array as readable string
+  def format_emotions(emotions_array)
+    return '' unless emotions_array.is_a?(Array) && emotions_array.any?
+
+    emotions_array.map do |e|
+      "#{e['emotion'].capitalize}: #{e['intensity']}/10"
+    end.join(', ')
+  end
+
+  # Format exploring questions (only answered ones)
+  def format_exploring_questions(alt)
+    answers = AlternativeThought::EXPLORING_QUESTIONS.filter_map do |field, question|
+      answer = alt.send(field)
+      next if answer.blank?
+
+      "- #{question} #{truncate_content(answer, 200)}"
+    end
+    answers.join("\n")
+  end
+
+  # Format thinking patterns (only identified ones)
+  def format_thinking_patterns(alt)
+    patterns = AlternativeThought::THINKING_PATTERNS.filter_map do |field, label|
+      answer = alt.send(field)
+      next if answer.blank?
+
+      "- #{label}: #{truncate_content(answer, 150)}"
+    end
+    patterns.join("\n")
+  end
+
+  # Helper for PCL-5 severity interpretation
+  def pcl_severity_label(score)
+    case score
+    when 0..10 then 'Minimal'
+    when 11..32 then 'Mild to Moderate'
+    when 33..49 then 'Moderate to High'
+    else 'High (clinical threshold)'
+    end
   end
 
   # Truncates long content to avoid excessive token usage while preserving meaning

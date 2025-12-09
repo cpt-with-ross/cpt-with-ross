@@ -40,9 +40,7 @@ index_event.baseline.update!(
   pcl_sleep_trouble: 3
 )
 
-stuck_point = index_event.stuck_points.find_or_create_by!(statement: 'I should have seen it coming') do |sp|
-  sp.resolved = false
-end
+stuck_point = index_event.stuck_points.find_or_create_by!(statement: 'I should have seen it coming')
 
 stuck_point.abc_worksheets.find_or_create_by!(title: 'Driving anxiety') do |abc|
   abc.activating_event = 'Driving past the intersection where the accident happened'

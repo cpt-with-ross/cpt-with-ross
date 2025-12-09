@@ -52,7 +52,6 @@ class CreateCptDomainTables < ActiveRecord::Migration[7.1]
     # Stuck Points - negative thoughts/beliefs
     create_table :stuck_points do |t|
       t.text :statement
-      t.boolean :resolved, default: false, null: false
       t.references :index_event, null: false, foreign_key: true
 
       t.timestamps

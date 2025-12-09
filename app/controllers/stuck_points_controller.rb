@@ -148,7 +148,7 @@ class StuckPointsController < ApplicationController
   end
 
   def stuck_point_params
-    params.require(:stuck_point).permit(:statement, :belief, :belief_type, :resolved)
+    params.require(:stuck_point).permit(:statement)
   end
 
   # Builds list of URL paths to child resources for deletion fallback logic
