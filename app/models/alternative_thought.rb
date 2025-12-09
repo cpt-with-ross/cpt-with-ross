@@ -60,6 +60,32 @@ class AlternativeThought < ApplicationRecord
   validates :stuck_point_belief_before, numericality: { in: 0..100 }, allow_nil: true
   validates :stuck_point_belief_after, numericality: { in: 0..100 }, allow_nil: true
   validates :alternative_thought_belief, numericality: { in: 0..100 }, allow_nil: true
+  validate :emotions_before_intensities_within_range
+  validate :emotions_after_intensities_within_range
+
+  private
+
+  def emotions_before_intensities_within_range
+    validate_emotions_array(:emotions_before)
+  end
+
+  def emotions_after_intensities_within_range
+    validate_emotions_array(:emotions_after)
+  end
+
+  def validate_emotions_array(attribute)
+    array = send(attribute)
+    return unless array.is_a?(Array)
+
+    array.each do |entry|
+      intensity = entry['intensity'].to_i
+      next if intensity.between?(0, 10)
+
+      errors.add(attribute, "intensity must be between 0 and 10 (got #{intensity})")
+    end
+  end
+
+  public
 
   # Provides a display title, falling back to "Alt Thought #N" if not set.
   # For new records, returns the raw attribute to allow empty display.

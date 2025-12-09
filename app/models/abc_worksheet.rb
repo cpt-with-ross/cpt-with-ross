@@ -41,6 +41,22 @@ class AbcWorksheet < ApplicationRecord
   belongs_to :stuck_point, inverse_of: :abc_worksheets
 
   validates :stuck_point, presence: true
+  validate :emotions_intensities_within_range
+
+  private
+
+  def emotions_intensities_within_range
+    return unless emotions.is_a?(Array)
+
+    emotions.each do |entry|
+      intensity = entry['intensity'].to_i
+      next if intensity.between?(0, 10)
+
+      errors.add(:emotions, "intensity must be between 0 and 10 (got #{intensity})")
+    end
+  end
+
+  public
 
   # Provides a display title, falling back to "ABC #N" if not set.
   # For new records, returns the raw attribute to allow empty display.

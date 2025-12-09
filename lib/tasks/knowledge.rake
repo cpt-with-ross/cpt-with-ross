@@ -8,7 +8,7 @@ namespace :knowledge do
     puts 'Enqueuing import jobs...'
 
     files.each do |file_path|
-      KnowledgeImportJob.perform_later(file_path)
+      KnowledgeImportJob.perform_later(file_path.to_s)
       puts "  Enqueued: #{File.basename(file_path)}"
     end
 

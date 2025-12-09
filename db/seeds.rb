@@ -60,11 +60,11 @@ stuck_point.alternative_thoughts.find_or_create_by!(title: 'Reframing responsibi
   at.stuck_point_belief_before = 85
   at.stuck_point_belief_after = 40
 
-  # Section C: Initial emotions
+  # Section C: Initial emotions (0-10 scale)
   at.emotions_before = [
-    { 'emotion' => 'guilt', 'intensity' => 80 },
-    { 'emotion' => 'shame', 'intensity' => 70 },
-    { 'emotion' => 'fear', 'intensity' => 60 }
+    { 'emotion' => 'guilt', 'intensity' => 8 },
+    { 'emotion' => 'shame', 'intensity' => 7 },
+    { 'emotion' => 'fear', 'intensity' => 6 }
   ]
 
   # Section D: Exploring thoughts
@@ -98,11 +98,11 @@ stuck_point.alternative_thoughts.find_or_create_by!(title: 'Reframing responsibi
   # Section F: Alternative thought belief rating
   at.alternative_thought_belief = 75
 
-  # Section H: Final emotions
+  # Section H: Final emotions (0-10 scale)
   at.emotions_after = [
-    { 'emotion' => 'guilt', 'intensity' => 35 },
-    { 'emotion' => 'shame', 'intensity' => 25 },
-    { 'emotion' => 'fear', 'intensity' => 40 },
-    { 'emotion' => 'sadness', 'intensity' => 45 }
+    { 'emotion' => 'guilt', 'intensity' => 4 },
+    { 'emotion' => 'shame', 'intensity' => 3 },
+    { 'emotion' => 'fear', 'intensity' => 4 },
+    { 'emotion' => 'sadness', 'intensity' => 5 }
   ]
 end

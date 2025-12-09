@@ -123,15 +123,6 @@
           <span class="badge bg-primary"><%= alternative_thought.stuck_point_belief_after %>%</span>
         </div>
 
-        <% if alternative_thought.stuck_point_belief_before.present? %>
-          <div class="alert alert-info mb-0">
-            <strong>Initial belief:</strong> <%= alternative_thought.stuck_point_belief_before %>%
-            <% change = alternative_thought.stuck_point_belief_after - alternative_thought.stuck_point_belief_before %>
-            <span class="ms-2 <%= change < 0 ? 'text-success' : (change > 0 ? 'text-danger' : '') %>">
-              (<%= change > 0 ? '+' : '' %><%= change %>%)
-            </span>
-          </div>
-        <% end %>
       <% else %>
         <p class="text-muted fst-italic mb-0">Stuck point not re-rated yet. Click Edit to rate.</p>
       <% end %>

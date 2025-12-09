@@ -31,19 +31,6 @@
         </div>
       </div>
 
-      <% if @alternative_thought.stuck_point_belief_before.present? %>
-        <div class="alert alert-info">
-          <strong>Initial belief:</strong> <%= @alternative_thought.stuck_point_belief_before %>%
-          <% if @alternative_thought.stuck_point_belief_after.present? %>
-            <br>
-            <strong>Change:</strong>
-            <% change = @alternative_thought.stuck_point_belief_after - @alternative_thought.stuck_point_belief_before %>
-            <span class="<%= change < 0 ? 'text-success' : (change > 0 ? 'text-danger' : '') %>">
-              <%= change > 0 ? '+' : '' %><%= change %>%
-            </span>
-          <% end %>
-        </div>
-      <% end %>
     </div>
   </div>
 

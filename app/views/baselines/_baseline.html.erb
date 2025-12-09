@@ -67,10 +67,6 @@
     </div>
     <div class="card-body">
       <% if baseline.pcl_complete? %>
-        <div class="alert alert-info mb-3">
-          <strong>Total Score:</strong> <%= baseline.pcl_total_score %> / 80
-        </div>
-
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead class="table-light">
@@ -98,6 +94,7 @@
             </tbody>
           </table>
         </div>
+        <p class="text-muted text-end mb-0"><strong>Total Score:</strong> <%= baseline.pcl_total_score %> / 80</p>
       <% else %>
         <p class="text-muted fst-italic mb-0">PCL-5 checklist not completed. Click Edit to fill out the symptom checklist.</p>
       <% end %>

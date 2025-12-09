@@ -36,18 +36,6 @@
         <% end %>
       </div>
 
-      <% if @alternative_thought.emotions_before.present? && @alternative_thought.emotions_before.any? %>
-        <div class="alert alert-info mt-3">
-          <strong>Initial emotions for comparison:</strong>
-          <div class="mt-2">
-            <% @alternative_thought.emotions_before.select { |e| e['intensity'].to_i > 0 }.each do |emotion_data| %>
-              <span class="badge bg-secondary me-1">
-                <%= emotion_data['emotion'].capitalize %>: <%= emotion_data['intensity'] %>%
-              </span>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
     </div>
   </div>
 

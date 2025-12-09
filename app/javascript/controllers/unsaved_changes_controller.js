@@ -25,7 +25,10 @@ export default class extends Controller {
     this.handleLinkClick = this.handleLinkClick.bind(this);
     this.handleTurboFetch = this.handleTurboFetch.bind(this);
 
-    this.storeOriginalValues();
+    // Delay storing values to ensure browser has fully rendered form values
+    requestAnimationFrame(() => {
+      this.storeOriginalValues();
+    });
 
     this.element.addEventListener('turbo:submit-end', this.handleSubmitEnd);
     window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -58,30 +61,47 @@ export default class extends Controller {
       } else if (input.type === 'checkbox') {
         this.originalValues[key] = input.checked;
       } else {
-        this.originalValues[key] = input.value;
+        this.originalValues[key] = this.normalizeValue(input);
       }
     });
+  }
+
+  // Normalize values to avoid false positives from browser whitespace handling
+  normalizeValue(input) {
+    let value = input.value;
+    if (input.tagName === 'TEXTAREA') {
+      // Normalize line endings and trim trailing whitespace that browsers may add/remove
+      value = value.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    }
+    return value;
   }
 
   isDirty() {
     const form = this.element.querySelector('form');
     if (!form) return false;
 
+    // Build current values map (same logic as storeOriginalValues)
+    const currentValues = {};
     for (const input of form.querySelectorAll('input, textarea, select')) {
       const key = input.name || input.id;
       if (!key) continue;
 
-      let currentValue;
       if (input.type === 'radio') {
-        if (!input.checked) continue;
-        currentValue = input.value;
+        if (input.checked) {
+          currentValues[key] = input.value;
+        } else if (!(key in currentValues)) {
+          currentValues[key] = '';
+        }
       } else if (input.type === 'checkbox') {
-        currentValue = input.checked;
+        currentValues[key] = input.checked;
       } else {
-        currentValue = input.value;
+        currentValues[key] = this.normalizeValue(input);
       }
+    }
 
-      if (currentValue !== this.originalValues[key]) {
+    // Compare against original values
+    for (const key of Object.keys(this.originalValues)) {
+      if (currentValues[key] !== this.originalValues[key]) {
         return true;
       }
     }
