@@ -1,0 +1,51 @@
+<%= render "shared/stuck_point_context", stuck_point: @stuck_point, label: "Original Stuck Point:" %>
+
+<%= simple_form_for @alternative_thought, data: { turbo_frame: "main_content" } do |f| %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white py-2">
+      <h5 class="mb-0">Re-Rate Old Stuck Point</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small mb-4">
+        After completing the exploring questions and thinking patterns, re-rate how much you now believe the original stuck point.
+      </p>
+
+      <div class="mb-4">
+        <label class="form-label">How much do you now believe the original stuck point? (0-100%)</label>
+        <div class="d-flex align-items-center gap-3">
+          <input type="range"
+                 name="alternative_thought[stuck_point_belief_after]"
+                 id="alternative_thought_stuck_point_belief_after"
+                 min="0" max="100"
+                 value="<%= @alternative_thought.stuck_point_belief_after || 0 %>"
+                 class="form-range flex-grow-1"
+                 autocomplete="off"
+                 data-controller="emotion-slider"
+                 data-emotion-slider-target="slider"
+                 data-action="input->emotion-slider#updateBadge">
+          <span class="badge bg-primary" style="min-width: 48px;"
+                data-emotion-slider-target="badge">
+            <%= @alternative_thought.stuck_point_belief_after || 0 %>
+          </span>
+          <span>%</span>
+        </div>
+      </div>
+
+      <% if @alternative_thought.stuck_point_belief_before.present? %>
+        <div class="alert alert-info">
+          <strong>Initial belief:</strong> <%= @alternative_thought.stuck_point_belief_before %>%
+          <% if @alternative_thought.stuck_point_belief_after.present? %>
+            <br>
+            <strong>Change:</strong>
+            <% change = @alternative_thought.stuck_point_belief_after - @alternative_thought.stuck_point_belief_before %>
+            <span class="<%= change < 0 ? 'text-success' : (change > 0 ? 'text-danger' : '') %>">
+              <%= change > 0 ? '+' : '' %><%= change %>%
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "shared/form_actions", f: f, cancel_path: @alternative_thought %>
+<% end %>

@@ -1,30 +1,180 @@
 <%= tag.div id: dom_id(alternative_thought) do %>
-  <div class="card p-4 shadow-sm">
-    <div class="d-flex justify-content-between align-items-start mb-3">
-      <h5 class="card-title mb-0">Alternative Thought</h5>
-      <%= link_to edit_alternative_thought_path(alternative_thought),
-          class: "btn btn-sm btn-outline-secondary",
+  <%# Stuck Point context displayed above all cards %>
+  <div class="mb-4 p-3 bg-light rounded border">
+    <h6 class="text-muted mb-2">Stuck Point Being Challenged:</h6>
+    <p class="mb-0 fw-medium"><%= alternative_thought.stuck_point.statement %></p>
+  </div>
+
+  <%# ================================================================== %>
+  <%# Card: Exploring Thoughts %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Exploring Thoughts</h5>
+      <%= link_to edit_alternative_thought_path(alternative_thought, section: "exploring"),
+          class: "btn btn-sm btn-light",
           data: { turbo_frame: "main_content" } do %>
         <i class="fas fa-edit"></i> Edit
       <% end %>
     </div>
-
-    <div class="mb-4">
-      <h6 class="text-muted mb-2">Unbalanced Thought</h6>
-      <% if alternative_thought.unbalanced_thought.present? %>
-        <p class="card-text"><%= simple_format(alternative_thought.unbalanced_thought) %></p>
+    <div class="card-body">
+      <% if alternative_thought.exploring_complete? %>
+        <% AlternativeThought::EXPLORING_QUESTIONS.each do |field, label| %>
+          <% value = alternative_thought.send(field) %>
+          <% if value.present? %>
+            <div class="mb-3">
+              <strong><%= label %></strong>
+              <p class="mb-0"><%= simple_format(value) %></p>
+            </div>
+          <% end %>
+        <% end %>
       <% else %>
-        <p class="text-muted fst-italic">Not yet written.</p>
-      <% end %>
-    </div>
-
-    <div>
-      <h6 class="text-muted mb-2">Balanced Thought</h6>
-      <% if alternative_thought.balanced_thought.present? %>
-        <p class="card-text"><%= simple_format(alternative_thought.balanced_thought) %></p>
-      <% else %>
-        <p class="text-muted fst-italic">Not yet written.</p>
+        <p class="text-muted fst-italic mb-0">No exploring questions answered yet. Click Edit to begin.</p>
       <% end %>
     </div>
   </div>
+
+  <%# ================================================================== %>
+  <%# Card: Thinking Patterns %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Thinking Patterns</h5>
+      <%= link_to edit_alternative_thought_path(alternative_thought, section: "patterns"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if alternative_thought.patterns_complete? %>
+        <% AlternativeThought::THINKING_PATTERNS.each do |field, label| %>
+          <% value = alternative_thought.send(field) %>
+          <% if value.present? %>
+            <div class="mb-3">
+              <strong><%= label %></strong>
+              <p class="mb-0"><%= simple_format(value) %></p>
+            </div>
+          <% end %>
+        <% end %>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">No thinking patterns identified yet. Click Edit to begin.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ================================================================== %>
+  <%# Card: Alternative Thought %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Alternative Thought(s)</h5>
+      <%= link_to edit_alternative_thought_path(alternative_thought, section: "alternative"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if alternative_thought.alternative_thought.present? %>
+        <div class="mb-3">
+          <%= simple_format(alternative_thought.alternative_thought) %>
+        </div>
+        <% if alternative_thought.alternative_thought_belief.present? %>
+          <div class="d-flex align-items-center gap-2">
+            <strong>Belief rating:</strong>
+            <div class="progress flex-grow-1" style="height: 20px; max-width: 200px;">
+              <div class="progress-bar" role="progressbar"
+                   style="width: <%= alternative_thought.alternative_thought_belief %>%"
+                   aria-valuenow="<%= alternative_thought.alternative_thought_belief %>"
+                   aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span class="badge bg-primary"><%= alternative_thought.alternative_thought_belief %>%</span>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">No alternative thought written yet. Click Edit to begin.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ================================================================== %>
+  <%# Card: Re-rate Old Stuck Point %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Re-Rate Old Stuck Point</h5>
+      <%= link_to edit_alternative_thought_path(alternative_thought, section: "rerate"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if alternative_thought.stuck_point_belief_after.present? %>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <strong>Current belief in stuck point:</strong>
+          <div class="progress flex-grow-1" style="height: 20px; max-width: 200px;">
+            <div class="progress-bar" role="progressbar"
+                 style="width: <%= alternative_thought.stuck_point_belief_after %>%"
+                 aria-valuenow="<%= alternative_thought.stuck_point_belief_after %>"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <span class="badge bg-primary"><%= alternative_thought.stuck_point_belief_after %>%</span>
+        </div>
+
+        <% if alternative_thought.stuck_point_belief_before.present? %>
+          <div class="alert alert-info mb-0">
+            <strong>Initial belief:</strong> <%= alternative_thought.stuck_point_belief_before %>%
+            <% change = alternative_thought.stuck_point_belief_after - alternative_thought.stuck_point_belief_before %>
+            <span class="ms-2 <%= change < 0 ? 'text-success' : (change > 0 ? 'text-danger' : '') %>">
+              (<%= change > 0 ? '+' : '' %><%= change %>%)
+            </span>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">Stuck point not re-rated yet. Click Edit to rate.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ================================================================== %>
+  <%# Card: Emotions After %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Emotion(s)</h5>
+      <%= link_to edit_alternative_thought_path(alternative_thought, section: "emotions_after"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% emotions_after = alternative_thought.emotions_after || [] %>
+      <% active_emotions = emotions_after.select { |e| e['intensity'].to_i > 0 } %>
+
+      <% if active_emotions.any? %>
+        <p class="text-muted small mb-3">How you feel now after completing the worksheet:</p>
+        <% active_emotions.sort_by { |e| -e['intensity'].to_i }.each do |emotion_data| %>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="flex-grow-0" style="min-width: 100px;"><%= emotion_data['emotion'].capitalize %></span>
+            <div class="progress flex-grow-1" style="height: 12px; max-width: 200px;">
+              <div class="progress-bar" role="progressbar"
+                   style="width: <%= emotion_data['intensity'].to_i * 10 %>%"
+                   aria-valuenow="<%= emotion_data['intensity'] %>"
+                   aria-valuemin="0" aria-valuemax="10"></div>
+            </div>
+            <span class="badge bg-secondary" style="min-width: 40px;"><%= emotion_data['intensity'] %></span>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">No emotions recorded yet. Click Edit to rate your emotions.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <p class="text-muted text-end small">
+    Last updated: <time datetime="<%= alternative_thought.updated_at.iso8601 %>" data-controller="local-time"><%= alternative_thought.updated_at.strftime("%B %d, %Y at %l:%M %p") %></time>
+  </p>
 <% end %>

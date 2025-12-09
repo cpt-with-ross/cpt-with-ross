@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "main_content", data: { controller: "frame-tracker", frame_tracker_initial_path_value: alternative_thought_path(@alternative_thought) } do %>
+<%= turbo_frame_tag "main_content" do %>
   <%= render "alternative_thoughts/show_content",
       alternative_thought: @alternative_thought,
       stuck_point: @stuck_point %>

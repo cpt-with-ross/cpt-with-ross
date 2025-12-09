@@ -1,30 +1,45 @@
-<%= turbo_frame_tag "main_content", data: { controller: "frame-tracker", frame_tracker_initial_path_value: edit_alternative_thought_path(@alternative_thought) } do %>
+<%= turbo_frame_tag "main_content" do %>
+  <div data-controller="current-path" data-current-path-path-value="<%= alternative_thought_path(@alternative_thought) %>"></div>
+
   <%= render "shared/page_header",
       parents: [@stuck_point.index_event.title, @stuck_point.statement.truncate(30), "Alternative Thoughts"],
-      title: "Edit #{@alternative_thought.title}" %>
+      title: "Edit #{@alternative_thought.title}",
+      show_close: false %>
 
-  <div class="card p-4 shadow-sm">
-    <%= simple_form_for @alternative_thought, data: { turbo_frame: "main_content" } do |f| %>
-      <div class="mb-4">
-        <%= f.input :unbalanced_thought,
-            as: :text,
-            label: "Unbalanced Thought",
-            input_html: { rows: 4, class: "form-control" },
-            hint: "Write the negative or distorted thought you want to challenge." %>
-      </div>
+  <div class="main-content p-4" data-controller="unsaved-changes">
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <%= link_to "Exploring",
+            edit_alternative_thought_path(@alternative_thought, section: "exploring"),
+            class: "nav-link #{'active' if @section == 'exploring'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Patterns",
+            edit_alternative_thought_path(@alternative_thought, section: "patterns"),
+            class: "nav-link #{'active' if @section == 'patterns'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Alternative",
+            edit_alternative_thought_path(@alternative_thought, section: "alternative"),
+            class: "nav-link #{'active' if @section == 'alternative'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Re-Rate",
+            edit_alternative_thought_path(@alternative_thought, section: "rerate"),
+            class: "nav-link #{'active' if @section == 'rerate'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Emotions",
+            edit_alternative_thought_path(@alternative_thought, section: "emotions_after"),
+            class: "nav-link #{'active' if @section == 'emotions_after'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+    </ul>
 
-      <div class="mb-4">
-        <%= f.input :balanced_thought,
-            as: :text,
-            label: "Balanced Thought",
-            input_html: { rows: 4, class: "form-control" },
-            hint: "Write a more balanced, realistic alternative to the unbalanced thought." %>
-      </div>
-
-      <div class="d-flex gap-2">
-        <%= f.button :submit, "Save", class: "btn btn-primary" %>
-        <%= link_to "Cancel", @alternative_thought, class: "btn btn-outline-secondary", data: { turbo_frame: "main_content" } %>
-      </div>
-    <% end %>
+    <%= render "form_#{@section}" %>
   </div>
 <% end %>

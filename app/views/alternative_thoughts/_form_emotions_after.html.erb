@@ -1,0 +1,55 @@
+<%= render "shared/stuck_point_context", stuck_point: @stuck_point %>
+
+<%= simple_form_for @alternative_thought, data: { turbo_frame: "main_content" } do |f| %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white py-2">
+      <h5 class="mb-0">Emotion(s)</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small mb-4">
+        Now what do you feel? Rate how strongly you feel each emotion from 0 to 10.
+      </p>
+
+      <div class="row">
+        <% AlternativeThought::EMOTIONS.each do |emotion| %>
+          <% intensity = @alternative_thought.emotion_after_intensity(emotion) || 0 %>
+          <div class="col-md-6 mb-3" data-controller="emotion-slider">
+            <div class="emotion-slider-header">
+              <label for="emotions_after_<%= emotion %>" class="form-label mb-0">
+                <%= emotion.capitalize %>
+              </label>
+              <span class="badge <%= intensity > 0 ? 'bg-primary' : 'bg-secondary' %>"
+                    data-emotion-slider-target="badge">
+                <%= intensity %>
+              </span>
+            </div>
+            <input type="range"
+                   name="alternative_thought[emotions_after][<%= emotion %>]"
+                   id="emotions_after_<%= emotion %>"
+                   min="0" max="10"
+                   value="<%= intensity %>"
+                   class="form-range w-100"
+                   autocomplete="off"
+                   data-emotion-slider-target="slider"
+                   data-action="input->emotion-slider#updateBadge">
+          </div>
+        <% end %>
+      </div>
+
+      <% if @alternative_thought.emotions_before.present? && @alternative_thought.emotions_before.any? %>
+        <div class="alert alert-info mt-3">
+          <strong>Initial emotions for comparison:</strong>
+          <div class="mt-2">
+            <% @alternative_thought.emotions_before.select { |e| e['intensity'].to_i > 0 }.each do |emotion_data| %>
+              <span class="badge bg-secondary me-1">
+                <%= emotion_data['emotion'].capitalize %>: <%= emotion_data['intensity'] %>%
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "shared/form_actions", f: f, cancel_path: @alternative_thought %>
+<% end %>

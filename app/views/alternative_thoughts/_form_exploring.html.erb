@@ -1,0 +1,65 @@
+<%= render "shared/stuck_point_context", stuck_point: @stuck_point %>
+
+<%= simple_form_for @alternative_thought, data: { turbo_frame: "main_content" } do |f| %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white py-2">
+      <h5 class="mb-0">Exploring Thoughts</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small mb-4">
+        Use these exploring questions to examine your stuck point. Consider whether the thought is balanced and factual or extreme.
+      </p>
+
+      <div class="mb-4">
+        <%= f.input :exploring_evidence_against,
+            as: :text,
+            label: "Evidence against?",
+            input_html: { rows: 3, class: "form-control", placeholder: "What evidence contradicts this stuck point?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :exploring_missing_info,
+            as: :text,
+            label: "What information is not included?",
+            input_html: { rows: 3, class: "form-control", placeholder: "What relevant facts might you be overlooking?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :exploring_all_or_none,
+            as: :text,
+            label: "All or none? Extreme?",
+            input_html: { rows: 3, class: "form-control", placeholder: "Does this thought use absolute terms like 'always', 'never', 'everyone'?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :exploring_focused_one_piece,
+            as: :text,
+            label: "Focused on just one piece of the event?",
+            input_html: { rows: 3, class: "form-control", placeholder: "Are you only seeing part of what happened?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :exploring_questionable_source,
+            as: :text,
+            label: "Questionable source of information?",
+            input_html: { rows: 3, class: "form-control", placeholder: "Where did this belief come from? Is that source reliable?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :exploring_confusing_probability,
+            as: :text,
+            label: "Confusing possible with unlikely?",
+            input_html: { rows: 3, class: "form-control", placeholder: "Just because something is possible, does that make it likely?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :exploring_feelings_or_facts,
+            as: :text,
+            label: "Based on feelings or facts?",
+            input_html: { rows: 3, class: "form-control", placeholder: "Is this belief based on emotions or objective evidence?" } %>
+      </div>
+    </div>
+  </div>
+
+  <%= render "shared/form_actions", f: f, cancel_path: @alternative_thought %>
+<% end %>

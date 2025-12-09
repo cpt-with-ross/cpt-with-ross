@@ -1,0 +1,51 @@
+<%= render "shared/stuck_point_context", stuck_point: @stuck_point %>
+
+<%= simple_form_for @alternative_thought, data: { turbo_frame: "main_content" } do |f| %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white py-2">
+      <h5 class="mb-0">Thinking Patterns</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small mb-4">
+        Use these thinking patterns to decide whether your stuck point matches one of the patterns and explain why.
+      </p>
+
+      <div class="mb-4">
+        <%= f.input :pattern_jumping_to_conclusions,
+            as: :text,
+            label: "Jumping to conclusions",
+            input_html: { rows: 3, class: "form-control", placeholder: "Are you making assumptions without enough evidence?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :pattern_ignoring_important_parts,
+            as: :text,
+            label: "Ignoring important parts",
+            input_html: { rows: 3, class: "form-control", placeholder: "Are you overlooking key information that doesn't fit the stuck point?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :pattern_oversimplifying,
+            as: :text,
+            label: "Oversimplifying/overgeneralizing",
+            input_html: { rows: 3, class: "form-control", placeholder: "Are you making broad conclusions from limited information?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :pattern_mind_reading,
+            as: :text,
+            label: "Mind reading",
+            input_html: { rows: 3, class: "form-control", placeholder: "Are you assuming you know what others think or feel?" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :pattern_emotional_reasoning,
+            as: :text,
+            label: "Emotional reasoning",
+            input_html: { rows: 3, class: "form-control", placeholder: "Are you treating feelings as facts? ('I feel it, so it must be true')" } %>
+      </div>
+    </div>
+  </div>
+
+  <%= render "shared/form_actions", f: f, cancel_path: @alternative_thought %>
+<% end %>

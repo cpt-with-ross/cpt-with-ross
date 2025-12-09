@@ -1,27 +1,29 @@
 # frozen_string_literal: true
 
 # =============================================================================
-# AlternativeThoughtsController - Managing Balanced Thought Challenges
+# AlternativeThoughtsController - Managing Challenging Questions Worksheets
 # =============================================================================
 #
-# Alternative Thoughts are a CPT tool for cognitive restructuring. Once a stuck
-# point is identified and analyzed via ABC worksheets, users create alternative
-# thoughts that challenge and balance the original belief.
+# Alternative Thoughts Worksheets guide users through cognitive restructuring
+# by examining stuck points through exploring questions and thinking patterns,
+# then developing more balanced alternative thoughts.
 #
-# Structure:
-# - Unbalanced Thought: The original stuck point / automatic thought
-# - Balanced Thought: A more realistic, helpful perspective
-#
-# This helps users move from all-or-nothing thinking (e.g., "I can never trust
-# anyone") to balanced perspectives (e.g., "While some people have hurt me,
-# I can learn to evaluate trustworthiness over time").
+# Sections (matching PDF):
+# - D. Exploring Thoughts: 7 questions to examine the stuck point
+# - E. Thinking Patterns: 5 cognitive distortion patterns
+# - F. Alternative Thought: New balanced thought with belief rating
+# - G. Re-rate Stuck Point: Updated belief in original thought
+# - H. Emotions After: Final emotional state after worksheet
 #
 class AlternativeThoughtsController < ApplicationController
   include InlineFormRenderable
   include StuckPointChildResource
 
+  SECTIONS = %w[exploring patterns alternative rerate emotions_after].freeze
+
   before_action :set_alternative_thought, only: %i[show edit update destroy]
   before_action :set_thought_focus, only: %i[show edit]
+  before_action :set_section, only: %i[edit]
 
   # Renders the show view within the main_content Turbo Frame
   def show
@@ -32,13 +34,13 @@ class AlternativeThoughtsController < ApplicationController
     @alternative_thought = @stuck_point.alternative_thoughts.build
     render_inline_form @alternative_thought,
                        url: stuck_point_alternative_thoughts_path(@stuck_point),
-                       placeholder: 'Alternative Thought Title...',
+                       placeholder: 'Name your new Alternative Thoughts Worksheet (Optional)...',
                        frame_id: "new_at_frame_#{@stuck_point.id}",
                        attribute_name: :title
   end
 
   # Dual behavior based on requesting Turbo Frame:
-  # - main_content: Full edit form in center panel
+  # - main_content: Full edit form in center panel (with section tabs)
   # - title_frame: Inline title edit in sidebar
   def edit
     if turbo_frame_request_id == 'main_content'
@@ -46,7 +48,7 @@ class AlternativeThoughtsController < ApplicationController
     else
       render_inline_form @alternative_thought,
                          url: alternative_thought_path(@alternative_thought),
-                         placeholder: 'Alternative Thought Title...',
+                         placeholder: 'Name your new Alternative Thoughts Worksheet (Optional)...',
                          frame_id: dom_id(@alternative_thought, :title_frame),
                          attribute_name: :title
     end
@@ -64,7 +66,7 @@ class AlternativeThoughtsController < ApplicationController
         render turbo_stream: [
           turbo_stream.append("at_list_#{@stuck_point.id}",
                               partial: 'shared/file_sidebar_item',
-                              locals: { item: @alternative_thought }),
+                              locals: { item: @alternative_thought, is_active: true }),
           turbo_stream.update("new_at_frame_#{@stuck_point.id}", ''),
           turbo_stream.update('main_content',
                               partial: 'alternative_thoughts/show_content',
@@ -75,34 +77,44 @@ class AlternativeThoughtsController < ApplicationController
     else
       render_inline_form @alternative_thought,
                          url: stuck_point_alternative_thoughts_path(@stuck_point),
-                         placeholder: 'Alternative Thought Title...',
+                         placeholder: 'Name your new Alternative Thoughts Worksheet (Optional)...',
                          frame_id: "new_at_frame_#{@stuck_point.id}",
                          attribute_name: :title,
                          status: :unprocessable_content
     end
   end
 
-  # Updates the alternative thought and refreshes both sidebar and main content
+  # Updates the alternative thought. Refreshes main content for full edit form
+  # or sidebar rename when currently viewing this thought.
   def update
     if @alternative_thought.update(alternative_thought_params)
       respond_with_turbo_or_redirect do
-        render turbo_stream: [
+        sidebar_rename = turbo_frame_request_id == dom_id(@alternative_thought, :title_frame)
+        viewing_self = viewing_self?(alternative_thought_path(@alternative_thought))
+
+        streams = [
           turbo_stream.replace(
             dom_id(@alternative_thought, :title_frame),
             partial: 'shared/file_sidebar_title',
-            locals: { item: @alternative_thought }
-          ),
-          turbo_stream.update(
+            locals: { item: @alternative_thought, is_active: viewing_self }
+          )
+        ]
+
+        # Update main content if: full edit form OR viewing this thought
+        if !sidebar_rename || viewing_self
+          streams << turbo_stream.update(
             'main_content',
             partial: 'alternative_thoughts/show_content',
             locals: { alternative_thought: @alternative_thought, stuck_point: @stuck_point }
           )
-        ]
+        end
+
+        render turbo_stream: streams
       end
     else
       render_inline_form @alternative_thought,
                          url: alternative_thought_path(@alternative_thought),
-                         placeholder: 'Alternative Thought Title...',
+                         placeholder: 'Name your new Alternative Thoughts Worksheet (Optional)...',
                          frame_id: dom_id(@alternative_thought, :title_frame),
                          attribute_name: :title,
                          status: :unprocessable_content
@@ -125,11 +137,35 @@ class AlternativeThoughtsController < ApplicationController
   end
 
   def alternative_thought_params
-    params.require(:alternative_thought).permit(:title, :unbalanced_thought, :balanced_thought)
+    params.require(:alternative_thought).permit(
+      :title, :alternative_thought,
+      # Section B: Stuck point belief
+      :stuck_point_belief_before,
+      # Section D: Exploring thoughts (7 questions)
+      :exploring_evidence_against, :exploring_missing_info, :exploring_all_or_none,
+      :exploring_focused_one_piece, :exploring_questionable_source,
+      :exploring_confusing_probability, :exploring_feelings_or_facts,
+      # Section E: Thinking patterns (5 patterns)
+      :pattern_jumping_to_conclusions, :pattern_ignoring_important_parts,
+      :pattern_oversimplifying, :pattern_mind_reading, :pattern_emotional_reasoning,
+      # Section F: Alternative thought belief
+      :alternative_thought_belief,
+      # Section G: Re-rated stuck point
+      :stuck_point_belief_after,
+      # Section C & H: Emotions (jsonb)
+      emotions_before: {},
+      emotions_after: {}
+    )
   end
 
   # Sets focus context for AI chat when viewing this alternative thought
   def set_thought_focus
     set_focus_context(:alternative_thought, @alternative_thought.id)
+  end
+
+  # Sets the current section for tabbed editing
+  def set_section
+    @section = params[:section].presence || 'exploring'
+    @section = 'exploring' unless SECTIONS.include?(@section)
   end
 end

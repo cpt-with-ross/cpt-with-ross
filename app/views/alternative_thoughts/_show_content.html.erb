@@ -1,7 +1,6 @@
-<div data-controller="current-path" data-current-path-path-value="<%= alternative_thought_path(alternative_thought) %>"></div>
-
-<%= render "shared/page_header",
+<%= render "shared/resource_show_content",
+    resource_path: alternative_thought_path(alternative_thought),
     parents: [stuck_point.index_event.title, stuck_point.statement.truncate(30), "Alternative Thoughts"],
-    title: alternative_thought.title %>
-
-<%= render "alternative_thoughts/alternative_thought", alternative_thought: alternative_thought %>
+    title: alternative_thought.title,
+    partial_path: "alternative_thoughts/alternative_thought",
+    locals: { alternative_thought: alternative_thought } %>
