@@ -86,3 +86,7 @@ gem 'neighbor'
 
 # Markdown rendering for chat messages
 gem 'redcarpet'
+
+# PDF generation
+gem 'prawn'
+gem 'prawn-table'

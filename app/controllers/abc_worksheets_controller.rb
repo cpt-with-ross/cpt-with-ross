@@ -20,7 +20,7 @@ class AbcWorksheetsController < ApplicationController
   include InlineFormRenderable
   include StuckPointChildResource
 
-  before_action :set_abc_worksheet, only: %i[show edit update destroy]
+  before_action :set_abc_worksheet, only: %i[show edit update destroy pdf email]
   before_action :set_worksheet_focus, only: %i[show edit]
 
   # Renders the show view within the main_content Turbo Frame
@@ -130,6 +130,38 @@ class AbcWorksheetsController < ApplicationController
   # Deletes worksheet with fallback handling from StuckPointChildResource
   def destroy
     destroy_with_fallback(@abc_worksheet, abc_worksheet_path(@abc_worksheet))
+  end
+
+  # Generates and downloads a PDF of the worksheet
+  # Use ?print=true for inline display (print preview)
+  # Default is attachment (download)
+  def pdf
+    pdf_content = WorksheetPdfGenerator.new(@abc_worksheet).generate
+    filename = "#{@abc_worksheet.title.parameterize}-#{Date.current}.pdf"
+
+    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
+
+    send_data pdf_content,
+              filename: filename,
+              type: 'application/pdf',
+              disposition: disposition
+  end
+
+  # Emails the worksheet PDF to the user
+  def email
+    WorksheetMailer.send_worksheet(current_user, @abc_worksheet).deliver_now
+
+    respond_to do |format|
+      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
+      format.html { redirect_to abc_worksheet_path(@abc_worksheet), notice: 'Worksheet emailed successfully!' }
+    end
+  rescue StandardError => e
+    respond_to do |format|
+      format.json { render json: { error: 'Failed to send email.' }, status: :unprocessable_entity }
+      format.html do
+        redirect_to abc_worksheet_path(@abc_worksheet), alert: 'Failed to send email. Please try again.'
+      end
+    end
   end
 
   private

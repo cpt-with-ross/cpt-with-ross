@@ -21,7 +21,7 @@ class AlternativeThoughtsController < ApplicationController
 
   SECTIONS = %w[exploring patterns alternative rerate emotions_after].freeze
 
-  before_action :set_alternative_thought, only: %i[show edit update destroy]
+  before_action :set_alternative_thought, only: %i[show edit update destroy pdf email]
   before_action :set_thought_focus, only: %i[show edit]
   before_action :set_section, only: %i[edit]
 
@@ -124,6 +124,40 @@ class AlternativeThoughtsController < ApplicationController
   # Deletes thought with fallback handling from StuckPointChildResource
   def destroy
     destroy_with_fallback(@alternative_thought, alternative_thought_path(@alternative_thought))
+  end
+
+  # Generates and downloads a PDF of the worksheet
+  # Use ?print=true for inline display (print preview)
+  # Default is attachment (download)
+  def pdf
+    pdf_content = WorksheetPdfGenerator.new(@alternative_thought).generate
+    filename = "#{@alternative_thought.title.parameterize}-#{Date.current}.pdf"
+
+    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
+
+    send_data pdf_content,
+              filename: filename,
+              type: 'application/pdf',
+              disposition: disposition
+  end
+
+  # Emails the worksheet PDF to the user
+  def email
+    WorksheetMailer.send_worksheet(current_user, @alternative_thought).deliver_now
+
+    respond_to do |format|
+      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
+      format.html do
+        redirect_to alternative_thought_path(@alternative_thought), notice: 'Worksheet emailed successfully!'
+      end
+    end
+  rescue StandardError => e
+    respond_to do |format|
+      format.json { render json: { error: 'Failed to send email.' }, status: :unprocessable_entity }
+      format.html do
+        redirect_to alternative_thought_path(@alternative_thought), alert: 'Failed to send email. Please try again.'
+      end
+    end
   end
 
   private

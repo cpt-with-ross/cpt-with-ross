@@ -258,6 +258,7 @@ GEM
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pdf-core (0.10.0)
     pg (1.6.2)
     pg (1.6.2-aarch64-linux)
     pg (1.6.2-aarch64-linux-musl)
@@ -269,6 +270,12 @@ GEM
     popper_js (2.11.8)
     pp (0.6.3)
       prettyprint
+    prawn (2.5.0)
+      matrix (~> 0.4)
+      pdf-core (~> 0.10.0)
+      ttfunk (~> 1.8)
+    prawn-table (0.2.2)
+      prawn (>= 1.3.0, < 3.0.0)
     prettyprint (0.2.0)
     prism (1.6.0)
     psych (5.2.6)
@@ -413,6 +420,8 @@ GEM
     tilt (2.6.1)
     timeout (0.4.4)
     tsort (0.2.0)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     turbo-rails (2.0.20)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
@@ -465,6 +474,8 @@ DEPENDENCIES
   neighbor
   pg (~> 1.1)
   pgvector (~> 0.3.2)
+  prawn
+  prawn-table
   puma (>= 5.0)
   rails (~> 7.1.6)
   redcarpet

@@ -17,8 +17,18 @@ Rails.application.routes.draw do
   resources :index_events, shallow: true, only: %i[new create show edit update destroy] do
     resource :baseline, only: %i[show edit update]
     resources :stuck_points, only: %i[new create show edit update destroy] do
-      resources :abc_worksheets, only: %i[new create show edit update destroy]
-      resources :alternative_thoughts, only: %i[new create show edit update destroy]
+      resources :abc_worksheets, only: %i[new create show edit update destroy] do
+        member do
+          get :pdf
+          post :email
+        end
+      end
+      resources :alternative_thoughts, only: %i[new create show edit update destroy] do
+        member do
+          get :pdf
+          post :email
+        end
+      end
     end
   end
 end
