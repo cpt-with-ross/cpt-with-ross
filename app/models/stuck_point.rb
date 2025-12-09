@@ -22,10 +22,21 @@ class StuckPoint < ApplicationRecord
   has_many :abc_worksheets, dependent: :destroy, inverse_of: :stuck_point
   has_many :alternative_thoughts, dependent: :destroy, inverse_of: :stuck_point
 
-  validates :statement, presence: true
+  validates :index_event, presence: true
 
-  # Alias for consistent interface with other sidebar resources
-  def title
-    statement
+  # Provides the statement with fallback to "Stuck Point #N" if not set.
+  # For new records, returns the raw attribute to allow empty display.
+  def statement
+    return self[:statement] if new_record?
+
+    self[:statement].presence || "Stuck Point ##{id}"
+  end
+
+  # Syncs the statement to all ABC worksheets' beliefs field.
+  # Optionally excludes a specific worksheet (e.g., the one just updated).
+  def sync_beliefs_to_worksheets(except_id: nil)
+    scope = abc_worksheets
+    scope = scope.where.not(id: except_id) if except_id
+    scope.find_each { |ws| ws.update(beliefs: statement) }
   end
 end

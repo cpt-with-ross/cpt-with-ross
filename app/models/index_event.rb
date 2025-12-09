@@ -13,19 +13,27 @@
 #
 # Hierarchy:
 #   IndexEvent
-#   ├── ImpactStatement (1:1, auto-created)
+#   ├── Baseline (1:1, auto-created)
 #   └── StuckPoints[] (1:many)
 #       ├── AbcWorksheets[]
 #       └── AlternativeThoughts[]
 #
 class IndexEvent < ApplicationRecord
   belongs_to :user, inverse_of: :index_events
-  has_one :impact_statement, dependent: :destroy, inverse_of: :index_event
+  has_one :baseline, dependent: :destroy, inverse_of: :index_event
   has_many :stuck_points, dependent: :destroy, inverse_of: :index_event
 
-  validates :title, presence: true
+  validates :user, presence: true
 
-  # Every IndexEvent requires an ImpactStatement - auto-create on save to
+  # Every IndexEvent requires a Baseline - auto-create on save to
   # ensure the CPT workflow can proceed immediately after event creation.
-  after_create :create_impact_statement
+  after_create :create_baseline
+
+  # Provides a display title, falling back to "Index Event #N" if not set.
+  # For new records, returns the raw attribute to allow empty display.
+  def title
+    return self[:title] if new_record?
+
+    self[:title].presence || "Index Event ##{id}"
+  end
 end

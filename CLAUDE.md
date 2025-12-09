@@ -44,7 +44,7 @@ The core CPT therapy workflow follows a hierarchical structure:
 ```
 User (Devise auth)
   └── IndexEvent (traumatic event being processed)
-        ├── ImpactStatement (1:1, auto-created with IndexEvent)
+        ├── Baseline (1:1, auto-created with IndexEvent)
         └── StuckPoint[] (negative thoughts/beliefs)
               ├── AbcWorksheet[] (A-B-C cognitive worksheets)
               └── AlternativeThought[] (balanced thought challenges)

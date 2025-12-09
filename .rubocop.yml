@@ -35,6 +35,8 @@ Metrics/MethodLength:
   Enabled: false
 Metrics/AbcSize:
   Enabled: false
+Metrics/ClassLength:
+  Enabled: false
 Style/MutableConstant:
   Enabled: false
 Metrics/CyclomaticComplexity:

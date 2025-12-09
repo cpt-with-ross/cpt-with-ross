@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
     t.text "activating_event"
     t.text "beliefs"
     t.text "consequences"
+    t.jsonb "emotions", default: []
     t.bigint "stuck_point_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -56,12 +57,62 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
 
   create_table "alternative_thoughts", force: :cascade do |t|
     t.string "title"
-    t.text "unbalanced_thought"
-    t.text "balanced_thought"
+    t.text "alternative_thought"
     t.bigint "stuck_point_id", null: false
+    t.integer "stuck_point_belief_before"
+    t.jsonb "emotions_before", default: []
+    t.text "exploring_evidence_against"
+    t.text "exploring_feelings_or_facts"
+    t.text "exploring_missing_info"
+    t.text "exploring_all_or_none"
+    t.text "exploring_questionable_source"
+    t.text "exploring_focused_one_piece"
+    t.text "exploring_confusing_probability"
+    t.text "pattern_jumping_to_conclusions"
+    t.text "pattern_ignoring_important_parts"
+    t.text "pattern_oversimplifying"
+    t.text "pattern_mind_reading"
+    t.text "pattern_emotional_reasoning"
+    t.integer "alternative_thought_belief"
+    t.integer "stuck_point_belief_after"
+    t.jsonb "emotions_after", default: []
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stuck_point_id"], name: "index_alternative_thoughts_on_stuck_point_id"
+  end
+
+  create_table "baselines", force: :cascade do |t|
+    t.text "statement"
+    t.bigint "index_event_id", null: false
+    t.text "event_description"
+    t.string "time_since_event"
+    t.boolean "involved_death_injury_violence"
+    t.string "experience_type"
+    t.text "experience_other_description"
+    t.string "death_cause_type"
+    t.integer "pcl_disturbing_memories"
+    t.integer "pcl_disturbing_dreams"
+    t.integer "pcl_flashbacks"
+    t.integer "pcl_upset_reminders"
+    t.integer "pcl_physical_reactions"
+    t.integer "pcl_avoiding_memories"
+    t.integer "pcl_avoiding_reminders"
+    t.integer "pcl_trouble_remembering"
+    t.integer "pcl_negative_beliefs"
+    t.integer "pcl_blaming"
+    t.integer "pcl_negative_feelings"
+    t.integer "pcl_loss_of_interest"
+    t.integer "pcl_feeling_distant"
+    t.integer "pcl_trouble_positive_feelings"
+    t.integer "pcl_irritable_behavior"
+    t.integer "pcl_risky_behavior"
+    t.integer "pcl_super_alert"
+    t.integer "pcl_jumpy"
+    t.integer "pcl_difficulty_concentrating"
+    t.integer "pcl_sleep_trouble"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["index_event_id"], name: "index_baselines_on_index_event_id"
   end
 
   create_table "chats", force: :cascade do |t|
@@ -71,14 +122,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
     t.bigint "user_id", null: false
     t.index ["model_id"], name: "index_chats_on_model_id"
     t.index ["user_id"], name: "index_chats_on_user_id"
-  end
-
-  create_table "impact_statements", force: :cascade do |t|
-    t.text "statement"
-    t.bigint "index_event_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["index_event_id"], name: "index_impact_statements_on_index_event_id"
   end
 
   create_table "index_events", force: :cascade do |t|
@@ -273,9 +316,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
 
   create_table "stuck_points", force: :cascade do |t|
     t.text "statement"
-    t.text "belief"
-    t.string "belief_type"
-    t.boolean "resolved"
+    t.boolean "resolved", default: false, null: false
     t.bigint "index_event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -310,9 +351,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "alternative_thoughts", "stuck_points"
+  add_foreign_key "baselines", "index_events"
   add_foreign_key "chats", "models"
   add_foreign_key "chats", "users"
-  add_foreign_key "impact_statements", "index_events"
   add_foreign_key "index_events", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
