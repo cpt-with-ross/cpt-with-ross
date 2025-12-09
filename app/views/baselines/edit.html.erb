@@ -1,0 +1,33 @@
+<%= turbo_frame_tag "main_content" do %>
+  <div data-controller="current-path" data-current-path-path-value="<%= index_event_baseline_path(@index_event) %>"></div>
+
+  <%= render "shared/page_header",
+      parents: @index_event.title,
+      title: "Edit Baseline",
+      show_close: false %>
+
+  <div class="main-content p-4" data-controller="unsaved-changes">
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <%= link_to "Baseline Checklist",
+            edit_index_event_baseline_path(@index_event, section: "checklist"),
+            class: "nav-link #{'active' if @section == 'checklist'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "PCL-5",
+            edit_index_event_baseline_path(@index_event, section: "pcl"),
+            class: "nav-link #{'active' if @section == 'pcl'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Impact Statement",
+            edit_index_event_baseline_path(@index_event, section: "statement"),
+            class: "nav-link #{'active' if @section == 'statement'}",
+            data: { turbo_frame: "main_content" } %>
+      </li>
+    </ul>
+
+    <%= render "form_#{@section}" %>
+  </div>
+<% end %>

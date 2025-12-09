@@ -1,0 +1,131 @@
+<%= tag.div id: dom_id(baseline) do %>
+  <%# ================================================================== %>
+  <%# Section 1: Baseline PTSD Checklist - Event Identification %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Baseline PTSD Checklist</h5>
+      <%= link_to edit_index_event_baseline_path(baseline.index_event, section: "checklist"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if baseline.event_description.present? %>
+        <div class="mb-3">
+          <strong>Worst event:</strong>
+          <p class="mb-0"><%= simple_format(baseline.event_description) %></p>
+        </div>
+
+        <% if baseline.time_since_event.present? %>
+          <div class="mb-3">
+            <strong>How long ago:</strong> <%= baseline.time_since_event %>
+          </div>
+        <% end %>
+
+        <% unless baseline.involved_death_injury_violence.nil? %>
+          <div class="mb-3">
+            <strong>Involved death, serious injury, or sexual violence:</strong>
+            <%= baseline.involved_death_injury_violence ? "Yes" : "No" %>
+          </div>
+        <% end %>
+
+        <% if baseline.experience_type.present? %>
+          <div class="mb-3">
+            <strong>How experienced:</strong>
+            <%= Baseline::EXPERIENCE_TYPES[baseline.experience_type] %>
+            <% if baseline.experience_type == "other" && baseline.experience_other_description.present? %>
+              <p class="mb-0 ms-3"><%= baseline.experience_other_description %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <% if baseline.death_cause_type.present? %>
+          <div class="mb-3">
+            <strong>Death cause:</strong>
+            <%= Baseline::DEATH_CAUSE_TYPES[baseline.death_cause_type] %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">No event details recorded yet. Click Edit to begin.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ================================================================== %>
+  <%# Section 2: PCL-5 Symptom Checklist %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">PTSD Symptom Checklist (PCL-5)</h5>
+      <%= link_to edit_index_event_baseline_path(baseline.index_event, section: "pcl"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if baseline.pcl_complete? %>
+        <div class="alert alert-info mb-3">
+          <strong>Total Score:</strong> <%= baseline.pcl_total_score %> / 80
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Symptom</th>
+                <th class="text-center" style="width: 120px;">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% Baseline::PCL_QUESTIONS.each_with_index do |(attr, question), index| %>
+                <% score = baseline.send(attr) %>
+                <tr>
+                  <td><%= index + 1 %>. <%= question %></td>
+                  <td class="text-center">
+                    <% if score.present? %>
+                      <span class="badge bg-<%= score >= 3 ? 'danger' : score >= 2 ? 'warning' : 'success' %>">
+                        <%= score %> - <%= Baseline::PCL_SCALE[score] %>
+                      </span>
+                    <% else %>
+                      <span class="text-muted">-</span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">PCL-5 checklist not completed. Click Edit to fill out the symptom checklist.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ================================================================== %>
+  <%# Section 3: Impact Statement %>
+  <%# ================================================================== %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Impact Statement</h5>
+      <%= link_to edit_index_event_baseline_path(baseline.index_event, section: "statement"),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if baseline.statement.present? %>
+        <div class="card-text"><%= simple_format(baseline.statement) %></div>
+      <% else %>
+        <p class="text-muted fst-italic mb-0">No impact statement written yet. Click Edit to begin.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <p class="text-muted text-end small">
+    Last updated: <time datetime="<%= baseline.updated_at.iso8601 %>" data-controller="local-time"><%= baseline.updated_at.strftime("%B %d, %Y at %l:%M %p") %></time>
+  </p>
+<% end %>

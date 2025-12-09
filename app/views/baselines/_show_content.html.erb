@@ -1,0 +1,6 @@
+<%= render "shared/resource_show_content",
+    resource_path: index_event_baseline_path(index_event),
+    parents: index_event.title,
+    title: "Baseline",
+    partial_path: "baselines/baseline",
+    locals: { baseline: baseline } %>

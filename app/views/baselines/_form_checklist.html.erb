@@ -1,0 +1,65 @@
+<%= simple_form_for [@index_event, @baseline],
+    url: index_event_baseline_path(@index_event, section: 'checklist'),
+    data: { turbo_frame: "main_content" } do |f| %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0">Baseline PTSD Checklist</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted mb-4">
+        <em>Instructions:</em> This questionnaire asks about problems you may have had after a very stressful experience
+        involving actual or threatened death, serious injury, or sexual violence. It could be something that happened to
+        you directly, something you witnessed, or something you learned happened to a close family member or close friend.
+      </p>
+
+      <div class="mb-4">
+        <%= f.input :event_description,
+            as: :text,
+            label: "Briefly identify the worst event:",
+            input_html: { rows: 3, class: "form-control" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :time_since_event,
+            label: "How long ago did it happen?",
+            input_html: { class: "form-control" } %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :involved_death_injury_violence,
+            as: :radio_buttons,
+            label: "Did it involve actual or threatened death, serious injury, or sexual violence?",
+            collection: [["Yes", true], ["No", false]],
+            wrapper: :vertical_collection %>
+      </div>
+
+      <div class="mb-4" data-controller="conditional-field" data-conditional-field-show-value="other">
+        <%= f.input :experience_type,
+            as: :radio_buttons,
+            label: "How did you experience it?",
+            collection: Baseline::EXPERIENCE_TYPES.map { |k, v| [v, k] },
+            wrapper: :vertical_collection %>
+
+        <div class="ms-4 mt-3 <%= 'd-none' unless @baseline.experience_type == 'other' %>" data-conditional-field-target="field">
+          <%= f.input :experience_other_description,
+              as: :text,
+              label: false,
+              input_html: { rows: 2, class: "form-control", placeholder: "Please describe..." } %>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :death_cause_type,
+            as: :radio_buttons,
+            label: "If the event involved the death of a close family member or close friend, was it due to some kind of accident or violence, or was it due to natural causes?",
+            collection: Baseline::DEATH_CAUSE_TYPES.map { |k, v| [v, k] },
+            wrapper: :vertical_collection %>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.button :submit, "Save", class: "btn btn-primary" %>
+        <%= link_to "Cancel", index_event_baseline_path(@index_event), class: "btn btn-outline-secondary", data: { turbo_frame: "main_content" } %>
+      </div>
+    </div>
+  </div>
+<% end %>

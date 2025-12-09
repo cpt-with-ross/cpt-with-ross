@@ -1,0 +1,48 @@
+<%= simple_form_for [@index_event, @baseline],
+    url: index_event_baseline_path(@index_event, section: 'statement'),
+    data: { turbo_frame: "main_content" } do |f| %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0">Impact Statement</h5>
+    </div>
+    <div class="card-body">
+      <p class="mb-3">
+        Please write at least one page on <em>why</em> you think your worst traumatic event occurred.
+        You are <em>not</em> being asked to write specifics about the traumatic event. Write about what
+        you have been thinking about the <em>cause</em> of the worst event.
+      </p>
+
+      <div class="mb-4">
+        <p class="fw-semibold mb-2">Here are some questions that might be helpful to consider as you write about the cause of the event:</p>
+        <ul class="mb-0">
+          <li>Who have you been thinking is to blame for this event?</li>
+          <li>Have you been thinking of things you should have done differently? If so, what?</li>
+          <li>Have you been thinking of things other people should have done differently? If so, what?</li>
+          <li>Have you been thinking the event could have been prevented? If so, how?</li>
+          <li>Why do you think this event happened to you (versus to someone else)?</li>
+          <li>What does it mean about you that this event happened?</li>
+          <li>If the event happened to someone else, why do you think it happened to them (versus to another person)?</li>
+        </ul>
+      </div>
+
+      <div class="mb-4">
+        <i class="fas fa-lightbulb me-2"></i>
+        <strong>Also consider</strong> the effects this traumatic event has had on your beliefs about yourself, others, and the world
+        in the following areas: <strong>safety</strong>, <strong>trust</strong>, <strong>power/control</strong>,
+        <strong>esteem</strong>, and <strong>intimacy</strong>.
+      </div>
+
+      <div class="mb-4">
+        <%= f.input :statement,
+            as: :text,
+            label: "Your Impact Statement",
+            input_html: { rows: 15, class: "form-control", placeholder: "Write your responses to the questions about why the event happened and the effects of the trauma here..." } %>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.button :submit, "Save", class: "btn btn-primary" %>
+        <%= link_to "Cancel", index_event_baseline_path(@index_event), class: "btn btn-outline-secondary", data: { turbo_frame: "main_content" } %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "main_content" do %>
+  <%= render "baselines/show_content",
+      baseline: @baseline,
+      index_event: @index_event %>
+<% end %>
