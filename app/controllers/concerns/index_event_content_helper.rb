@@ -7,8 +7,8 @@
 # This concern handles a complex UX scenario when updating an IndexEvent:
 # The app uses a sidebar navigation pattern where clicking an item loads its
 # content into the main_content frame. When an IndexEvent is updated, we need
-# to check if the user is currently viewing any of its child content (impact
-# statement, worksheets, alternative thoughts) and preserve that view.
+# to check if the user is currently viewing any of its child content (baseline,
+# worksheets, alternative thoughts) and preserve that view.
 #
 # The Problem:
 # When updating an IndexEvent via Turbo Stream, the sidebar re-renders with
@@ -29,7 +29,7 @@ module IndexEventContentHelper
   # Used to determine if the user is currently viewing something that would
   # be affected by an IndexEvent update.
   def build_related_paths(index_event)
-    paths = [index_event_impact_statement_path(index_event)]
+    paths = [index_event_baseline_path(index_event)]
 
     index_event.stuck_points.each do |sp|
       sp.abc_worksheets.each { |ws| paths << abc_worksheet_path(ws) }
@@ -54,16 +54,16 @@ module IndexEventContentHelper
     current_path = params[:current_path]
     return nil if current_path.blank?
 
-    find_impact_statement_content(current_path) ||
+    find_baseline_content(current_path) ||
       find_stuck_point_child_content(current_path)
   end
 
-  # Renders impact statement partial if user is viewing the impact statement
-  def find_impact_statement_content(current_path)
-    return unless current_path == index_event_impact_statement_path(@index_event)
+  # Renders baseline partial if user is viewing the baseline
+  def find_baseline_content(current_path)
+    return unless current_path == index_event_baseline_path(@index_event)
 
-    render_to_string(partial: 'impact_statements/show_content',
-                     locals: { impact_statement: @index_event.impact_statement,
+    render_to_string(partial: 'baselines/show_content',
+                     locals: { baseline: @index_event.baseline,
                                index_event: @index_event })
   end
 

@@ -13,8 +13,8 @@
 #
 # The "destroy_with_fallback" pattern handles an edge case in the SPA-like UI:
 # If the user deletes an item they're currently viewing in the main content
-# area, we need to replace that content with something sensible (the impact
-# statement) rather than leaving a blank space.
+# area, we need to replace that content with something sensible (the baseline)
+# rather than leaving a blank space.
 #
 module StuckPointChildResource
   extend ActiveSupport::Concern
@@ -37,25 +37,32 @@ module StuckPointChildResource
                              .find(params[:stuck_point_id])
   end
 
+  # Checks if the user is currently viewing the given resource path.
+  # Used to determine whether main_content should be updated on sidebar rename.
+  def viewing_self?(resource_path)
+    params[:current_path] == resource_path
+  end
+
   # Deletes a resource and handles the edge case where the user is viewing
   # the item they just deleted. In that case, replaces the main content with
-  # the impact statement as a sensible fallback.
+  # the baseline as a sensible fallback.
   #
-  # The current_path param is tracked by the frame_tracker Stimulus controller
-  # so we know what content the user is currently viewing.
+  # The current_path param is sent via the delete_with_context controller
+  # which reads from sessionStorage to know what content the user is viewing.
   def destroy_with_fallback(resource, resource_path)
     index_event = @stuck_point.index_event
-    viewing_self = params[:current_path] == resource_path
+    viewing_self = viewing_self?(resource_path)
     resource.destroy
 
     respond_to do |format|
       format.turbo_stream do
         streams = [turbo_stream.remove(dom_id(resource))]
-        # If user was viewing the deleted item, show impact statement instead
+        # If user was viewing the deleted item, show baseline instead
         if viewing_self
           streams << turbo_stream.update('main_content',
-                                         partial: 'impact_statements/impact_statement',
-                                         locals: { impact_statement: index_event.impact_statement })
+                                         partial: 'baselines/show_content',
+                                         locals: { baseline: index_event.baseline,
+                                                   index_event: index_event })
         end
         render turbo_stream: streams
       end

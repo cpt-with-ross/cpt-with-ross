@@ -1,0 +1,4 @@
+<div class="d-flex gap-2">
+  <%= f.button :submit, local_assigns[:submit_text] || "Save", class: "btn btn-primary" %>
+  <%= link_to "Cancel", cancel_path, class: "btn btn-outline-secondary", data: { turbo_frame: "main_content" } %>
+</div>

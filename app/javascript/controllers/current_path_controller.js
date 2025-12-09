@@ -1,15 +1,10 @@
 /**
  * =============================================================================
- * CurrentPathController - Path Tracking for Turbo Stream Updates
+ * CurrentPathController - Path Tracking for Main Content
  * =============================================================================
  *
- * A lightweight controller that updates the tracked current path when content
- * is rendered. Used in partials that are delivered via Turbo Streams to ensure
- * path tracking stays synchronized.
- *
- * This complements FrameTrackerController:
- * - FrameTrackerController: Tracks navigations via frame src changes
- * - CurrentPathController: Tracks updates via Turbo Stream rendering
+ * Marks the current path of content displayed in main_content. The sidebar
+ * highlight controller reads this to determine which sidebar item to highlight.
  *
  * Usage: data-controller="current-path" data-current-path-path-value="/some/path"
  */
@@ -22,14 +17,8 @@ export default class extends Controller {
 
   connect() {
     if (this.hasPathValue && this.pathValue) {
-      // Update sessionStorage for form submissions
+      // Update sessionStorage for form submissions (delete context tracking)
       sessionStorage.setItem('mainContentCurrentPath', this.pathValue);
-
-      // Update frame dataset for consistency with other tracking methods
-      const frame = document.getElementById('main_content');
-      if (frame) {
-        frame.dataset.currentPath = this.pathValue;
-      }
     }
   }
 }

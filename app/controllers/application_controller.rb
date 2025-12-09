@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   # This tells the AI chat what therapy item the user is currently viewing.
   #
   # @param type [Symbol] One of: :index_event, :stuck_point, :abc_worksheet,
-  #                      :alternative_thought, :impact_statement
+  #                      :alternative_thought, :baseline
   # @param id [Integer] The ID of the focused record
   def set_focus_context(type, id)
     @focus_context = { type: type.to_s, id: id }
