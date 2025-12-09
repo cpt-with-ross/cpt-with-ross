@@ -23,8 +23,6 @@ class IndexEvent < ApplicationRecord
   has_one :baseline, dependent: :destroy, inverse_of: :index_event
   has_many :stuck_points, dependent: :destroy, inverse_of: :index_event
 
-  validates :user, presence: true
-
   # Every IndexEvent requires a Baseline - auto-create on save to
   # ensure the CPT workflow can proceed immediately after event creation.
   after_create :create_baseline

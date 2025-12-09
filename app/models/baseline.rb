@@ -22,8 +22,6 @@
 class Baseline < ApplicationRecord
   belongs_to :index_event, inverse_of: :baseline
 
-  validates :index_event, presence: true
-
   # Experience type options for how the event was experienced
   EXPERIENCE_TYPES = {
     'direct' => 'It happened to me directly.',

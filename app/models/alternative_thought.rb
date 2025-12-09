@@ -56,7 +56,6 @@ class AlternativeThought < ApplicationRecord
 
   belongs_to :stuck_point, inverse_of: :alternative_thoughts
 
-  validates :stuck_point, presence: true
   validates :stuck_point_belief_before, numericality: { in: 0..100 }, allow_nil: true
   validates :stuck_point_belief_after, numericality: { in: 0..100 }, allow_nil: true
   validates :alternative_thought_belief, numericality: { in: 0..100 }, allow_nil: true

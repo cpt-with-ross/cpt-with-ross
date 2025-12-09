@@ -40,7 +40,6 @@ class AbcWorksheet < ApplicationRecord
 
   belongs_to :stuck_point, inverse_of: :abc_worksheets
 
-  validates :stuck_point, presence: true
   validate :emotions_intensities_within_range
 
   private
