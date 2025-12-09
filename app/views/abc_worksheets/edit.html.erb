@@ -1,32 +1,93 @@
-<%= turbo_frame_tag "main_content", data: { controller: "frame-tracker", frame_tracker_initial_path_value: edit_abc_worksheet_path(@abc_worksheet) } do %>
+<%= turbo_frame_tag "main_content" do %>
+  <div data-controller="current-path" data-current-path-path-value="<%= abc_worksheet_path(@abc_worksheet) %>"></div>
+
   <%= render "shared/page_header",
       parents: [@stuck_point.index_event.title, @stuck_point.statement.truncate(30), "ABC Worksheets"],
-      title: "Edit #{@abc_worksheet.title}" %>
+      title: "Edit #{@abc_worksheet.title}",
+      show_close: false %>
 
-  <div class="card p-4 shadow-sm">
+  <div class="main-content p-4" data-controller="unsaved-changes">
     <%= simple_form_for @abc_worksheet, data: { turbo_frame: "main_content" } do |f| %>
-      <div class="mb-4">
-        <%= f.input :activating_event,
-            as: :text,
-            label: "A - Activating Event",
-            input_html: { rows: 4, class: "form-control" },
-            hint: "Describe the situation or event that triggered your thoughts and feelings." %>
-      </div>
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white text-center py-2">
+          <h5 class="mb-0">ABC Worksheet</h5>
+        </div>
+        <div class="card-body p-0">
+          <%# Header row - Bootstrap flexbox ensures equal heights on xl screens %>
+          <div class="row g-0 d-none d-xl-flex border-bottom bg-light">
+            <div class="col-xl-4 border-end text-center py-2">
+              <%= render "abc_worksheets/column_header", letter: "A", title: "Activating event", description: "Something happens" %>
+            </div>
+            <div class="col-xl-4 border-end text-center py-2">
+              <%= render "abc_worksheets/column_header", letter: "B", title: "Belief/stuck point", description: "I tell myself something" %>
+            </div>
+            <div class="col-xl-4 text-center py-2">
+              <%= render "abc_worksheets/column_header", letter: "C", title: "Consequence", description: "I feel something" %>
+            </div>
+          </div>
 
-      <div class="mb-4">
-        <%= f.input :beliefs,
-            as: :text,
-            label: "B - Beliefs",
-            input_html: { rows: 4, class: "form-control" },
-            hint: "What thoughts or beliefs came up during this event?" %>
-      </div>
+          <div class="row g-0">
+            <div class="col-xl-4 border-end">
+              <div class="d-xl-none text-center border-bottom py-2 bg-light">
+                <%= render "abc_worksheets/column_header", letter: "A", title: "Activating event", description: "Something happens" %>
+              </div>
+              <div class="p-3">
+                <%= f.input :activating_event,
+                    as: :text,
+                    label: false,
+                    input_html: { rows: 8, class: "form-control", placeholder: "Describe the situation or event that triggered your thoughts..." } %>
+              </div>
+            </div>
 
-      <div class="mb-4">
-        <%= f.input :consequences,
-            as: :text,
-            label: "C - Consequences",
-            input_html: { rows: 4, class: "form-control" },
-            hint: "What emotions and behaviors resulted from these beliefs?" %>
+            <div class="col-xl-4 border-end">
+              <div class="d-xl-none text-center border-bottom py-2 bg-light">
+                <%= render "abc_worksheets/column_header", letter: "B", title: "Belief/stuck point", description: "I tell myself something" %>
+              </div>
+              <div class="p-3">
+                <%= f.input :beliefs,
+                    as: :text,
+                    label: false,
+                    input_html: {
+                      rows: 8,
+                      class: "form-control",
+                      placeholder: "What thoughts or beliefs came up during this event?"
+                    } %>
+              </div>
+            </div>
+
+            <div class="col-xl-4">
+              <div class="d-xl-none text-center border-bottom py-2 bg-light">
+                <%= render "abc_worksheets/column_header", letter: "C", title: "Consequence", description: "I feel something" %>
+              </div>
+              <div class="p-3">
+                <div class="small text-muted mb-2">Rate intensity (0 = not felt, 10 = extremely intense):</div>
+                <% AbcWorksheet::EMOTIONS.each do |emotion| %>
+                  <% intensity = @abc_worksheet.emotion_intensity(emotion) || 0 %>
+                  <div class="mb-3" data-controller="emotion-slider">
+                    <div class="emotion-slider-header">
+                      <label for="intensity_<%= emotion %>" class="small fw-medium mb-0">
+                        <%= emotion.capitalize %>
+                      </label>
+                      <span class="badge <%= intensity > 0 ? 'bg-primary' : 'bg-secondary' %>"
+                            data-emotion-slider-target="badge">
+                        <%= intensity %>
+                      </span>
+                    </div>
+                    <input type="range"
+                           name="abc_worksheet[emotions][<%= emotion %>]"
+                           id="intensity_<%= emotion %>"
+                           min="0" max="10"
+                           value="<%= intensity %>"
+                           class="form-range w-100"
+                           autocomplete="off"
+                           data-emotion-slider-target="slider"
+                           data-action="input->emotion-slider#updateBadge">
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="d-flex gap-2">
@@ -35,4 +96,5 @@
       </div>
     <% end %>
   </div>
+
 <% end %>

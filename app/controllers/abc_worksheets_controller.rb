@@ -14,8 +14,7 @@
 #
 # Bidirectional Sync:
 # The worksheet's "beliefs" field mirrors the parent stuck point's statement.
-# When beliefs are updated here, we sync back to the stuck point (and vice
-# versa via UpdateAbcBeliefsJob when stuck point changes).
+# When beliefs are updated here, we sync back to the stuck point.
 #
 class AbcWorksheetsController < ApplicationController
   include InlineFormRenderable
@@ -34,7 +33,7 @@ class AbcWorksheetsController < ApplicationController
     @abc_worksheet = @stuck_point.abc_worksheets.build
     render_inline_form @abc_worksheet,
                        url: stuck_point_abc_worksheets_path(@stuck_point),
-                       placeholder: 'ABC Worksheet Title...',
+                       placeholder: 'Name your new ABC Worksheet (Optional)...',
                        frame_id: "new_abc_frame_#{@stuck_point.id}",
                        attribute_name: :title,
                        hidden_fields: { beliefs: @stuck_point.statement }
@@ -49,7 +48,7 @@ class AbcWorksheetsController < ApplicationController
     else
       render_inline_form @abc_worksheet,
                          url: abc_worksheet_path(@abc_worksheet),
-                         placeholder: 'ABC Worksheet Title...',
+                         placeholder: 'Name your new ABC Worksheet (Optional)...',
                          frame_id: dom_id(@abc_worksheet, :title_frame),
                          attribute_name: :title
     end
@@ -67,7 +66,7 @@ class AbcWorksheetsController < ApplicationController
         render turbo_stream: [
           turbo_stream.append("abc_list_#{@stuck_point.id}",
                               partial: 'shared/file_sidebar_item',
-                              locals: { item: @abc_worksheet }),
+                              locals: { item: @abc_worksheet, is_active: true }),
           turbo_stream.update("new_abc_frame_#{@stuck_point.id}", ''),
           turbo_stream.update('main_content',
                               partial: 'abc_worksheets/show_content',
@@ -78,52 +77,53 @@ class AbcWorksheetsController < ApplicationController
     else
       render_inline_form @abc_worksheet,
                          url: stuck_point_abc_worksheets_path(@stuck_point),
-                         placeholder: 'ABC Worksheet Title...',
+                         placeholder: 'Name your new ABC Worksheet (Optional)...',
                          frame_id: "new_abc_frame_#{@stuck_point.id}",
                          attribute_name: :title,
                          status: :unprocessable_content
     end
   end
 
-  # Updates the worksheet. If beliefs changed, syncs back to the parent stuck
-  # point to maintain consistency across the data model.
+  # Updates the worksheet. Syncs beliefs back to the parent stuck point
+  # to maintain consistency across the data model.
   def update
     if @abc_worksheet.update(abc_worksheet_params)
-      # Bidirectional sync: Update stuck point if beliefs were modified
-      @stuck_point.update(statement: @abc_worksheet.beliefs) if abc_worksheet_params[:beliefs].present?
+      # Bidirectional sync: Update stuck point and all sibling ABC worksheets
+      @stuck_point.update(statement: @abc_worksheet[:beliefs])
+      @stuck_point.sync_beliefs_to_worksheets(except_id: @abc_worksheet.id)
 
       respond_with_turbo_or_redirect do
+        sidebar_rename = turbo_frame_request_id == dom_id(@abc_worksheet, :title_frame)
+        viewing_self = viewing_self?(abc_worksheet_path(@abc_worksheet))
+
         streams = [
           turbo_stream.replace(
             dom_id(@abc_worksheet, :title_frame),
             partial: 'shared/file_sidebar_title',
-            locals: { item: @abc_worksheet }
-          ),
-          turbo_stream.update(
+            locals: { item: @abc_worksheet, is_active: viewing_self }
+          )
+        ]
+
+        # Update main content if: full edit form OR viewing this worksheet
+        if !sidebar_rename || viewing_self
+          streams << turbo_stream.update(
             'main_content',
             partial: 'abc_worksheets/show_content',
             locals: { abc_worksheet: @abc_worksheet, stuck_point: @stuck_point }
           )
-        ]
-
-        # Also update stuck point in sidebar if we synced beliefs
-        if abc_worksheet_params[:beliefs].present?
-          streams << turbo_stream.replace(
-            dom_id(@stuck_point, :title_frame),
-            partial: 'stuck_points/title_button',
-            locals: { stuck_point: @stuck_point }
-          )
         end
+
+        # Always update stuck point in sidebar to reflect beliefs changes
+        streams << turbo_stream.replace(
+          dom_id(@stuck_point, :title_frame),
+          partial: 'stuck_points/title_button',
+          locals: { stuck_point: @stuck_point }
+        )
 
         render turbo_stream: streams
       end
     else
-      render_inline_form @abc_worksheet,
-                         url: abc_worksheet_path(@abc_worksheet),
-                         placeholder: 'ABC Worksheet Title...',
-                         frame_id: dom_id(@abc_worksheet, :title_frame),
-                         attribute_name: :title,
-                         status: :unprocessable_content
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -143,7 +143,19 @@ class AbcWorksheetsController < ApplicationController
   end
 
   def abc_worksheet_params
-    params.require(:abc_worksheet).permit(:title, :activating_event, :beliefs, :consequences)
+    permitted = params.require(:abc_worksheet).permit(:title, :activating_event, :beliefs, :consequences,
+                                                      emotions: AbcWorksheet::EMOTIONS)
+
+    # Convert emotions hash {emotion: intensity} to array [{emotion:, intensity:}]
+    if permitted[:emotions].present?
+      emotions_array = permitted[:emotions].to_h.filter_map do |emotion, intensity|
+        int_val = intensity.to_i
+        { 'emotion' => emotion, 'intensity' => int_val } if int_val.positive?
+      end
+      permitted[:emotions] = emotions_array
+    end
+
+    permitted
   end
 
   # Sets focus context for AI chat when viewing this worksheet
