@@ -316,7 +316,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_05_121901) do
 
   create_table "stuck_points", force: :cascade do |t|
     t.text "statement"
-    t.boolean "resolved", default: false, null: false
     t.bigint "index_event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

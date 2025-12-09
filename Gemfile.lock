@@ -324,6 +324,7 @@ GEM
       erb
       psych (>= 4.0.0)
       tsort
+    redcarpet (3.6.1)
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
@@ -466,6 +467,7 @@ DEPENDENCIES
   pgvector (~> 0.3.2)
   puma (>= 5.0)
   rails (~> 7.1.6)
+  redcarpet
   rubocop
   rubocop-capybara
   rubocop-rails

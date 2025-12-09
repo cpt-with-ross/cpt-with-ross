@@ -7,7 +7,7 @@
 <% elsif message.role == 'assistant' %>
   <div class="d-flex justify-content-start mb-4" id="<%= dom_id(message) %>">
     <div class="text-dark" style="max-width: 90%; font-size: 0.95rem; line-height: 1.6;">
-      <span id="message_<%= message.id %>_content"><%= message.content %></span>
+      <span id="message_<%= message.id %>_content"><%= markdown(message.content) %></span>
     </div>
   </div>
 <% end %>

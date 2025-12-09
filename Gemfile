@@ -83,3 +83,6 @@ gem 'googleauth' # Required for Vertex AI authentication with ADC
 
 gem 'pgvector', '~> 0.3.2'
 gem 'neighbor'
+
+# Markdown rendering for chat messages
+gem 'redcarpet'
