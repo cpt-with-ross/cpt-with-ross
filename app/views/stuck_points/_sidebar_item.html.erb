@@ -5,10 +5,40 @@
       <%= render 'stuck_points/title_button', stuck_point: stuck_point %>
     </div>
 
+    <%
+      extra_items = [
+        {
+          label: 'Print',
+          icon: 'fa-solid fa-print',
+          path: "#{pdf_stuck_point_path(stuck_point)}?print=true",
+          target: '_blank',
+          turbo: false,
+          controller: 'worksheet-actions',
+          action: 'click->worksheet-actions#printFromDropdown'
+        },
+        {
+          label: 'Export',
+          icon: 'fa-solid fa-file-pdf',
+          path: pdf_stuck_point_path(stuck_point),
+          target: '_blank',
+          turbo: false
+        },
+        {
+          label: 'Share',
+          icon: 'fa-solid fa-envelope',
+          path: email_stuck_point_path(stuck_point),
+          turbo: false,
+          controller: 'worksheet-actions',
+          action: 'click->worksheet-actions#shareFromDropdown'
+        }
+      ]
+    %>
+
     <%= render 'shared/action_dropdown',
         item: stuck_point,
         edit_path: edit_stuck_point_path(stuck_point),
-        delete_path: stuck_point_path(stuck_point) %>
+        delete_path: stuck_point_path(stuck_point),
+        extra_items: extra_items %>
   </div>
 
   <div id="collapse_stuck_<%= stuck_point.id %>" class="accordion-collapse collapse" data-bs-parent="#stuck_points_list_<%= stuck_point.index_event.id %>">

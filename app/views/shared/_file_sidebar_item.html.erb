@@ -17,6 +17,38 @@
       </li>
       <li><hr class="dropdown-divider"></li>
       <li>
+        <%= link_to "#{url_for([:pdf, item])}?print=true",
+            class: "dropdown-item small",
+            target: "_blank",
+            data: {
+              turbo: false,
+              controller: "worksheet-actions",
+              action: "click->worksheet-actions#printFromDropdown"
+            } do %>
+          <i class="fa-solid fa-print me-2"></i> Print
+        <% end %>
+      </li>
+      <li>
+        <%= link_to [:pdf, item],
+            class: "dropdown-item small",
+            target: "_blank",
+            data: { turbo: false } do %>
+          <i class="fa-solid fa-file-pdf me-2"></i> Export
+        <% end %>
+      </li>
+      <li>
+        <%= link_to [:email, item],
+            class: "dropdown-item small",
+            data: {
+              turbo: false,
+              controller: "worksheet-actions",
+              action: "click->worksheet-actions#shareFromDropdown"
+            } do %>
+          <i class="fa-solid fa-envelope me-2"></i> Share
+        <% end %>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      <li>
         <div data-controller="delete-with-context">
           <%= button_to item, method: :delete,
               class: "dropdown-item small text-danger" do %>

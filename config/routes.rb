@@ -20,8 +20,13 @@ Rails.application.routes.draw do
   resources :index_events, shallow: true, only: %i[new create show edit update destroy] do
     resource :baseline, only: %i[show edit update] do
       get :summary, on: :member
+      post :email, on: :member
     end
     resources :stuck_points, only: %i[new create show edit update destroy] do
+      member do
+        get :pdf
+        post :email
+      end
       resources :abc_worksheets, only: %i[new create show edit update destroy] do
         member do
           get :pdf

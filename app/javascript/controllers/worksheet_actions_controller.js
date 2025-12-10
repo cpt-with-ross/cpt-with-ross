@@ -115,6 +115,64 @@ export default class extends Controller {
   }
 
   /**
+   * Print from dropdown - Opens PDF in new window and triggers print dialog
+   * Called when Print is clicked from the worksheet dropdown menu
+   */
+  printFromDropdown(event) {
+    event.preventDefault();
+
+    const url = event.currentTarget.href;
+
+    // Open PDF in new window and trigger print when loaded
+    const printWindow = window.open(url, '_blank');
+    if (printWindow) {
+      printWindow.onload = function() {
+        setTimeout(function() {
+          printWindow.print();
+        }, 250);
+      };
+    }
+  }
+
+  /**
+   * Share from dropdown - Sends PDF to user's email via POST request
+   * Called when Share is clicked from the worksheet dropdown menu
+   */
+  async shareFromDropdown(event) {
+    event.preventDefault();
+
+    // Get the URL from the link
+    const url = event.currentTarget.href;
+
+    // Show loading state
+    this.showNotification('Sending email...', 'info');
+
+    try {
+      // Get CSRF token
+      const token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+      // Send POST request
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': token,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        this.showNotification('Email sent successfully!', 'success');
+      } else {
+        const data = await response.json();
+        this.showNotification(data.error || 'Failed to send email.', 'danger');
+      }
+    } catch (error) {
+      console.error('Email error:', error);
+      this.showNotification('An error occurred while sending the email.', 'danger');
+    }
+  }
+
+  /**
    * Helper: Show Bootstrap toast notification
    */
   showNotification(message, type = 'info') {

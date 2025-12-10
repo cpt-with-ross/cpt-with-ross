@@ -6,11 +6,22 @@
     <i class="fa-solid fa-ellipsis"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 z-3">
+    <li>
+      <%= link_to edit_path,
+          class: "dropdown-item small",
+          data: { turbo_frame: dom_id(item, :title_frame) } do %>
+        <i class="fa-solid fa-pen me-2"></i> Rename
+      <% end %>
+    </li>
+    <li><hr class="dropdown-divider"></li>
     <% extra_items.each do |menu_item| %>
       <li>
         <%
           data_attrs = {}
           data_attrs[:turbo_frame] = menu_item[:turbo_frame] if menu_item[:turbo_frame]
+          data_attrs[:turbo] = menu_item[:turbo] if menu_item.key?(:turbo)
+          data_attrs[:controller] = menu_item[:controller] if menu_item[:controller]
+          data_attrs[:action] = menu_item[:action] if menu_item[:action]
 
           onclick_parts = []
           if menu_item[:collapse_id]
@@ -23,23 +34,21 @@
         %>
         <%= link_to menu_item[:path],
             class: "dropdown-item small",
+            target: menu_item[:target],
             data: data_attrs,
             onclick: onclick_handler do %>
           <% if menu_item[:icon] %><i class="<%= menu_item[:icon] %> me-2"></i><% end %><%= menu_item[:label] %>
         <% end %>
       </li>
     <% end %>
-    <li>
-      <%= link_to "Rename", edit_path,
-          class: "dropdown-item small",
-          data: { turbo_frame: dom_id(item, :title_frame) } %>
-    </li>
     <% if show_divider %><li><hr class="dropdown-divider"></li><% end %>
     <li>
       <div data-controller="delete-with-context">
-        <%= button_to "Delete", delete_path,
+        <%= button_to delete_path,
             method: :delete,
-            class: "dropdown-item small text-danger" %>
+            class: "dropdown-item small text-danger" do %>
+          <i class="fa-regular fa-trash-can me-2"></i> Delete
+        <% end %>
       </div>
     </li>
   </ul>

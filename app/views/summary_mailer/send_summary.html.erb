@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h2>Your CPT Summary</h2>
+
+    <p>Hello <%= @user.email %>,</p>
+
+    <p>
+      Attached is a comprehensive summary of your CPT therapy work for:
+    </p>
+
+    <p>
+      <strong>Index Event:</strong> <%= @index_event.title %>
+    </p>
+
+    <p>
+      The attached PDF includes all of your stuck points and their associated
+      alternative thoughts, providing a complete overview of your progress.
+    </p>
+
+    <p>
+      Best regards,<br>
+      CPT with Ross
+    </p>
+  </body>
+</html>

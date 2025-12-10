@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 # =============================================================================
-# SummaryPdfGenerator - Service for generating summary PDF of index event
+# StuckPointPdfGenerator - Service for generating PDF of a stuck point
 # =============================================================================
 #
-# Generates a comprehensive PDF summary document containing:
-# - Index Event title and details
-# - All Stuck Points associated with the event
-# - All Alternative Thoughts for each Stuck Point
+# Generates a PDF document containing:
+# - Index Event title
+# - Stuck Point statement
+# - List of ABC Worksheets associated with the stuck point
+# - List of Alternative Thoughts associated with the stuck point
+# (Does NOT include the full content of worksheets)
 #
-class SummaryPdfGenerator
+class StuckPointPdfGenerator
   # App color scheme (matching WorksheetPdfGenerator)
   COLORS = {
     primary: '0D6EFD',    # Blue
@@ -19,9 +21,11 @@ class SummaryPdfGenerator
     border: 'DEE2E6'      # Border gray
   }.freeze
 
-  def initialize(index_event)
-    @index_event = index_event
-    @stuck_points = index_event.stuck_points.includes(:alternative_thoughts).order(created_at: :asc)
+  def initialize(stuck_point)
+    @stuck_point = stuck_point
+    @index_event = stuck_point.index_event
+    @abc_worksheets = stuck_point.abc_worksheets.order(created_at: :asc)
+    @alternative_thoughts = stuck_point.alternative_thoughts.order(created_at: :asc)
     @logo_path = Rails.root.join('app/assets/images/logo.png')
   end
 
@@ -37,7 +41,8 @@ class SummaryPdfGenerator
       # Main content
       pdf.bounding_box([0, pdf.bounds.top - 80], width: pdf.bounds.width, height: pdf.bounds.height - 140) do
         add_index_event_header(pdf)
-        add_stuck_points_summary(pdf)
+        add_stuck_point_section(pdf)
+        add_worksheets_list(pdf)
       end
     end.render
   end
@@ -93,7 +98,7 @@ class SummaryPdfGenerator
   # Adds index event header section
   def add_index_event_header(pdf)
     # Title
-    pdf.text 'Index Event Summary', size: 24, style: :bold, color: COLORS[:dark]
+    pdf.text 'Stuck Point Overview', size: 24, style: :bold, color: COLORS[:dark]
     pdf.move_down 20
 
     # Index Event box
@@ -110,101 +115,43 @@ class SummaryPdfGenerator
     pdf.move_down 60
   end
 
-  # Adds all stuck points and their alternative thoughts
-  def add_stuck_points_summary(pdf)
-    if @stuck_points.empty?
-      pdf.text 'No stuck points have been identified yet.', size: 12, color: COLORS[:secondary], style: :italic
-      return
-    end
-
-    @stuck_points.each_with_index do |stuck_point, index|
-      # Check if we need a new page for this stuck point
-      if pdf.cursor < 200 && index > 0
-        pdf.start_new_page
-      end
-
-      add_stuck_point_section(pdf, stuck_point, index + 1)
-    end
-  end
-
-  # Adds a single stuck point and its alternative thoughts
-  def add_stuck_point_section(pdf, stuck_point, number)
+  # Adds stuck point section
+  def add_stuck_point_section(pdf)
     # Stuck Point header
-    add_card_header(pdf, "Stuck Point ##{number}")
+    add_card_header(pdf, "Stuck Point")
 
     # Stuck Point statement
-    pdf.text stuck_point.statement, size: 11, color: COLORS[:dark]
-    pdf.move_down 20
+    pdf.text @stuck_point.statement, size: 12, color: COLORS[:dark]
+    pdf.move_down 30
+  end
 
-    # ABC Worksheets for this stuck point
-    abc_worksheets = stuck_point.abc_worksheets.order(created_at: :asc)
+  # Adds list of worksheets
+  def add_worksheets_list(pdf)
+    # ABC Worksheets section
+    add_card_header(pdf, "ABC Worksheets")
 
-    if abc_worksheets.any?
-      pdf.text 'ABC Worksheets:', size: 12, style: :bold, color: COLORS[:dark]
-      pdf.move_down 10
-
-      abc_worksheets.each_with_index do |abc_worksheet, idx|
-        # Check if we need a new page
-        if pdf.cursor < 150
-          pdf.start_new_page
-        end
-
-        add_abc_worksheet_content(pdf, abc_worksheet, idx + 1)
+    if @abc_worksheets.any?
+      @abc_worksheets.each_with_index do |worksheet, idx|
+        pdf.text "#{idx + 1}. #{worksheet.title}", size: 11, color: COLORS[:dark]
+        pdf.move_down 8
       end
     else
       pdf.text 'No ABC worksheets have been created yet.', size: 10, color: COLORS[:secondary], style: :italic
-      pdf.move_down 10
     end
 
-    # Alternative Thoughts for this stuck point
-    alternative_thoughts = stuck_point.alternative_thoughts.order(created_at: :asc)
+    pdf.move_down 20
 
-    if alternative_thoughts.any?
-      pdf.text 'Alternative Thoughts:', size: 12, style: :bold, color: COLORS[:dark]
-      pdf.move_down 10
+    # Alternative Thoughts section
+    add_card_header(pdf, "Alternative Thoughts")
 
-      alternative_thoughts.each_with_index do |alt_thought, idx|
-        # Check if we need a new page
-        if pdf.cursor < 150
-          pdf.start_new_page
-        end
-
-        add_alternative_thought_content(pdf, alt_thought, idx + 1)
+    if @alternative_thoughts.any?
+      @alternative_thoughts.each_with_index do |thought, idx|
+        pdf.text "#{idx + 1}. #{thought.title}", size: 11, color: COLORS[:dark]
+        pdf.move_down 8
       end
     else
       pdf.text 'No alternative thoughts have been created yet.', size: 10, color: COLORS[:secondary], style: :italic
-      pdf.move_down 20
     end
-  end
-
-  # Adds content for a single alternative thought
-  def add_alternative_thought_content(pdf, alt_thought, number)
-    # Alternative thought number and title
-    pdf.text "#{number}. #{alt_thought.title}", size: 11, style: :bold, color: COLORS[:primary]
-    pdf.move_down 5
-
-    # Alternative thought text
-    if alt_thought.alternative_thought.present?
-      pdf.text alt_thought.alternative_thought, size: 10
-      pdf.move_down 5
-
-      # Belief rating
-      if alt_thought.alternative_thought_belief.present?
-        pdf.text "Belief rating: #{alt_thought.alternative_thought_belief}%",
-                 size: 9, color: COLORS[:secondary]
-      end
-    else
-      pdf.text 'Not yet written', size: 10, color: COLORS[:secondary], style: :italic
-    end
-
-    pdf.move_down 15
-  end
-
-  # Adds content for a single ABC worksheet
-  def add_abc_worksheet_content(pdf, abc_worksheet, number)
-    # ABC worksheet number and title
-    pdf.text "#{number}. #{abc_worksheet.title}", size: 11, style: :bold, color: COLORS[:primary]
-    pdf.move_down 15
   end
 
   # Helper: Adds a card header with background color and border

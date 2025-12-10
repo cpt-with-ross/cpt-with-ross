@@ -23,7 +23,7 @@ class StuckPointsController < ApplicationController
   include InlineFormRenderable
 
   before_action :set_index_event, only: %i[new create]
-  before_action :set_stuck_point, only: %i[show edit update destroy]
+  before_action :set_stuck_point, only: %i[show edit update destroy pdf email]
 
   # Returns title button partial for Turbo Frame refresh
   def show
@@ -130,6 +130,35 @@ class StuckPointsController < ApplicationController
         render turbo_stream: streams
       end
       format.html { redirect_to root_path }
+    end
+  end
+
+  # Generates and downloads PDF for the stuck point
+  def pdf
+    pdf_content = StuckPointPdfGenerator.new(@stuck_point).generate
+    filename = "#{@stuck_point.index_event.title.parameterize}-stuck-point-#{Date.current}.pdf"
+    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
+
+    send_data pdf_content,
+              filename: filename,
+              type: 'application/pdf',
+              disposition: disposition
+  end
+
+  # Sends stuck point PDF via email
+  def email
+    Rails.logger.info "=== Starting email delivery for stuck point #{@stuck_point.id} ==="
+
+    StuckPointMailer.send_stuck_point(current_user, @stuck_point).deliver_now
+
+    respond_to do |format|
+      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
+    end
+  rescue StandardError => e
+    Rails.logger.error "=== Email delivery failed: #{e.class} - #{e.message} ==="
+
+    respond_to do |format|
+      format.json { render json: { error: "Failed to send email: #{e.message}" }, status: :unprocessable_entity }
     end
   end
 
