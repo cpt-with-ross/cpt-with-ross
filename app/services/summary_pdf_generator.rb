@@ -140,15 +140,15 @@ class SummaryPdfGenerator
     abc_worksheets = stuck_point.abc_worksheets.order(created_at: :asc)
 
     if abc_worksheets.any?
+      # Check if we need a new page before starting ABC Worksheets section
+      if pdf.cursor < 200
+        pdf.start_new_page
+      end
+
       pdf.text 'ABC Worksheets:', size: 12, style: :bold, color: COLORS[:dark]
       pdf.move_down 10
 
       abc_worksheets.each_with_index do |abc_worksheet, idx|
-        # Check if we need a new page
-        if pdf.cursor < 150
-          pdf.start_new_page
-        end
-
         add_abc_worksheet_content(pdf, abc_worksheet, idx + 1)
       end
     else
@@ -160,6 +160,11 @@ class SummaryPdfGenerator
     alternative_thoughts = stuck_point.alternative_thoughts.order(created_at: :asc)
 
     if alternative_thoughts.any?
+      # Check if we need a new page before starting Alternative Thoughts section
+      if pdf.cursor < 200
+        pdf.start_new_page
+      end
+
       pdf.text 'Alternative Thoughts:', size: 12, style: :bold, color: COLORS[:dark]
       pdf.move_down 10
 
@@ -202,9 +207,51 @@ class SummaryPdfGenerator
 
   # Adds content for a single ABC worksheet
   def add_abc_worksheet_content(pdf, abc_worksheet, number)
+    # Check if we need a new page
+    if pdf.cursor < 200
+      pdf.start_new_page
+    end
+
     # ABC worksheet number and title
     pdf.text "#{number}. #{abc_worksheet.title}", size: 11, style: :bold, color: COLORS[:primary]
-    pdf.move_down 15
+    pdf.move_down 10
+
+    # Column headers
+    header_data = [
+      [
+        { content: "A\nActivating Event\nSomething happens", align: :center, background_color: COLORS[:light] },
+        { content: "B\nBelief/Stuck Point\nI tell myself something", align: :center, background_color: COLORS[:light] },
+        { content: "C\nConsequence\nI feel something", align: :center, background_color: COLORS[:light] }
+      ]
+    ]
+
+    # Content data
+    activating = abc_worksheet.activating_event.present? ? abc_worksheet.activating_event : 'Not yet written.'
+    beliefs = abc_worksheet.beliefs.present? ? abc_worksheet.beliefs : 'Not yet written.'
+
+    # Format emotions for display
+    emotions_text = if abc_worksheet.emotions.present? && abc_worksheet.emotions.any?
+                      abc_worksheet.emotions.sort_by { |e| -e['intensity'] }
+                                .map { |e| "#{e['emotion'].capitalize}: #{e['intensity']}/10" }
+                                .join("\n")
+                    else
+                      'No emotions recorded.'
+                    end
+
+    content_data = [[activating, beliefs, emotions_text]]
+
+    # Create table
+    pdf.table(header_data + content_data,
+              column_widths: [pdf.bounds.width / 3.0] * 3,
+              cell_style: {
+                padding: 10,
+                borders: [:left, :right, :top, :bottom],
+                border_color: COLORS[:border]
+              }) do
+      row(0).font_style = :bold
+    end
+
+    pdf.move_down 20
   end
 
   # Helper: Adds a card header with background color and border
