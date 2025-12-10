@@ -2,19 +2,11 @@
   <div class="card shadow-sm">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center py-2">
       <h5 class="mb-0">ABC Worksheet</h5>
-      <div class="d-flex gap-2">
-        <%= link_to pdf_abc_worksheet_path(abc_worksheet),
-            class: "btn btn-sm btn-light",
-            target: "_blank",
-            title: "Download PDF" do %>
-          <i class="fas fa-download"></i> Download PDF
-        <% end %>
-        <%= link_to edit_abc_worksheet_path(abc_worksheet),
-            class: "btn btn-sm btn-light",
-            data: { turbo_frame: "main_content" } do %>
-          <i class="fas fa-edit"></i> Edit
-        <% end %>
-      </div>
+      <%= link_to edit_abc_worksheet_path(abc_worksheet),
+          class: "btn btn-sm btn-light",
+          data: { turbo_frame: "main_content" } do %>
+        <i class="fas fa-edit"></i> Edit
+      <% end %>
     </div>
     <div class="card-body p-0">
       <%# Header row - Bootstrap flexbox ensures equal heights on xl screens %>
