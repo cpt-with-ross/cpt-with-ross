@@ -37,10 +37,11 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Configure letter_opener_web to preview emails in browser during development
-  config.action_mailer.delivery_method = :letter_opener_web
-  config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.perform_deliveries = true
+
+  # Resend API configuration (same as production)
+  config.action_mailer.delivery_method = :resend
 
   config.action_mailer.perform_caching = false
 
