@@ -22,6 +22,8 @@
 # - emotions: JSONB array of {emotion:, intensity:} for structured emotion tracking
 #
 class AbcWorksheet < ApplicationRecord
+  RESOURCE_TYPE = 'ABC Worksheet'
+
   # The 12 discrete psychological emotions (non-reducible lexicon)
   EMOTIONS = %w[
     anger
@@ -59,6 +61,7 @@ class AbcWorksheet < ApplicationRecord
 
   # Provides a display title, falling back to "ABC #N" if not set.
   # For new records, returns the raw attribute to allow empty display.
+  # Note: Uses own ID for fallback (consistent with title methods across models)
   def title
     return self[:title] if new_record?
 
@@ -66,8 +69,8 @@ class AbcWorksheet < ApplicationRecord
   end
 
   # Provides beliefs with fallback to "Stuck Point #N" if not set.
-  # Uses stuck_point.id for consistency with StuckPoint#statement fallback.
   # For new records, returns the raw attribute to allow empty display.
+  # Note: Uses stuck_point_id (parent ID) because this field represents the parent's statement
   def beliefs
     return self[:beliefs] if new_record?
 

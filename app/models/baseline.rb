@@ -20,6 +20,8 @@
 # Note: Baselines are 1:1 with IndexEvents and auto-created via callback.
 #
 class Baseline < ApplicationRecord
+  RESOURCE_TYPE = 'Impact Statement'
+
   belongs_to :index_event, inverse_of: :baseline
 
   # Experience type options for how the event was experienced
@@ -73,6 +75,13 @@ class Baseline < ApplicationRecord
     pcl_sleep_trouble: 'Trouble falling or staying asleep?'
   }.freeze
   # rubocop:enable Layout/LineLength
+
+  # Provides a display title via the parent index event.
+  # Baselines are 1:1 with IndexEvents, so they inherit the event's title.
+  # Note: Consistent interface with other exportable models (AbcWorksheet, etc.)
+  def title
+    index_event&.title || "Impact Statement ##{id}"
+  end
 
   # Calculate total PCL-5 score (0-80 range)
   def pcl_total_score

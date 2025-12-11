@@ -19,6 +19,8 @@
 #       └── AlternativeThoughts[]
 #
 class IndexEvent < ApplicationRecord
+  RESOURCE_TYPE = 'Index Event Summary'
+
   belongs_to :user, inverse_of: :index_events
   has_one :baseline, dependent: :destroy, inverse_of: :index_event
   has_many :stuck_points, dependent: :destroy, inverse_of: :index_event

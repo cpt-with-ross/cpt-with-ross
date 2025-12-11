@@ -18,12 +18,15 @@
 # method aliases this for consistent API across resources in the sidebar.
 #
 class StuckPoint < ApplicationRecord
+  RESOURCE_TYPE = 'Stuck Point'
+
   belongs_to :index_event, inverse_of: :stuck_points
   has_many :abc_worksheets, dependent: :destroy, inverse_of: :stuck_point
   has_many :alternative_thoughts, dependent: :destroy, inverse_of: :stuck_point
 
   # Provides the statement with fallback to "Stuck Point #N" if not set.
   # For new records, returns the raw attribute to allow empty display.
+  # Note: Uses own ID for fallback (consistent with title methods across models)
   def statement
     return self[:statement] if new_record?
 

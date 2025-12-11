@@ -18,6 +18,8 @@
 # - H. Emotions After: Final emotional state after worksheet
 #
 class AlternativeThought < ApplicationRecord
+  RESOURCE_TYPE = 'Alternative Thought'
+
   # The 12 discrete psychological emotions (same as AbcWorksheet)
   EMOTIONS = %w[
     anger
@@ -88,6 +90,7 @@ class AlternativeThought < ApplicationRecord
 
   # Provides a display title, falling back to "Alt Thought #N" if not set.
   # For new records, returns the raw attribute to allow empty display.
+  # Note: Uses own ID for fallback (consistent with title methods across models)
   def title
     return self[:title] if new_record?
 
