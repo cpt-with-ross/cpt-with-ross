@@ -2,7 +2,9 @@
   <div data-controller="current-path" data-current-path-path-value="<%= abc_worksheet_path(@abc_worksheet) %>"></div>
 
   <%= render "shared/page_header",
-      parents: [@stuck_point.index_event.title, @stuck_point.statement.truncate(30), "ABC Worksheets"],
+      index_event_path: index_event_baseline_path(@stuck_point.index_event),
+      index_event_title: @stuck_point.index_event.title,
+      parents: [@stuck_point.statement.truncate(30), "ABC Worksheets"],
       title: "Edit #{@abc_worksheet.title}",
       show_close: false %>
 

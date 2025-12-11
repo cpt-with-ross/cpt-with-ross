@@ -3,60 +3,12 @@
 <div class="d-flex align-items-center justify-content-between mb-1 pe-2 sidebar-item-group" id="<%= dom_id(item) %>">
   <%= render 'shared/file_sidebar_title', **title_locals %>
 
-  <div class="dropdown">
-    <button class="btn btn-sm btn-link text-muted p-0 action-btn" type="button" data-bs-toggle="dropdown" style="font-size: 0.75rem;">
-      <i class="fa-solid fa-ellipsis"></i>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-      <li>
-        <%= link_to [:edit, item],
-            class: "dropdown-item small",
-            data: { turbo_frame: dom_id(item, :title_frame) } do %>
-          <i class="fa-solid fa-pen me-2"></i> Rename
-        <% end %>
-      </li>
-      <li><hr class="dropdown-divider"></li>
-      <li>
-        <%= link_to "#{url_for([:pdf, item])}?print=true",
-            class: "dropdown-item small",
-            target: "_blank",
-            data: {
-              turbo: false,
-              controller: "worksheet-actions",
-              action: "click->worksheet-actions#printFromDropdown"
-            } do %>
-          <i class="fa-solid fa-print me-2"></i> Print
-        <% end %>
-      </li>
-      <li>
-        <%= link_to [:pdf, item],
-            class: "dropdown-item small",
-            target: "_blank",
-            data: { turbo: false } do %>
-          <i class="fa-solid fa-file-pdf me-2"></i> Export
-        <% end %>
-      </li>
-      <li>
-        <%= link_to [:email, item],
-            class: "dropdown-item small",
-            data: {
-              turbo: false,
-              controller: "worksheet-actions",
-              action: "click->worksheet-actions#shareFromDropdown"
-            } do %>
-          <i class="fa-solid fa-envelope me-2"></i> Share
-        <% end %>
-      </li>
-      <li><hr class="dropdown-divider"></li>
-      <li>
-        <div data-controller="delete-with-context">
-          <%= button_to item, method: :delete,
-              class: "dropdown-item small text-danger" do %>
-            <i class="fa-regular fa-trash-can me-2"></i> Delete
-          <% end %>
-        </div>
-      </li>
-    </ul>
-  </div>
-
+  <%= render 'shared/action_dropdown',
+      item: item,
+      edit_path: [:edit, item],
+      delete_path: item,
+      document_actions: document_actions(
+        export_path: export_path_for(item),
+        share_path: share_path_for(item)
+      ) %>
 </div>

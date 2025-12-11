@@ -2,7 +2,9 @@
   <div data-controller="current-path" data-current-path-path-value="<%= alternative_thought_path(@alternative_thought) %>"></div>
 
   <%= render "shared/page_header",
-      parents: [@stuck_point.index_event.title, @stuck_point.statement.truncate(30), "Alternative Thoughts"],
+      index_event_path: index_event_baseline_path(@stuck_point.index_event),
+      index_event_title: @stuck_point.index_event.title,
+      parents: [@stuck_point.statement.truncate(30), "Alternative Thoughts"],
       title: "Edit #{@alternative_thought.title}",
       show_close: false %>
 

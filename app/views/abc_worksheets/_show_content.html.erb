@@ -1,6 +1,8 @@
 <%= render "shared/resource_show_content",
     resource_path: abc_worksheet_path(abc_worksheet),
-    parents: [stuck_point.index_event.title, stuck_point.statement.truncate(30), "ABC Worksheets"],
+    index_event_path: index_event_baseline_path(stuck_point.index_event),
+    index_event_title: stuck_point.index_event.title,
+    parents: [stuck_point.statement.truncate(30), "ABC Worksheets"],
     title: abc_worksheet.title,
     partial_path: "abc_worksheets/abc_worksheet",
     locals: { abc_worksheet: abc_worksheet } %>

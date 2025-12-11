@@ -1,6 +1,10 @@
 <div data-controller="current-path" data-current-path-path-value="<%= resource_path %>"></div>
 
-<%= render "shared/page_header", parents: parents, title: title %>
+<%= render "shared/page_header",
+    index_event_path: local_assigns[:index_event_path],
+    index_event_title: local_assigns[:index_event_title],
+    parents: parents,
+    title: title %>
 
 <div class="main-content p-4">
   <%= render partial_path, locals %>

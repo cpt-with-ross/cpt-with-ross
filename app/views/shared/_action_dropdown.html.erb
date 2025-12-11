@@ -1,5 +1,5 @@
-<% extra_items ||= [] %>
-<% show_divider = local_assigns.fetch(:show_divider, extra_items.any?) %>
+<% document_actions ||= [] %>
+<% show_divider = local_assigns.fetch(:show_divider, document_actions.any?) %>
 
 <div class="dropdown">
   <button class="btn btn-sm btn-link text-muted p-0 ms-2 action-btn" type="button" data-bs-toggle="dropdown">
@@ -14,7 +14,7 @@
       <% end %>
     </li>
     <li><hr class="dropdown-divider"></li>
-    <% extra_items.each do |menu_item| %>
+    <% document_actions.each do |menu_item| %>
       <li>
         <%
           data_attrs = {}
@@ -43,7 +43,7 @@
     <% end %>
     <% if show_divider %><li><hr class="dropdown-divider"></li><% end %>
     <li>
-      <div data-controller="delete-with-context">
+      <div data-controller="delete-with-context" data-delete-with-context-item-type-value="<%= item.model_name.human.downcase %>">
         <%= button_to delete_path,
             method: :delete,
             class: "dropdown-item small text-danger" do %>

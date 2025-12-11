@@ -1,6 +1,8 @@
 <%= render "shared/resource_show_content",
     resource_path: alternative_thought_path(alternative_thought),
-    parents: [stuck_point.index_event.title, stuck_point.statement.truncate(30), "Alternative Thoughts"],
+    index_event_path: index_event_baseline_path(stuck_point.index_event),
+    index_event_title: stuck_point.index_event.title,
+    parents: [stuck_point.statement.truncate(30), "Alternative Thoughts"],
     title: alternative_thought.title,
     partial_path: "alternative_thoughts/alternative_thought",
     locals: { alternative_thought: alternative_thought } %>

@@ -1,10 +1,18 @@
 <div class="border-bottom bg-light sticky-top px-3 d-flex align-items-center justify-content-between" style="min-height: 65px;">
   <h5 class="fw-bold m-0">
-    <% Array(local_assigns[:parents]).each do |p| %>
-      <span class="text-muted"><%= p %></span>
+    <% if local_assigns[:index_event_path] %>
+      <%= link_to index_event_title, index_event_path,
+          class: "text-primary text-decoration-none",
+          data: { turbo_frame: "main_content" } %>
       <span class="text-muted mx-2">&gt;</span>
+      <% Array(local_assigns[:parents]).each do |p| %>
+        <span class="text-muted"><%= p %>,</span>
+      <% end %>
+    <% else %>
+      <% Array(local_assigns[:parents]).each do |p| %>
+        <span class="text-muted"><%= p %>,</span>
+      <% end %>
     <% end %>
-
     <span class="text-dark"><%= title %></span>
   </h5>
 

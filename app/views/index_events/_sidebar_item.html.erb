@@ -5,40 +5,14 @@
 
     <%= render 'index_events/title_button', index_event: index_event, is_active: is_active, expanded: expanded %>
 
-    <%
-      extra_items = [
-        {
-          label: 'Print',
-          icon: 'fa-solid fa-print',
-          path: "#{summary_index_event_baseline_path(index_event)}?print=true",
-          target: '_blank',
-          turbo: false,
-          controller: 'worksheet-actions',
-          action: 'click->worksheet-actions#printFromDropdown'
-        },
-        {
-          label: 'Export',
-          icon: 'fa-solid fa-file-pdf',
-          path: summary_index_event_baseline_path(index_event),
-          target: '_blank',
-          turbo: false
-        },
-        {
-          label: 'Share',
-          icon: 'fa-solid fa-envelope',
-          path: email_index_event_baseline_path(index_event),
-          turbo: false,
-          controller: 'worksheet-actions',
-          action: 'click->worksheet-actions#shareFromDropdown'
-        }
-      ]
-    %>
-
     <%= render 'shared/action_dropdown',
         item: index_event,
         edit_path: edit_index_event_path(index_event),
         delete_path: index_event_path(index_event),
-        extra_items: extra_items %>
+        document_actions: document_actions(
+          export_path: export_index_event_baseline_path(index_event),
+          share_path: share_index_event_baseline_path(index_event)
+        ) %>
   </div>
 
   <div id="collapse_<%= index_event.id %>" class="accordion-collapse collapse <%= 'show' if expanded %>" data-bs-parent="#indexEventsAccordion">
