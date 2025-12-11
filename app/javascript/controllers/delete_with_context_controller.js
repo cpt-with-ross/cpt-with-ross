@@ -8,11 +8,14 @@
  * the controller can replace main_content with sensible fallback content.
  *
  * Usage: data-controller="delete-with-context" (on parent of delete form)
+ *        data-delete-with-context-item-type-value="index event" (optional)
  */
 import { Controller } from '@hotwired/stimulus';
 import { injectCurrentPathField } from '../utils/path_utils';
 
 export default class extends Controller {
+  static values = { itemType: { type: String, default: 'item' } };
+
   connect() {
     this.form = this.element.querySelector('form');
     if (this.form) {
@@ -28,7 +31,7 @@ export default class extends Controller {
   }
 
   handleSubmit(event) {
-    if (!confirm('Are you sure you want to delete this item?')) {
+    if (!confirm(`Are you sure you want to delete this ${this.itemTypeValue}?`)) {
       event.preventDefault();
       return;
     }
