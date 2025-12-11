@@ -2,7 +2,7 @@
   <h5 class="fw-bold m-0">
     <% if local_assigns[:index_event_path] %>
       <%= link_to index_event_title, index_event_path,
-          class: "text-primary text-decoration-none",
+          class: "text-primary text-decoration-none sidebar-nav-text",
           data: { turbo_frame: "main_content" } %>
       <span class="text-muted mx-2">&gt;</span>
       <% Array(local_assigns[:parents]).each do |p| %>

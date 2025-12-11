@@ -10,7 +10,7 @@
       <%= link_to edit_path,
           class: "dropdown-item small",
           data: { turbo_frame: dom_id(item, :title_frame) } do %>
-        <i class="fa-solid fa-pen me-2"></i> Rename
+        <i class="fa-solid fa-pen fa-fw me-2"></i> Rename
       <% end %>
     </li>
     <li><hr class="dropdown-divider"></li>
@@ -37,7 +37,7 @@
             target: menu_item[:target],
             data: data_attrs,
             onclick: onclick_handler do %>
-          <% if menu_item[:icon] %><i class="<%= menu_item[:icon] %> me-2"></i><% end %><%= menu_item[:label] %>
+          <% if menu_item[:icon] %><i class="<%= menu_item[:icon] %> fa-fw me-2"></i> <% end %><%= menu_item[:label] %>
         <% end %>
       </li>
     <% end %>
@@ -47,7 +47,7 @@
         <%= button_to delete_path,
             method: :delete,
             class: "dropdown-item small text-danger" do %>
-          <i class="fa-regular fa-trash-can me-2"></i> Delete
+          <i class="fa-regular fa-trash-can fa-fw me-2"></i> Delete
         <% end %>
       </div>
     </li>
