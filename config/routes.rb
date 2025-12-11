@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   get 'up' => 'rails/health#show', as: :rails_health_check
 
+  # ActiveStorage database storage engine (serves blobs from PostgreSQL)
+  mount ActiveStorageDB::Engine => '/active_storage_db'
+
   devise_for :users, skip: %i[registrations passwords], controllers: {
     sessions: 'users/sessions'
   }

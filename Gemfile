@@ -93,3 +93,10 @@ gem 'prawn-table'
 
 # Email delivery via Resend API
 gem 'resend'
+
+# Google Cloud Text-to-Speech for AI voice responses
+# v1beta1 required for SSML <mark> tags / timepoint support
+gem 'google-cloud-text_to_speech-v1beta1', '~> 0.27.1'
+
+# Store ActiveStorage files in PostgreSQL (required for Heroku's ephemeral filesystem)
+gem 'active_storage_db'
