@@ -4,8 +4,8 @@
 
 puts 'Creating demo data...'
 
-user = User.find_or_initialize_by(email: 'demo@cptwithross.com')
-user.password = 'demo123'
+user = User.find_or_initialize_by(email: 'test@cptwithross.com')
+user.password = 'test123'
 user.save!
 
 # =============================================================================
@@ -74,13 +74,8 @@ sp.alternative_thoughts.find_or_create_by!(title: 'Reframing responsibility') do
   ]
 end
 
-# Second stuck point (no worksheets yet - shows in-progress state)
-event.stuck_points.find_or_create_by!(
-  statement: 'The world is unpredictably dangerous and I cannot protect myself'
-)
-
 puts ''
 puts 'Demo ready!'
-puts '  Email: demo@cptwithross.com'
-puts '  Password: demo123'
+puts '  Email: test@cptwithross.com'
+puts '  Password: test123'
 puts "  PCL-5 Score: #{event.baseline.pcl_total_score}/80"
