@@ -58,7 +58,7 @@ export default class extends Controller {
       if (!response.ok) throw new Error('Failed to load audio')
 
       this.audioCache = await response.blob()
-      
+
       // Store ETag for future requests
       const etag = response.headers.get('ETag')
       if (etag) {
