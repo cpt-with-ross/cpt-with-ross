@@ -55,9 +55,13 @@ class Message < ApplicationRecord
     tts_eligible? && audio.attached?
   end
 
-  # Returns true if TTS is still processing (job queued or running)
+  # Returns true if TTS is still processing (job queued or running).
+  # Only considers messages created within the last 5 minutes to avoid
+  # showing perpetual spinners on old messages or messages pending deletion.
+  TTS_PROCESSING_TIMEOUT = 5.minutes
+
   def tts_processing?
-    tts_eligible? && !audio.attached?
+    tts_eligible? && !audio.attached? && created_at > TTS_PROCESSING_TIMEOUT.ago
   end
 
   # Returns the audio URL for playback (nil if not ready)
