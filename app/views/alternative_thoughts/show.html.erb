@@ -1,3 +1,4 @@
+<% content_for :title, "#{@alternative_thought.title} - Challenging Questions" %>
 <%= turbo_frame_tag "main_content" do %>
   <%= render "alternative_thoughts/show_content",
       alternative_thought: @alternative_thought,

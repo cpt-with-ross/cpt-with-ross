@@ -1,3 +1,4 @@
+<% content_for :title, "#{@abc_worksheet.title} - ABC Worksheet" %>
 <%= turbo_frame_tag "main_content" do %>
   <%= render "abc_worksheets/show_content",
       abc_worksheet: @abc_worksheet,

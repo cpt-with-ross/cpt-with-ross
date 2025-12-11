@@ -44,7 +44,7 @@ module PdfExporters
     MARGIN_SIDES = 50
 
     def initialize
-      @logo_path = Rails.root.join('app/assets/images/logo.png')
+      @logo_path = Rails.public_path.join('logo.png')
     end
 
     # Generates and returns PDF document as a string

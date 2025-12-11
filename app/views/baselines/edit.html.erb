@@ -1,3 +1,4 @@
+<% content_for :title, baseline_section_title(@section) %>
 <%= turbo_frame_tag "main_content" do %>
   <div data-controller="current-path" data-current-path-path-value="<%= index_event_baseline_path(@index_event) %>"></div>
 

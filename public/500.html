@@ -1,66 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>We're sorry, but something went wrong (500)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <title>Something Went Wrong | CPT with Ross - PTSD Therapy Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI-powered Cognitive Processing Therapy assistant for PTSD recovery and healing">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CPT with Ross">
+  <meta property="og:title" content="Something Went Wrong | CPT with Ross">
+  <meta property="og:description" content="AI-powered Cognitive Processing Therapy assistant for PTSD recovery and healing">
+  <meta property="og:image" content="https://cptwithross.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Something Went Wrong | CPT with Ross">
+  <meta name="twitter:description" content="AI-powered Cognitive Processing Therapy assistant for PTSD recovery and healing">
+  <meta name="twitter:image" content="https://cptwithross.com/og-image.png">
+  <link rel="icon" type="image/png" href="/logo.png">
   <style>
-  .rails-default-error-page {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-    margin: 0;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  .rails-default-error-page div.dialog {
-    width: 95%;
-    max-width: 33em;
-    margin: 4em auto 0;
-  }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #F4F4F4 0%, #fff 100%);
+      color: #0E0000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
 
-  .rails-default-error-page div.dialog > div {
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 12% 0;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    .error-container {
+      text-align: center;
+      max-width: 480px;
+    }
 
-  .rails-default-error-page h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
+    .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
-  .rails-default-error-page div.dialog > p {
-    margin: 0 0 1em;
-    padding: 1em;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    .error-code {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 6rem;
+      font-weight: 700;
+      color: #E67E22;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      letter-spacing: -2px;
+    }
+
+    .error-title {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0E0000;
+      margin-bottom: 1rem;
+    }
+
+    .error-message {
+      font-size: 1rem;
+      color: #6c757d;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: #0D6EFD;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .home-link:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-1px);
+    }
+
+    .home-link svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .decorative-line {
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #E67E22, #FFC65A);
+      border-radius: 2px;
+      margin: 0 auto 2rem;
+    }
+
+    .support-text {
+      font-size: 0.875rem;
+      color: #9ca3af;
+      margin-top: 2rem;
+    }
   </style>
 </head>
-
-<body class="rails-default-error-page">
-  <!-- This file lives in public/500.html -->
-  <div class="dialog">
-    <div>
-      <h1>We're sorry, but something went wrong.</h1>
-    </div>
-    <p>If you are the application owner check the logs for more information.</p>
+<body>
+  <div class="error-container">
+    <img src="/logo.png" alt="CPT with Ross" class="logo">
+    <div class="error-code">500</div>
+    <div class="decorative-line"></div>
+    <h1 class="error-title">Something Went Wrong</h1>
+    <p class="error-message">
+      We encountered an unexpected issue. This isn't your fault.
+      Our team has been notified and we're working on it.
+    </p>
+    <a href="/" class="home-link">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      Return Home
+    </a>
+    <p class="support-text">
+      If this keeps happening, please try again in a few minutes.
+    </p>
   </div>
 </body>
 </html>
