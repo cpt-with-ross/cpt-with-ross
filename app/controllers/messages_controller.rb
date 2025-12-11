@@ -48,7 +48,6 @@ class MessagesController < ApplicationController
     end
   end
 
-
   def text_to_speech
     text = params[:text]
 
@@ -57,20 +56,32 @@ class MessagesController < ApplicationController
       return
     end
 
-    begin
-    tts_service = TextToSpeechService.new
-    audio_content = tts_service.synthesize(text: text)
+    # Generate cache key based on text content
+    cache_key = Digest::SHA256.hexdigest(text)
+    etag = cache_key
 
-    send_data audio_content,
-              type: 'audio/mpeg',
-              disposition: 'inline',
-              filename: "speech_#{Time.current.to_i}.mp3"
+    # Check if browser has cached version
+    if request.headers['If-None-Match'] == etag
+      head :not_modified
+      return
+    end
+
+    begin
+      tts_service = TextToSpeechService.new
+      audio_content = tts_service.synthesize(text: text)
+
+      # Set caching headers - cache for 1 week
+      response.headers['Cache-Control'] = 'public, max-age=604800, immutable'
+      response.headers['ETag'] = etag
+
+      send_data audio_content,
+                type: 'audio/mpeg',
+                disposition: 'inline',
+                filename: "speech_#{cache_key}.mp3"
     rescue StandardError => e
       Rails.logger.error "TTS Error: #{e.message}"
       render json: { error: 'Failed to generate speech' }, status: :internal_server_error
     end
-
-    # TextToSpeechService.new.synthesize(text: text)
   end
 
   private
