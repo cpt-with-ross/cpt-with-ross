@@ -20,6 +20,7 @@
 class Message < ApplicationRecord
   acts_as_message tool_calls_foreign_key: :message_id
   has_many_attached :attachments
+  has_one_attached :audio
 
   # Streams a chunk of LLM response to the UI in real-time.
   # Called repeatedly by ChatResponseJob as each token is generated.
@@ -38,5 +39,35 @@ class Message < ApplicationRecord
                          target: "message_#{id}_content",
                          partial: 'messages/error',
                          locals: { error_message: error_message }
+  end
+
+  # =============================================================================
+  # TTS Audio Helpers
+  # =============================================================================
+
+  # Returns true if this is an assistant message that should have TTS
+  def tts_eligible?
+    role == 'assistant' && content.present?
+  end
+
+  # Returns true if TTS audio is ready to play
+  def tts_ready?
+    tts_eligible? && audio.attached?
+  end
+
+  # Returns true if TTS is still processing (job queued or running)
+  def tts_processing?
+    tts_eligible? && !audio.attached?
+  end
+
+  # Returns the audio URL for playback (nil if not ready)
+  def audio_url
+    return nil unless tts_ready?
+
+    Rails.application.routes.url_helpers.rails_blob_path(
+      audio,
+      only_path: true,
+      disposition: 'inline'
+    )
   end
 end

@@ -48,6 +48,12 @@ class ChatResponseJob < ApplicationJob
     # Persist the complete response to the database
     message.update!(content: accumulated_content)
 
+    # Broadcast the audio loading spinner now that content exists
+    # This creates the target div that TextToSpeechJob will replace when audio is ready
+    broadcast_audio_loading(message)
+
+    # Queue TTS generation for the completed message
+    TextToSpeechJob.perform_later(message.id)
   # Granular error handling provides specific feedback for different failure modes
   rescue RubyLLM::UnauthorizedError
     handle_error(message, 'API key is invalid or missing. Please check your configuration.',
@@ -107,5 +113,18 @@ class ChatResponseJob < ApplicationJob
   def handle_error(message, broadcast_text, persist_text)
     message.broadcast_error(broadcast_text)
     message.update!(content: persist_text)
+  end
+
+  # Broadcasts the audio loading spinner to show TTS is processing.
+  # The audio container div is always rendered in the template (empty initially).
+  # This replaces it with the loading spinner, which TextToSpeechJob will then
+  # replace with the audio player when ready.
+  def broadcast_audio_loading(message)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "chat_#{message.chat_id}",
+      target: "message_#{message.id}_audio",
+      partial: 'messages/audio_loading',
+      locals: { message: message }
+    )
   end
 end
