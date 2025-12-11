@@ -21,11 +21,16 @@
 #
 class BaselinesController < ApplicationController
   include InlineFormRenderable
+  include Exportable
 
   VALID_SECTIONS = %w[checklist pcl statement].freeze
 
+  exportable :baseline
+
   before_action :set_index_event
-  before_action :set_baseline
+  # rubocop:disable Rails/LexicallyScopedActionFilter -- export and share are defined in Exportable concern
+  before_action :set_baseline, only: %i[show edit update export share]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :set_section, only: %i[edit update]
   before_action :set_baseline_focus, only: %i[show edit]
 
@@ -46,35 +51,6 @@ class BaselinesController < ApplicationController
     end
   end
 
-  # Generates and downloads a summary PDF for the index event
-  def summary
-    pdf_content = SummaryPdfGenerator.new(@index_event).generate
-    filename = "#{@index_event.title.parameterize}-summary-#{Date.current}.pdf"
-    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
-
-    send_data pdf_content,
-              filename: filename,
-              type: 'application/pdf',
-              disposition: disposition
-  end
-
-  # Sends summary PDF via email
-  def email
-    Rails.logger.info "=== Starting email delivery for index event summary #{@index_event.id} ==="
-
-    SummaryMailer.send_summary(current_user, @index_event).deliver_now
-
-    respond_to do |format|
-      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
-    end
-  rescue StandardError => e
-    Rails.logger.error "=== Email delivery failed: #{e.class} - #{e.message} ==="
-
-    respond_to do |format|
-      format.json { render json: { error: "Failed to send email: #{e.message}" }, status: :unprocessable_entity }
-    end
-  end
-
   private
 
   # Finds parent IndexEvent scoped to current user
@@ -83,7 +59,10 @@ class BaselinesController < ApplicationController
   end
 
   # Retrieves the baseline (1:1 relationship with IndexEvent)
+  # Authorization is implicit via @index_event being scoped to current_user
   def set_baseline
+    raise ActiveRecord::RecordNotFound unless @index_event
+
     @baseline = @index_event.baseline
   end
 

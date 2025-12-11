@@ -21,9 +21,14 @@
 #
 class StuckPointsController < ApplicationController
   include InlineFormRenderable
+  include Exportable
+
+  exportable :stuck_point
 
   before_action :set_index_event, only: %i[new create]
-  before_action :set_stuck_point, only: %i[show edit update destroy pdf email]
+  # rubocop:disable Rails/LexicallyScopedActionFilter -- export and share are defined in Exportable concern
+  before_action :set_stuck_point, only: %i[show edit update destroy export share]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
 
   # Returns title button partial for Turbo Frame refresh
   def show
@@ -133,35 +138,6 @@ class StuckPointsController < ApplicationController
     end
   end
 
-  # Generates and downloads PDF for the stuck point
-  def pdf
-    pdf_content = StuckPointPdfGenerator.new(@stuck_point).generate
-    filename = "#{@stuck_point.index_event.title.parameterize}-stuck-point-#{Date.current}.pdf"
-    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
-
-    send_data pdf_content,
-              filename: filename,
-              type: 'application/pdf',
-              disposition: disposition
-  end
-
-  # Sends stuck point PDF via email
-  def email
-    Rails.logger.info "=== Starting email delivery for stuck point #{@stuck_point.id} ==="
-
-    StuckPointMailer.send_stuck_point(current_user, @stuck_point).deliver_now
-
-    respond_to do |format|
-      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
-    end
-  rescue StandardError => e
-    Rails.logger.error "=== Email delivery failed: #{e.class} - #{e.message} ==="
-
-    respond_to do |format|
-      format.json { render json: { error: "Failed to send email: #{e.message}" }, status: :unprocessable_entity }
-    end
-  end
-
   private
 
   # Finds parent IndexEvent scoped to current user
@@ -170,10 +146,12 @@ class StuckPointsController < ApplicationController
   end
 
   # Finds stuck point by ID (shallow route), scoped to current user
+  # Authorization is implicit via join scoping to current_user
   def set_stuck_point
     @stuck_point = StuckPoint.joins(index_event: :user)
                              .where(users: { id: current_user.id })
                              .find(params[:id])
+    raise ActiveRecord::RecordNotFound unless @stuck_point
   end
 
   def stuck_point_params

@@ -18,10 +18,15 @@
 class AlternativeThoughtsController < ApplicationController
   include InlineFormRenderable
   include StuckPointChildResource
+  include Exportable
 
   SECTIONS = %w[exploring patterns alternative rerate emotions_after].freeze
 
-  before_action :set_alternative_thought, only: %i[show edit update destroy pdf email]
+  exportable :alternative_thought
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter -- export and share are defined in Exportable concern
+  before_action :set_alternative_thought, only: %i[show edit update destroy export share]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :set_thought_focus, only: %i[show edit]
   before_action :set_section, only: %i[edit]
 
@@ -126,51 +131,16 @@ class AlternativeThoughtsController < ApplicationController
     destroy_with_fallback(@alternative_thought, alternative_thought_path(@alternative_thought))
   end
 
-  # Generates and downloads a PDF of the worksheet
-  # Use ?print=true for inline display (print preview)
-  # Default is attachment (download)
-  def pdf
-    pdf_content = WorksheetPdfGenerator.new(@alternative_thought).generate
-    filename = "#{@alternative_thought.title.parameterize}-#{Date.current}.pdf"
-
-    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
-
-    send_data pdf_content,
-              filename: filename,
-              type: 'application/pdf',
-              disposition: disposition
-  end
-
-  # Emails the worksheet PDF to the user
-  def email
-    Rails.logger.info "=== Starting email delivery for Alternative Thought #{@alternative_thought.id} ==="
-    WorksheetMailer.send_worksheet(current_user, @alternative_thought).deliver_now
-    Rails.logger.info "=== Email delivered successfully ==="
-
-    respond_to do |format|
-      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
-      format.html do
-        redirect_to alternative_thought_path(@alternative_thought), notice: 'Worksheet emailed successfully!'
-      end
-    end
-  rescue StandardError => e
-    Rails.logger.error "=== Email delivery failed: #{e.class} - #{e.message} ==="
-    Rails.logger.error e.backtrace.join("\n")
-    respond_to do |format|
-      format.json { render json: { error: "Failed to send email: #{e.message}" }, status: :unprocessable_entity }
-      format.html do
-        redirect_to alternative_thought_path(@alternative_thought), alert: "Failed to send email: #{e.message}"
-      end
-    end
-  end
-
   private
 
   # Finds alternative thought with authorization via join to current user
+  # Authorization is implicit via join scoping to current_user
   def set_alternative_thought
     @alternative_thought = AlternativeThought.joins(stuck_point: { index_event: :user })
                                              .where(users: { id: current_user.id })
                                              .find(params[:id])
+    raise ActiveRecord::RecordNotFound unless @alternative_thought
+
     @stuck_point = @alternative_thought.stuck_point
   end
 

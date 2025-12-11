@@ -1,35 +1,64 @@
 module ApplicationHelper
-  # Returns all ABC worksheets and Alternative Thoughts for the current user
-  # grouped by type with display labels for dropdowns
-  def all_user_worksheets
-    return [] unless @index_events
+  # Generates the export path for a given resource using ExportConfig
+  def export_path_for(item)
+    build_exportable_path(item, :export)
+  end
 
-    worksheets = []
+  # Generates the share path for a given resource using ExportConfig
+  def share_path_for(item)
+    build_exportable_path(item, :share)
+  end
 
-    @index_events.each do |index_event|
-      index_event.stuck_points.each do |stuck_point|
-        # Add ABC Worksheets
-        stuck_point.abc_worksheets.each do |worksheet|
-          worksheets << {
-            id: worksheet.id,
-            type: 'abc_worksheet',
-            label: "ABC: #{worksheet.title} (#{index_event.title})",
-            path: abc_worksheet_path(worksheet)
-          }
-        end
+  private
 
-        # Add Alternative Thoughts
-        stuck_point.alternative_thoughts.each do |thought|
-          worksheets << {
-            id: thought.id,
-            type: 'alternative_thought',
-            label: "Alt: #{thought.title} (#{index_event.title})",
-            path: alternative_thought_path(thought)
-          }
-        end
-      end
+  # Dynamically builds export/share paths based on ExportConfig registration
+  # Baseline requires special handling due to nested route structure
+  def build_exportable_path(item, action)
+    key = ExportConfig.key_for_model(item)
+
+    if key == :baseline
+      send("#{action}_index_event_baseline_path", item.index_event)
+    else
+      send("#{action}_#{key}_path", item)
     end
+  end
 
-    worksheets.sort_by { |w| w[:label] }
+  public
+
+  # Generates the standard Print/Export/Share dropdown items for a resource.
+  # Accepts either explicit paths or a resource object.
+  #
+  # @param item [Object] Exportable resource (AbcWorksheet, AlternativeThought, etc.)
+  # @return [Array<Hash>] Array of menu item hashes for action_dropdown partial
+  def document_actions(item: nil, export_path: nil, share_path: nil)
+    export_path ||= export_path_for(item)
+    share_path ||= share_path_for(item)
+
+    [
+      {
+        label: 'Print',
+        icon: 'fa-solid fa-print',
+        path: "#{export_path}?print=true",
+        target: '_blank',
+        turbo: false,
+        controller: 'document-actions',
+        action: 'click->document-actions#printFromDropdown'
+      },
+      {
+        label: 'Export',
+        icon: 'fa-solid fa-file-pdf',
+        path: export_path,
+        target: '_blank',
+        turbo: false
+      },
+      {
+        label: 'Share',
+        icon: 'fa-solid fa-envelope',
+        path: share_path,
+        turbo: false,
+        controller: 'document-actions',
+        action: 'click->document-actions#shareFromDropdown'
+      }
+    ]
   end
 end

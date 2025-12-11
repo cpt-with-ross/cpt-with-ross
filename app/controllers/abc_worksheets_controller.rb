@@ -19,8 +19,13 @@
 class AbcWorksheetsController < ApplicationController
   include InlineFormRenderable
   include StuckPointChildResource
+  include Exportable
 
-  before_action :set_abc_worksheet, only: %i[show edit update destroy pdf email]
+  exportable :abc_worksheet
+
+  # rubocop:disable Rails/LexicallyScopedActionFilter -- export and share are defined in Exportable concern
+  before_action :set_abc_worksheet, only: %i[show edit update destroy export share]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
   before_action :set_worksheet_focus, only: %i[show edit]
 
   # Renders the show view within the main_content Turbo Frame
@@ -132,49 +137,16 @@ class AbcWorksheetsController < ApplicationController
     destroy_with_fallback(@abc_worksheet, abc_worksheet_path(@abc_worksheet))
   end
 
-  # Generates and downloads a PDF of the worksheet
-  # Use ?print=true for inline display (print preview)
-  # Default is attachment (download)
-  def pdf
-    pdf_content = WorksheetPdfGenerator.new(@abc_worksheet).generate
-    filename = "#{@abc_worksheet.title.parameterize}-#{Date.current}.pdf"
-
-    disposition = params[:print] == 'true' ? 'inline' : 'attachment'
-
-    send_data pdf_content,
-              filename: filename,
-              type: 'application/pdf',
-              disposition: disposition
-  end
-
-  # Emails the worksheet PDF to the user
-  def email
-    Rails.logger.info "=== Starting email delivery for ABC worksheet #{@abc_worksheet.id} ==="
-    WorksheetMailer.send_worksheet(current_user, @abc_worksheet).deliver_now
-    Rails.logger.info "=== Email delivered successfully ==="
-
-    respond_to do |format|
-      format.json { render json: { message: 'Email sent successfully!' }, status: :ok }
-      format.html { redirect_to abc_worksheet_path(@abc_worksheet), notice: 'Worksheet emailed successfully!' }
-    end
-  rescue StandardError => e
-    Rails.logger.error "=== Email delivery failed: #{e.class} - #{e.message} ==="
-    Rails.logger.error e.backtrace.join("\n")
-    respond_to do |format|
-      format.json { render json: { error: "Failed to send email: #{e.message}" }, status: :unprocessable_entity }
-      format.html do
-        redirect_to abc_worksheet_path(@abc_worksheet), alert: "Failed to send email: #{e.message}"
-      end
-    end
-  end
-
   private
 
   # Finds worksheet with authorization via join to current user
+  # Authorization is implicit via join scoping to current_user
   def set_abc_worksheet
     @abc_worksheet = AbcWorksheet.joins(stuck_point: { index_event: :user })
                                  .where(users: { id: current_user.id })
                                  .find(params[:id])
+    raise ActiveRecord::RecordNotFound unless @abc_worksheet
+
     @stuck_point = @abc_worksheet.stuck_point
   end
 
