@@ -10,7 +10,7 @@
  * Usage: data-controller="form-with-context" data-action="submit->form-with-context#submit"
  */
 import { Controller } from '@hotwired/stimulus';
-import { injectCurrentPathField } from '../utils/path_utils';
+import { injectCurrentPathField } from 'utils/path_utils';
 
 export default class extends Controller {
   submit() {

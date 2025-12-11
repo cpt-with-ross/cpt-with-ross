@@ -11,7 +11,7 @@
  *        data-delete-with-context-item-type-value="index event" (optional)
  */
 import { Controller } from '@hotwired/stimulus';
-import { injectCurrentPathField } from '../utils/path_utils';
+import { injectCurrentPathField } from 'utils/path_utils';
 
 export default class extends Controller {
   static values = { itemType: { type: String, default: 'item' } };
