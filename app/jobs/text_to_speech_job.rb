@@ -99,6 +99,9 @@ class TextToSpeechJob < ApplicationJob
     # Strip markdown for cleaner TTS output
     clean_text = strip_markdown(text)
 
+    # Fix pronunciation issues (e.g., "CPT" being read as "Captain")
+    clean_text = fix_pronunciations(clean_text)
+
     # Split into words, preserving sentence structure
     words = clean_text.split(/\s+/).compact_blank
 
@@ -126,6 +129,11 @@ class TextToSpeechJob < ApplicationJob
       .gsub(/\[(.+?)\]\(.+?\)/, '\1')    # Links - keep text, remove URL
       .gsub(/\n{2,}/, "\n")              # Multiple newlines to single
       .strip
+  end
+
+  # Fixes common pronunciation issues where TTS misreads abbreviations
+  def fix_pronunciations(text)
+    text.gsub(/\bCPT\b/i, 'C. P. T.')
   end
 
   # Calls Google Cloud Text-to-Speech API with SSML input and timepoint request
