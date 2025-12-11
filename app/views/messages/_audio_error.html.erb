@@ -1,0 +1,12 @@
+<%#
+  Error state shown when TTS audio generation fails.
+  Displayed instead of spinner when Google Cloud TTS encounters an error
+  (content too long, credential issues, etc.)
+  Wrapper div provides Turbo Stream target for broadcast_replace_to
+%>
+<div id="message_<%= message.id %>_audio" class="mt-2">
+  <div class="audio-error d-inline-flex align-items-center gap-2 px-2 py-1 rounded bg-light border text-muted small">
+    <i class="fa-solid fa-volume-xmark"></i>
+    <span>Audio unavailable</span>
+  </div>
+</div>

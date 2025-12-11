@@ -6,9 +6,21 @@
   </div>
 <% elsif message.role == 'assistant' %>
   <div class="d-flex justify-content-start mb-4" id="<%= dom_id(message) %>">
-    <div class="text-dark" style="max-width: 90%; font-size: 0.95rem; line-height: 1.6;" data-controller="markdown">
-      <span id="message_<%= message.id %>_content" data-markdown-target="source" hidden><%= message.content %></span>
-      <div data-markdown-target="output"></div>
+    <div class="text-dark" style="max-width: 90%; font-size: 0.95rem; line-height: 1.6;">
+      <div data-controller="markdown">
+        <span id="message_<%= message.id %>_content" data-markdown-target="source" hidden><%= message.content %></span>
+        <div data-markdown-target="output" id="message_<%= message.id %>_output"></div>
+      </div>
+
+      <%# Audio player section - partials include wrapper div with target ID for Turbo Stream %>
+      <% if message.tts_ready? %>
+        <%= render 'messages/audio_player', message: message %>
+      <% elsif message.tts_processing? %>
+        <%= render 'messages/audio_loading', message: message %>
+      <% else %>
+        <%# Empty container for TTS broadcast target when audio not yet generated %>
+        <div id="message_<%= message.id %>_audio" class="mt-2"></div>
+      <% end %>
     </div>
   </div>
 <% end %>

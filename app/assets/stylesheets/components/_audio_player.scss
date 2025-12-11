@@ -1,0 +1,60 @@
+// =============================================================================
+// Audio Player - TTS playback controls for chat messages
+// =============================================================================
+//
+// Compact inline design that fits beneath message content.
+// Includes styles for the audio player controls and text highlighting.
+
+.audio-player {
+  font-size: 0.85rem;
+
+  .btn-link {
+    font-size: 0.9rem;
+    line-height: 1;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}
+
+.audio-loading {
+  font-size: 0.85rem;
+
+  .spinner-border-sm {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-width: 0.15em;
+  }
+}
+
+// =============================================================================
+// Text Highlighting for TTS Sync
+// =============================================================================
+//
+// Words are wrapped in .tts-word spans during playback.
+// The current word being spoken gets the .tts-highlight class.
+
+.tts-word {
+  transition: background-color 0.15s ease;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.tts-highlight {
+  background-color: rgba(var(--bs-primary-rgb), 0.25);
+}
+
+// =============================================================================
+// Auto-play Toggle Button
+// =============================================================================
+//
+// Override text-primary color on hover to show white when button is hovered
+
+.btn-outline-secondary:hover .fa-stack.text-primary {
+  color: white !important;
+}

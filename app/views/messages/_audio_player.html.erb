@@ -1,0 +1,35 @@
+<%#
+  Audio player controls for TTS playback
+  Uses Stimulus audio_player_controller for state management and text highlighting
+  Wrapper div provides Turbo Stream target for broadcast_replace_to
+%>
+<div id="message_<%= message.id %>_audio" class="mt-2">
+  <div class="audio-player d-inline-flex align-items-center gap-2 px-2 py-1 rounded bg-light border"
+       data-controller="audio-player"
+       data-audio-player-url-value="<%= message.audio_url %>"
+       data-audio-player-timepoints-value="<%= message.tts_timepoints&.to_json || '[]' %>"
+       data-audio-player-message-id-value="<%= message.id %>"
+       <% if local_assigns[:just_generated] %> data-audio-player-just-generated-value="true"<% end %>>
+
+  <%# Rewind button %>
+  <button type="button"
+          class="btn btn-sm btn-link text-secondary p-0"
+          data-action="audio-player#rewind"
+          title="Restart">
+    <i class="fa-solid fa-backward-step"></i>
+  </button>
+
+  <%# Play/Pause toggle %>
+  <button type="button"
+          class="btn btn-sm btn-link text-primary p-0"
+          data-action="audio-player#togglePlay"
+          data-audio-player-target="playBtn"
+          title="Play">
+    <i class="fa-solid fa-play" data-audio-player-target="playIcon"></i>
+    <i class="fa-solid fa-pause d-none" data-audio-player-target="pauseIcon"></i>
+  </button>
+
+  <%# Time display %>
+  <span class="small text-muted" data-audio-player-target="time">0:00</span>
+  </div>
+</div>

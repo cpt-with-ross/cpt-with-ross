@@ -1,0 +1,13 @@
+<%#
+  Loading spinner shown while TTS job is processing
+  Will be replaced via Turbo Stream when audio is ready
+  Wrapper div provides Turbo Stream target for broadcast_replace_to
+%>
+<div id="message_<%= message.id %>_audio" class="mt-2">
+  <div class="audio-loading d-inline-flex align-items-center gap-2 px-2 py-1 text-muted">
+    <div class="spinner-border spinner-border-sm" role="status">
+      <span class="visually-hidden">Generating audio...</span>
+    </div>
+    <span class="small">Generating audio...</span>
+  </div>
+</div>

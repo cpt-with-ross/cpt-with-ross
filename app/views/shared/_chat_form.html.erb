@@ -1,3 +1,6 @@
+<%# Silent audio unlock - enables TTS autoplay on first user interaction %>
+<div data-controller="audio-unlock"></div>
+
 <%= form_with model: Message.new,
               url: chat_messages_path(chat),
               id: "chat-form",
@@ -18,13 +21,27 @@
         data: { chat_form_target: "input", action: "keydown->chat-form#submitOnEnter" } %>
 
     <div class="d-flex justify-content-between align-items-end mt-2 px-1">
-      <%= link_to clear_chat_path(chat),
-                  data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to clear all messages?" },
-                  class: "btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0",
-                  style: "width: 32px; height: 32px;",
-                  title: "Clear chat" do %>
-        <i class="fa-solid fa-trash-can small"></i>
-      <% end %>
+      <div class="d-flex align-items-center gap-2">
+        <%= link_to clear_chat_path(chat),
+                    data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to clear all messages?" },
+                    class: "btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0",
+                    style: "width: 32px; height: 32px;",
+                    title: "Clear chat" do %>
+          <i class="fa-solid fa-trash-can small"></i>
+        <% end %>
+        <button type="button"
+                class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
+                style="width: 32px; height: 32px;"
+                data-controller="auto-play-toggle"
+                data-action="auto-play-toggle#toggle"
+                title="Auto-play is ON (click to disable)">
+          <span class="fa-stack text-primary" style="font-size: 0.6em;" data-auto-play-toggle-target="iconStack">
+            <i class="fa-solid fa-rotate-right fa-stack-2x"></i>
+            <i class="fa-solid fa-play fa-stack-1x" style="font-size: 0.7em;"></i>
+            <i class="fa-solid fa-slash fa-stack-2x d-none" style="z-index: 10; transform: scaleX(-1) rotate(30deg) scale(0.8); -webkit-text-stroke: 1px currentColor;" data-auto-play-toggle-target="slashIcon"></i>
+          </span>
+        </button>
+      </div>
       <button class="btn btn-dark rounded-circle d-flex align-items-center justify-content-center p-0"
               type="submit"
               style="width: 32px; height: 32px;"
