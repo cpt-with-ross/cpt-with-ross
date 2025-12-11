@@ -1,0 +1,6 @@
+<%= render 'export_mailer/export_email',
+           overview: true,
+           index_event_title: @index_event.title,
+           title_label: 'Stuck Point',
+           resource_title: @resource.statement.truncate(100),
+           description: 'The PDF includes all ABC Worksheets and Alternative Thoughts associated with this stuck point.' %>

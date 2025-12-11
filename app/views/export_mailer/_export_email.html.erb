@@ -1,0 +1,19 @@
+<p style="margin: 0 0 15px 0; color: #212529; font-size: 14px; font-weight: 600;">
+  Your <%= @resource_type %><%= ' Overview' if local_assigns[:overview] %>
+</p>
+
+<p style="margin: 0 0 15px 0; color: #495057; font-size: 14px; line-height: 1.5;">
+  <% if local_assigns[:index_event_title] && local_assigns[:resource_title] %>
+    Attached is the <%= local_assigns[:title_label]&.downcase || 'document' %> "<strong><%= resource_title %></strong>" from your index event "<strong><%= index_event_title %></strong>".
+  <% elsif local_assigns[:index_event_title] %>
+    Attached is your <strong><%= @resource_type.downcase %></strong> for the index event "<strong><%= index_event_title %></strong>".
+  <% elsif local_assigns[:resource_title] %>
+    Attached is your <%= @resource_type.downcase %> "<strong><%= resource_title %></strong>".
+  <% else %>
+    Your <strong><%= @resource_type.downcase %></strong> is attached.
+  <% end %>
+</p>
+
+<p style="margin: 0; color: #495057; font-size: 14px; line-height: 1.5;">
+  <%= description %>
+</p>
