@@ -133,7 +133,7 @@ class TextToSpeechJob < ApplicationJob
 
   # Fixes common pronunciation issues where TTS misreads abbreviations
   def fix_pronunciations(text)
-    text.gsub(/\bCPT\b/i, 'C. P. T.')
+    text.gsub(/\bCPT\b/i, 'Cognitive Processing Therapy')
   end
 
   # Calls Google Cloud Text-to-Speech API with SSML input and timepoint request
