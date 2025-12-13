@@ -2,7 +2,7 @@
 
 # Demo seed data for CPT with Ross - Run with: bin/rails db:seed
 
-puts 'Creating demo data...'
+Rails.logger.info 'Creating demo data...'
 
 user = User.find_or_initialize_by(email: 'test@cptwithross.com')
 user.password = 'test123'
@@ -74,8 +74,8 @@ sp.alternative_thoughts.find_or_create_by!(title: 'Reframing responsibility') do
   ]
 end
 
-puts ''
-puts 'Demo ready!'
-puts '  Email: test@cptwithross.com'
-puts '  Password: test123'
-puts "  PCL-5 Score: #{event.baseline.pcl_total_score}/80"
+Rails.logger.info ''
+Rails.logger.info 'Demo ready!'
+Rails.logger.info '  Email: test@cptwithross.com'
+Rails.logger.info '  Password: test123'
+Rails.logger.info "  PCL-5 Score: #{event.baseline.pcl_total_score}/80"
