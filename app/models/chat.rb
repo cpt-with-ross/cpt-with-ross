@@ -23,7 +23,7 @@ class Chat < ApplicationRecord
   belongs_to :user, inverse_of: :chats
   belongs_to :model, optional: true
 
-  # Returns the model identifier string (e.g., 'gemini-2.0-flash')
+  # Returns the model identifier string (e.g., 'gemini-2.5-flash')
   # Falls back to config defaults if no model is associated
   def llm_model_id
     model&.model_id || Rails.application.config.cpt_chat[:default_model_id]

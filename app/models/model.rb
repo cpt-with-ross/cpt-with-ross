@@ -8,7 +8,7 @@
 # acts_as_model pattern for integration with the gem's chat system.
 #
 # Fields:
-# - model_id: The provider's model identifier (e.g., 'gemini-2.0-flash')
+# - model_id: The provider's model identifier (e.g., 'gemini-2.5-flash')
 # - provider: The LLM provider (e.g., 'google', 'anthropic', 'openai')
 # - name: Human-readable display name
 #
