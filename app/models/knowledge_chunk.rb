@@ -10,7 +10,7 @@
 #
 # Each chunk contains:
 # - content: The actual text (typically a few paragraphs)
-# - embedding: A 1536-dimension vector (OpenAI text-embedding-3-small)
+# - embedding: A 768-dimension vector (Google text-embedding-004 via Vertex AI)
 # - page_number: Source page reference
 # - source_doc: Original document name
 #

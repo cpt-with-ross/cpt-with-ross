@@ -9,8 +9,8 @@
 #
 # JSONL Format Expected:
 # Each line is a JSON object with: content, page_number, source_doc, embedding
-# Embeddings should be pre-computed vectors (typically 1536 dimensions for
-# OpenAI text-embedding-3-small).
+# Embeddings should be pre-computed vectors (768 dimensions for
+# Google text-embedding-004 via Vertex AI).
 #
 # Performance:
 # Uses batch inserts (insert_all) to efficiently handle large knowledge bases.
